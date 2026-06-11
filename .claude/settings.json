@@ -5,6 +5,15 @@
   },
   "enabledPlugins": {
     "qt-development-skills@claude-plugins-official": true,
-    "superpowers@claude-plugins-official": true
+    "superpowers@claude-plugins-official": true,
+    "handoff@handoff-marketplace": true
+  },
+  "extraKnownMarketplaces": {
+    "handoff-marketplace": {
+      "source": {
+        "source": "github",
+        "repo": "borco/claude-handoff"
+      }
+    }
   }
 }

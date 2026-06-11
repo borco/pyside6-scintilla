@@ -21,6 +21,7 @@ core directly to PySide6 users.
 ## Goals
 
 `pyside6-scintilla` aims to be:
+
 - **MIT licensed** — usable in open-source or closed-source projects freely
 - **PySide6 native** — built with shiboken6, integrating naturally with PySide6 widgets
 - A **faithful, low-level binding** of Scintilla's `ScintillaEditBase` widget — not a

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<typesystem package="_pyside6_scintilla">
+    <load-typesystem name="typesystem_widgets.xml" generate="no"/>
+
+    <namespace-type name="Scintilla">
+        <!-- Integer typedefs used throughout ScintillaEditBase's public API -->
+        <primitive-type name="Position"/>
+        <primitive-type name="sptr_t"/>
+        <primitive-type name="uptr_t"/>
+
+        <enum-type name="Update"/>
+        <enum-type name="ModificationFlags"/>
+        <enum-type name="FoldLevel"/>
+        <enum-type name="KeyMod"/>
+        <enum-type name="Notification"/>
+        <enum-type name="CompletionMethods"/>
+        <enum-type name="CharacterSource"/>
+        <enum-type name="Message"/>
+
+        <value-type name="NotificationData">
+            <!-- Scintilla::Message is registered twice when this field is
+                 visible (ScintillaStructures.h forward-declares "enum class
+                 Message;" before NotificationData, in addition to the full
+                 definition in ScintillaMessages.h), causing shiboken to emit
+                 duplicate enum converters/type indices for Scintilla::Message. -->
+            <modify-field name="message" remove="true"/>
+        </value-type>
+    </namespace-type>
+
+    <object-type name="ScintillaEditBase"/>
+</typesystem>

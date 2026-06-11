@@ -1,0 +1,39 @@
+{
+    "version": 8,
+    "configurePresets": [
+        {
+            "name": "default",
+            "displayName": "Default Config",
+            "description": "Default build using Ninja generator",
+            "binaryDir": "${sourceDir}/build/${presetName}",
+            "generator": "Ninja"
+        },
+        {
+            "inherits": "default",
+            "name": "venv",
+            "description": "Use Python3 installed in .venv with `uv sync`"
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "venv",
+            "configurePreset": "venv",
+            "targets": "install"
+        }
+    ],
+    "workflowPresets": [
+        {
+            "name": "venv",
+            "steps": [
+                {
+                    "type": "configure",
+                    "name": "venv"
+                },
+                {
+                    "type": "build",
+                    "name": "venv"
+                }
+            ]
+        }
+    ]
+}

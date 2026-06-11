@@ -38,7 +38,7 @@ classifiers = [
 ]
 requires-python = ">=3.11"
 dependencies = [
-    "PySide6>=6.6",
+    "PySide6>=6.10",
 ]
 
 
@@ -50,6 +50,7 @@ Issues = "https://github.com/borco/pyside6-scintilla/issues"
 
 [tool.scikit-build]
 cmake.build-type = "Release"
+build-dir = "build/{wheel_tag}"
 wheel.packages = ["src/pyside6_scintilla"]
 
 [tool.scikit-build.metadata.version]
@@ -57,21 +58,28 @@ provider = "scikit_build_core.metadata.regex"
 input = "src/pyside6_scintilla/__init__.py"
 
 
+[dependency-groups]
+dev = [
+    "cmake>=3.25",
+    "ninja",
+    "pytest>=8.0",
+    "pytest-qt>=4.4",
+    "ruff>=0.8",
+    "scikit-build-core>=0.10",
+    "shiboken6-generator",
+]
+
+
 # ---------------------------------------------------------------------------
 # uv — development environment
 # ---------------------------------------------------------------------------
 
-# `package = false` until CMakeLists.txt / bindings exist — uv would otherwise
-# try to build this project via scikit-build-core on every sync.
+# Build without an isolated env: the CMake configure step needs to find the
+# PySide6/shiboken6 CMake packages from the *same* Python environment, which
+# only holds for .venv (PySide6 is a runtime dep, shiboken6/shiboken6-generator
+# are dev deps — none of these are [build-system].requires).
 [tool.uv]
-package = false
-
-[dependency-groups]
-dev = [
-    "pytest>=8.0",
-    "pytest-qt>=4.4",
-    "ruff>=0.8",
-]
+no-build-isolation-package = ["pyside6-scintilla"]
 
 
 # ---------------------------------------------------------------------------

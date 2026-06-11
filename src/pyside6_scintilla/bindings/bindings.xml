@@ -1,4 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+     shiboken6 typesystem for the `_pyside6_scintilla` extension module.
+
+     Declares which of the C++ types visible through bindings.h get Python
+     wrappers generated. Only types actually referenced by ScintillaEditBase's
+     public signals/slots/methods need to be listed; shiboken errors out
+     (naming the missing type) if a wrapped member references something not
+     declared here. See docs/BINDINGS.md for the iterative process of growing
+     this file (e.g. for Phase 2's ScintillaEdit).
+-->
 <typesystem package="_pyside6_scintilla">
     <load-typesystem name="typesystem_widgets.xml" generate="no"/>
 

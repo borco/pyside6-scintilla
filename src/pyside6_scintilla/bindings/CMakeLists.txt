@@ -1,3 +1,9 @@
+# Generates and builds the `_pyside6_scintilla` extension module: shiboken6
+# turns bindings.h + bindings.xml into the wrapper sources listed in
+# GENERATED_SOURCES below (see docs/BINDINGS.md for what each one contains),
+# which are then compiled and linked against `scintilla_qt`
+# (../../scintilla_qt) and Qt.
+
 find_package(Python COMPONENTS Interpreter Development.Module REQUIRED)
 
 # Shiboken6Tools isn't found by find_package() out of the box, so locate it

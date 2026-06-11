@@ -1,3 +1,10 @@
+// Header parsed by shiboken's ApiExtractor (the HEADERS argument to
+// shiboken_generator_create_binding() in CMakeLists.txt) to discover the C++
+// declarations that bindings.xml refers to. It is NOT included by the
+// shiboken-generated wrapper sources -- those have their own
+// auto-generated _pyside6_scintilla_python.h with a separate include list, so
+// changes here only affect what shiboken *sees*, not what the generated code
+// compiles against (see docs/BINDINGS.md).
 #ifndef BINDINGS_H
 #define BINDINGS_H
 

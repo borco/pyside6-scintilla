@@ -1,3 +1,11 @@
+# Builds vendored Scintilla (../scintilla) plus its Qt widget glue
+# (PlatQt/ScintillaQt/ScintillaEditBase) as a shared library. This is the
+# library that src/pyside6_scintilla/bindings links against.
+#
+# The source list mirrors ../scintilla/qt/ScintillaEditBase/ScintillaEditBase.pro.
+# When vendoring a new Scintilla release, diff that .pro file's SOURCES/HEADERS
+# against the list below and add/remove entries to match (see docs/BINDINGS.md).
+
 set(LIB_NAME scintilla_qt)
 
 set(SCINTILLA_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../scintilla)

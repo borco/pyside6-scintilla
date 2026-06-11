@@ -1,0 +1,91 @@
+[build-system]
+requires = [
+    "scikit-build-core>=0.10",
+    "shiboken6-generator",
+]
+build-backend = "scikit_build_core.build"
+
+
+[project]
+name = "pyside6-scintilla"
+dynamic = ["version"]
+description = "Permissively-licensed PySide6 bindings for the Scintilla code editor component"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [
+    { name = "Ioan Călin", email = "iborco@gmail.com" },
+]
+keywords = [
+    "pyside6",
+    "scintilla",
+    "qt",
+    "editor",
+    "shiboken6",
+    "code-editor",
+]
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Programming Language :: C++",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Text Editors",
+]
+requires-python = ">=3.11"
+dependencies = [
+    "PySide6>=6.6",
+]
+
+
+[project.urls]
+Homepage = "https://github.com/borco/pyside6-scintilla"
+Repository = "https://github.com/borco/pyside6-scintilla"
+Issues = "https://github.com/borco/pyside6-scintilla/issues"
+
+
+[tool.scikit-build]
+cmake.build-type = "Release"
+wheel.packages = ["src/pyside6_scintilla"]
+
+[tool.scikit-build.metadata.version]
+provider = "scikit_build_core.metadata.regex"
+input = "src/pyside6_scintilla/__init__.py"
+
+
+# ---------------------------------------------------------------------------
+# uv — development environment
+# ---------------------------------------------------------------------------
+
+# `package = false` until CMakeLists.txt / bindings exist — uv would otherwise
+# try to build this project via scikit-build-core on every sync.
+[tool.uv]
+package = false
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "pytest-qt>=4.4",
+    "ruff>=0.8",
+]
+
+
+# ---------------------------------------------------------------------------
+# pytest
+# ---------------------------------------------------------------------------
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+
+# ---------------------------------------------------------------------------
+# ruff (optional linting — remove if not wanted)
+# ---------------------------------------------------------------------------
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"

@@ -3,6 +3,7 @@
 > Permissively-licensed PySide6 bindings for the [Scintilla](https://www.scintilla.org/) code editor component.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+![Python](https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13%20%7C%203.14-blue)
 
 **Status: pre-alpha / early development.** There is no installable package or
 build yet — this README describes the project's goals.

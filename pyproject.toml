@@ -2,6 +2,8 @@
 requires = [
     "scikit-build-core>=0.10",
     "shiboken6-generator",
+    "shiboken6",
+    "PySide6>=6.10",
 ]
 build-backend = "scikit_build_core.build"
 
@@ -91,6 +93,26 @@ no-build-isolation-package = ["pyside6-scintilla"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+
+# ---------------------------------------------------------------------------
+# cibuildwheel — wheel builds (Tracer 1: Windows x86_64, single Python version)
+# ---------------------------------------------------------------------------
+
+[tool.cibuildwheel]
+build = "cp313-win_amd64"
+test-requires = ["pytest>=8.0", "pytest-qt>=4.4"]
+test-command = "pytest {project}/tests"
+
+[tool.cibuildwheel.windows]
+test-environment = { QT_QPA_PLATFORM = "offscreen" }
+# Qt6Core, Qt6Gui, Qt6Widgets, and the PySide6/shiboken6 ABI DLLs are provided
+# at runtime by the installed PySide6 package (resolved via process-wide
+# already-loaded-module lookup, since __init__.py imports PySide6.QtWidgets
+# first) - exclude them so delvewheel doesn't bundle conflicting copies from
+# the Qt SDK. --ignore-existing lets delvewheel find scintilla_qt.dll and
+# Qt6Core5Compat.dll, which are already bundled inside the wheel itself.
+repair-wheel-command = "delvewheel repair -w {dest_dir} -v --ignore-existing --exclude Qt6Core.dll --exclude Qt6Gui.dll --exclude Qt6Widgets.dll --exclude pyside6.abi3.dll --exclude shiboken6.abi3.dll {wheel}"
 
 
 # ---------------------------------------------------------------------------

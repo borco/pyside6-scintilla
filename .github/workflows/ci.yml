@@ -14,7 +14,7 @@ jobs:
       matrix:
         os: [ubuntu-latest]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Install Qt
         id: qt
@@ -50,7 +50,7 @@ jobs:
           echo "CLANG_INSTALL_DIR=$(dirname "$(dirname "$(dirname "$RESOURCE_DIR")")")" >> "$GITHUB_ENV"
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v6
+        uses: astral-sh/setup-uv@v7
         with:
           enable-cache: true
           python-version: "3.13"

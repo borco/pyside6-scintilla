@@ -7,7 +7,8 @@ everything when a new Scintilla release is vendored.
 ## How it fits together
 
 - `src/scintilla/` -- vendored Scintilla release tarball, unmodified (see
-  `.gitattributes`).
+  `.gitattributes`; see [docs/AUDITING.md](AUDITING.md) for how to verify
+  this).
 - `src/scintilla_qt/CMakeLists.txt` -- builds the vendored Scintilla core plus
   its Qt widget glue (`PlatQt`, `ScintillaQt`, `ScintillaEditBase`) as a shared
   library, `scintilla_qt`.

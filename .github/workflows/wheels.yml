@@ -1,6 +1,8 @@
 name: Wheels
 
 on:
+  push:
+    branches: [ci/phase2-wheels-windows]
   workflow_dispatch:
 
 jobs:

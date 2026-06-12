@@ -2,6 +2,7 @@ CMakeUserPresets.json
 CMakeLists.txt.user
 build/
 dist/
+wheelhouse/
 .*_cache/
 __pycache__/
 .venv

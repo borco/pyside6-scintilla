@@ -66,4 +66,13 @@ if(WIN32)
     # dependency on it would otherwise only be found via a Qt SDK install on
     # PATH/CMAKE_PREFIX_PATH. Ship it alongside scintilla_qt.dll instead.
     install(FILES $<TARGET_FILE:Qt6::Core5Compat> DESTINATION pyside6_scintilla)
+elseif(UNIX AND NOT APPLE)
+    # Same as the Windows case above, but scintilla_qt.so records Qt6Core5Compat's
+    # SONAME (libQt6Core5Compat.so.6) as its NEEDED entry, not the fully-versioned
+    # filename (libQt6Core5Compat.so.6.11.1) that TARGET_FILE gives. Installing
+    # TARGET_SONAME_FILE instead would copy that SONAME symlink as a dangling
+    # link (its .so.6.11.1 target never gets installed), which scikit-build-core
+    # then silently drops from the wheel - so install the real file and rename
+    # it to the SONAME the loader/auditwheel expect.
+    install(FILES $<TARGET_FILE:Qt6::Core5Compat> DESTINATION pyside6_scintilla RENAME libQt6Core5Compat.so.6)
 endif()

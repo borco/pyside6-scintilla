@@ -2,6 +2,11 @@ name: Wheels
 
 on:
   workflow_dispatch:
+  # Temporary: workflow_dispatch is only invocable from the default branch, so
+  # this push trigger (scoped to this branch) lets us verify on an actual
+  # GitHub Actions runner before merging to master. Remove once green.
+  push:
+    branches: [ci/phase2-wheels-linux]
 
 jobs:
   build:
@@ -10,11 +15,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest]
+        os: [windows-latest, ubuntu-latest]
     steps:
       - uses: actions/checkout@v5
 
       - name: Install Qt
+        if: runner.os == 'Windows'
         uses: jurplel/install-qt-action@v4
         with:
           version: "6.11.1"
@@ -26,6 +32,7 @@ jobs:
           aqtsource: git+https://github.com/miurahr/aqtinstall.git@8c3695d4a4e1ceabf6a74dc6c79681656dc6b74b
 
       - name: Set Qt env vars
+        if: runner.os == 'Windows'
         shell: bash
         run: echo "CMAKE_PREFIX_PATH=$QT_ROOT_DIR" >> "$GITHUB_ENV"
 

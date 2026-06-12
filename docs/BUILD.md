@@ -101,6 +101,28 @@ make test
 make lint
 ```
 
+## Continuous integration
+
+`.github/workflows/ci.yml` runs on every push and on pull requests targeting
+`master`, across `ubuntu-latest`, `windows-latest`, and `ubuntu-24.04-arm`
+(Linux x86_64/aarch64 + Windows x86_64). Each job:
+
+1. Installs Qt **6.11.1** plus the `Qt6Core5Compat` module via
+   [`jurplel/install-qt-action`](https://github.com/jurplel/install-qt-action)
+   -- matching the PySide6 6.11.1 pinned in `uv.lock`, since CI and local
+   builds must use the same Qt minor version to avoid ABI mismatches (see
+   [Prerequisites](#prerequisites) above).
+2. Points `CMAKE_PREFIX_PATH` at that Qt install, and on Linux also sets
+   `LD_LIBRARY_PATH` so `scintilla_qt.so` can find `libQt6Core5Compat.so.6` at
+   runtime (see [BINDINGS.md](BINDINGS.md) issue 3).
+3. Runs `uv sync`, `uv run pytest` (with `QT_QPA_PLATFORM=offscreen` for a
+   headless `pytest-qt`), and `uv run ruff check .` / `ruff format --check .`
+   -- the same commands as [Verifying the build](#verifying-the-build) above.
+
+CI doesn't build wheels or run the example app -- see [Building
+wheels](#building-wheels) below for the (currently manual) wheel-building
+process.
+
 ## Building wheels
 
 ```bash

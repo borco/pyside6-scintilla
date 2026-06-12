@@ -23,20 +23,30 @@ jobs:
           version: "6.11.1"
           modules: qt5compat
 
-      - name: Set CMAKE_PREFIX_PATH
+      - name: Set Qt env vars
         shell: bash
-        run: echo "CMAKE_PREFIX_PATH=${{ steps.qt.outputs.qtPath }}" >> "$GITHUB_ENV"
+        run: |
+          echo "CMAKE_PREFIX_PATH=${{ steps.qt.outputs.qtPath }}" >> "$GITHUB_ENV"
+          if [ "${{ runner.os }}" = "Linux" ]; then
+            # Qt6Core5Compat isn't bundled with the PySide6 wheel (see
+            # docs/BINDINGS.md issue 3), so scintilla_qt's dependency on it
+            # must resolve to the aqtinstall'd Qt at runtime.
+            echo "LD_LIBRARY_PATH=${{ steps.qt.outputs.qtPath }}/lib" >> "$GITHUB_ENV"
+          fi
 
-      - name: Install clang (for shiboken6's libclang resource dir)
+      - name: Install build/runtime dependencies (Linux)
         if: runner.os == 'Linux'
         shell: bash
         run: |
           sudo apt-get update
-          sudo apt-get install -y clang libclang-dev
+          # clang/libclang-dev: shiboken6-generator's bundled libclang can't
+          # locate its builtin headers (stddef.h etc.) without an external
+          # CLANG_INSTALL_DIR - MSVC's headers don't need this.
+          # libgl1/libegl1/libxkbcommon0: needed for Qt6Gui to load under
+          # QT_QPA_PLATFORM=offscreen for the test suite.
+          sudo apt-get install -y clang libclang-dev libgl1 libegl1 libxkbcommon0
           RESOURCE_DIR=$(clang -print-resource-dir)
           echo "Clang resource dir: $RESOURCE_DIR"
-          # shiboken6's bundled libclang looks for its builtin headers
-          # (stddef.h etc.) under <CLANG_INSTALL_DIR>/lib/clang/<ver>/include.
           echo "CLANG_INSTALL_DIR=$(dirname "$(dirname "$(dirname "$RESOURCE_DIR")")")" >> "$GITHUB_ENV"
 
       - name: Install uv
@@ -47,3 +57,13 @@ jobs:
 
       - name: uv sync
         run: uv sync
+
+      - name: Run tests
+        env:
+          QT_QPA_PLATFORM: offscreen
+        run: uv run pytest
+
+      - name: Lint
+        run: |
+          uv run ruff check .
+          uv run ruff format --check .

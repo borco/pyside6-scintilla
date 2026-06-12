@@ -96,11 +96,11 @@ testpaths = ["tests"]
 
 
 # ---------------------------------------------------------------------------
-# cibuildwheel — wheel builds (Tracer 1: Windows x86_64, single Python version)
+# cibuildwheel — wheel builds (Windows x86_64; Linux x86_64/aarch64 follow-up)
 # ---------------------------------------------------------------------------
 
 [tool.cibuildwheel]
-build = "cp313-win_amd64"
+build = "cp31{1,2,3,4}-win_amd64"
 test-requires = ["pytest>=8.0", "pytest-qt>=4.4"]
 test-command = "pytest {project}/tests"
 

@@ -27,6 +27,18 @@ jobs:
         shell: bash
         run: echo "CMAKE_PREFIX_PATH=${{ steps.qt.outputs.qtPath }}" >> "$GITHUB_ENV"
 
+      - name: Install clang (for shiboken6's libclang resource dir)
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang libclang-dev
+          RESOURCE_DIR=$(clang -print-resource-dir)
+          echo "Clang resource dir: $RESOURCE_DIR"
+          # shiboken6's bundled libclang looks for its builtin headers
+          # (stddef.h etc.) under <CLANG_INSTALL_DIR>/lib/clang/<ver>/include.
+          echo "CLANG_INSTALL_DIR=$(dirname "$(dirname "$(dirname "$RESOURCE_DIR")")")" >> "$GITHUB_ENV"
+
       - name: Install uv
         uses: astral-sh/setup-uv@v6
         with:

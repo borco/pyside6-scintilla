@@ -9,6 +9,7 @@ Run with:
 """
 
 import sys
+from typing import Final
 
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QApplication, QMainWindow, QToolBar
@@ -36,60 +37,60 @@ five
 """
 
 
-def _line_number_margin_width(editor: ScintillaEditBase) -> int:
+def line_number_margin_width(editor: ScintillaEditBase) -> int:
     """Pixel width that fits the current number of lines, plus a little padding."""
-    line_count = editor.send(int(Scintilla.Message.GetLineCount))
+    line_count = editor.send(Scintilla.Message.GetLineCount)
     digits = max(2, len(str(line_count)))
-    return editor.sends(int(Scintilla.Message.TextWidth), int(Scintilla.StylesCommon.LineNumber), "9" * digits) + 4
+    return editor.sends(Scintilla.Message.TextWidth, Scintilla.StylesCommon.LineNumber, "9" * digits) + 4
 
 
 class MainWindow(QMainWindow):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         self.setWindowTitle("pyside6-scintilla: simple ScintillaEditBase example")
         self.resize(800, 600)
 
-        self.editor = ScintillaEditBase()
-        self.setCentralWidget(self.editor)
+        self.__editor: Final = ScintillaEditBase()
+        self.setCentralWidget(self.__editor)
 
-        self._setup_editor()
-        self._setup_toolbar()
+        self.__setup_editor()
+        self.__setup_toolbar()
 
-    def _setup_editor(self) -> None:
-        editor = self.editor
+    def __setup_editor(self) -> None:
+        editor = self.__editor
         message = Scintilla.Message
 
-        editor.sends(int(message.SetText), 0, SAMPLE_TEXT)
+        editor.sends(message.SetText, 0, SAMPLE_TEXT)
 
         # Line-number margin, shown by default.
-        editor.send(int(message.SetMarginTypeN), LINE_NUMBER_MARGIN, int(Scintilla.MarginType.Number))
-        editor.send(int(message.SetMarginWidthN), LINE_NUMBER_MARGIN, _line_number_margin_width(editor))
+        editor.send(message.SetMarginTypeN, LINE_NUMBER_MARGIN, Scintilla.MarginType.Number)
+        editor.send(message.SetMarginWidthN, LINE_NUMBER_MARGIN, line_number_margin_width(editor))
 
         # Block (rectangular) selection and block editing: Alt+drag or
         # Alt+Shift+Arrow makes a rectangular selection, and typing applies
         # to every line of a multiple/rectangular selection at once.
-        editor.send(int(message.SetMouseSelectionRectangularSwitch), 1)
-        editor.send(int(message.SetMultipleSelection), 1)
-        editor.send(int(message.SetAdditionalSelectionTyping), 1)
+        editor.send(message.SetMouseSelectionRectangularSwitch, 1)
+        editor.send(message.SetMultipleSelection, 1)
+        editor.send(message.SetAdditionalSelectionTyping, 1)
         editor.send(
-            int(message.SetVirtualSpaceOptions),
-            int(Scintilla.VirtualSpace.RectangularSelection) | int(Scintilla.VirtualSpace.UserAccessible),
+            message.SetVirtualSpaceOptions,
+            Scintilla.VirtualSpace.RectangularSelection | Scintilla.VirtualSpace.UserAccessible,
         )
 
-    def _setup_toolbar(self) -> None:
+    def __setup_toolbar(self) -> None:
         toolbar = QToolBar("Main")
         self.addToolBar(toolbar)
 
-        self.toggle_line_numbers_action = QAction("Line Numbers", self)
-        self.toggle_line_numbers_action.setCheckable(True)
-        self.toggle_line_numbers_action.setChecked(True)
-        self.toggle_line_numbers_action.toggled.connect(self._toggle_line_numbers)
-        toolbar.addAction(self.toggle_line_numbers_action)
+        self.__toggle_line_numbers_action = QAction("Line Numbers", self)
+        self.__toggle_line_numbers_action.setCheckable(True)
+        self.__toggle_line_numbers_action.setChecked(True)
+        self.__toggle_line_numbers_action.toggled.connect(self.__toggle_line_numbers)
+        toolbar.addAction(self.__toggle_line_numbers_action)
 
-    def _toggle_line_numbers(self, checked: bool) -> None:
-        editor = self.editor
-        width = _line_number_margin_width(editor) if checked else 0
-        editor.send(int(Scintilla.Message.SetMarginWidthN), LINE_NUMBER_MARGIN, width)
+    def __toggle_line_numbers(self, checked: bool) -> None:
+        editor = self.__editor
+        width = line_number_margin_width(editor) if checked else 0
+        editor.send(Scintilla.Message.SetMarginWidthN, LINE_NUMBER_MARGIN, width)
 
 
 def main() -> None:

@@ -34,8 +34,11 @@ class Scintilla(Shiboken.Object):
     class CharacterSource(enum.IntEnum):
 
         DirectInput               = 0x0
+        r"""Direct input characters."""
         TentativeInput            = 0x1
+        r"""IME (inline mode) or dead key tentative input characters."""
         ImeResult                 = 0x2
+        r"""IME (either inline or windowed mode) full composited string."""
 
     class CompletionMethods(enum.IntEnum):
 
@@ -1711,30 +1714,55 @@ class Scintilla(Shiboken.Object):
     class ModificationFlags(enum.IntEnum):
 
         None_                     = 0x0
+        r"""Base value with no fields valid. Will not occur but is useful in tests."""
         InsertText                = 0x1
+        r"""Text has been inserted into the document."""
         DeleteText                = 0x2
+        r"""Text has been removed from the document."""
         ChangeStyle               = 0x4
+        r"""A style change has occurred."""
         ChangeFold                = 0x8
+        r"""A folding change has occurred."""
         User                      = 0x10
+        r"""Information: the operation was done by the user."""
         Undo                      = 0x20
+        r"""Information: this was the result of an Undo."""
         Redo                      = 0x40
+        r"""Information: this was the result of a Redo."""
         MultiStepUndoRedo         = 0x80
+        r"""This is part of a multi-step Undo or Redo transaction."""
         LastStepInUndoRedo        = 0x100
+        r"""This is the final step in an Undo or Redo transaction."""
         ChangeMarker              = 0x200
+        r"""One or more markers has changed in a line."""
         BeforeInsert              = 0x400
+        r"""Text is about to be inserted into the document."""
         BeforeDelete              = 0x800
+        r"""Text is about to be deleted from the document."""
         MultilineUndoRedo         = 0x1000
+        r"""This is part of an Undo or Redo with multi-line changes."""
         StartAction               = 0x2000
+        r"""Set on a SC_PERFORMED_USER action that is the first or only step in an undo transaction."""
         ChangeIndicator           = 0x4000
+        r"""An indicator has been added or removed from a range of text."""
         ChangeLineState           = 0x8000
+        r"""A line state has changed because SCI_SETLINESTATE was called."""
         ChangeMargin              = 0x10000
+        r"""A text margin has changed."""
         ChangeAnnotation          = 0x20000
+        r"""An annotation has changed."""
         Container                 = 0x40000
+        r"""Set on actions that the container stored into the undo stack with SCI_ADDUNDOACTION."""
         LexerState                = 0x80000
+        r"""The internal state of a lexer has changed over a range."""
         InsertCheck               = 0x100000
+        r"""Text is about to be inserted; the handler may change it via SCI_CHANGEINSERTION."""
         ChangeTabStops            = 0x200000
+        r"""The explicit tab stops on a line have changed because SCI_CLEARTABSTOPS or SCI_ADDTABSTOP was called."""
         ChangeEOLAnnotation       = 0x400000
+        r"""An EOL annotation has changed."""
         EventMaskAll              = 0x7fffff
+        r"""Mask for all valid flags; the default mask state set by SCI_SETMODEVENTMASK."""
 
     class Notification(enum.IntEnum):
 
@@ -1818,17 +1846,26 @@ class Scintilla(Shiboken.Object):
     class Update(enum.IntEnum):
 
         None_                     = 0x0
+        r"""Value without any changes."""
         Content                   = 0x1
+        r"""Contents, styling or markers may have been changed."""
         Selection                 = 0x2
+        r"""Selection may have been changed."""
         VScroll                   = 0x4
+        r"""May have scrolled vertically."""
         HScroll                   = 0x8
+        r"""May have scrolled horizontally."""
 
     class VirtualSpace(enum.IntEnum):
 
         None_                     = 0x0
+        r"""The default: no virtual space."""
         RectangularSelection      = 0x1
+        r"""Virtual space is enabled for rectangular selections."""
         UserAccessible            = 0x2
+        r"""Virtual space is enabled for user actions such as right arrow key or clicking beyond line end."""
         NoWrapLineStart           = 0x4
+        r"""Left arrow does not wrap to the previous line."""
 
 
     @staticmethod
@@ -1909,7 +1946,7 @@ class ScintillaEditBase(PySide6.QtWidgets.QAbstractScrollArea):
     def scrollHorizontal(self, value: int, /) -> None: ...
     def scrollVertical(self, value: int, /) -> None: ...
     def send(self, iMessage: int, /, wParam: int | None = ..., lParam: int | None = ...) -> int: ...
-    def sends(self, iMessage: int, /, wParam: int | None = ..., s: bytes | bytearray | memoryview | None = ...) -> int: ...
+    def sends(self, iMessage: int, /, wParam: int | None = ..., s: bytes | bytearray | memoryview | str | None = ...) -> int: ...
     def wheelEvent(self, event: PySide6.QtGui.QWheelEvent, /) -> None: ...
 
 

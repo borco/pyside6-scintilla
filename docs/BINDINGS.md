@@ -114,6 +114,47 @@ will need `delvewheel`/`auditwheel`/`delocate` in CI, or an
 `_pyside6_scintilla`'s `INSTALL_RPATH` is already set to `$ORIGIN`
 (Linux)/`@loader_path` (macOS) in anticipation of this.
 
+## Type stubs (`_pyside6_scintilla.pyi`)
+
+`src/pyside6_scintilla/_pyside6_scintilla.pyi` (plus the PEP 561
+`src/pyside6_scintilla/py.typed` marker) gives Pylance/mypy/ruff/pylint full
+signatures and autocomplete for `Scintilla.*`/`ScintillaEditBase`. Unlike the
+generated wrapper `.cpp`/`.h` files above, it's checked into git -- it
+directly improves the local dev/IDE experience (e.g. for
+`examples/simple_scintilla_base_edit/main.py`) and is picked up by
+`wheel.packages` for published wheels, without adding a PySide6-importing
+step to the CMake/CI build.
+
+Regenerate it with `make stubs` (`tools/generate_pyi.py`) after rebuilding
+the extension (`make install` or `uv sync --reinstall-package
+pyside6-scintilla`), and whenever `bindings.xml`/`bindings.h` change the
+public API surface. The script:
+
+1. Runs `shiboken6-genpyi` against the built `_pyside6_scintilla` extension,
+   working around two issues with the generic `shiboken6-genpyi` entry point
+   on a PySide6-based binding (both detailed in the script's docstring):
+   - it re-imports the extension from a bare path, which fails with "DLL
+     load failed" unless `pyside6_scintilla` (and therefore `PySide6.QtWidgets`,
+     see issue 3 above) has been imported first;
+   - its `find_imports()` references a `PySide6` global that only
+     `PySide6.support.generate_pyi` sets up -- the generic entry point raises
+     `NameError: name 'PySide6' is not defined` without it.
+2. Aliases `Scintilla.Position`/`sptr_t`/`uptr_t` to `int`. These are
+   primitive typedefs (`<primitive-type>` in `bindings.xml`), not nested
+   types, but genpyi emits unresolvable `Scintilla.Position`-style forward
+   references for them (`ScintillaEditBase.event_command`'s signature,
+   `NotificationData`'s `# type:` comments). If a future Scintilla release
+   adds another such primitive typedef, genpyi will warn
+   (`RuntimeWarning: ... UNRECOGNIZED: 'Scintilla.<name>'`) -- add it to
+   `PRIMITIVE_ALIASES` in `tools/generate_pyi.py`.
+3. Stitches the `# ...` doc comments from `src/scintilla/include/Scintilla.iface`
+   into `Scintilla.Message` enum members as docstrings (per-member hover
+   docs). `val`/enum-style features generally don't have these comments, so
+   this mainly benefits `Message`.
+
+`_pyside6_scintilla.pyi` is excluded from `ruff` (`extend-exclude` in
+`pyproject.toml`) since it's machine-generated and not ruff-format-compliant.
+
 ## Updating to a new Scintilla release
 
 Per `MISSION.md`, Scintilla updates are deliberate and tested, not automatic.

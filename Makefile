@@ -1,4 +1,4 @@
-.PHONY: setup lint format test clean clean-setup configure build install publish
+.PHONY: setup lint format test clean clean-setup configure build install publish stubs
 
 setup:
 	uv sync
@@ -43,3 +43,9 @@ install: build
 publish: format test lint
 	uv build
 	uv publish
+
+# Regenerate src/pyside6_scintilla/_pyside6_scintilla.pyi (see tools/generate_pyi.py
+# and docs/BINDINGS.md). Run after `make install` / `uv sync --reinstall-package
+# pyside6-scintilla` whenever bindings.xml/bindings.h change the public API.
+stubs:
+	uv run python tools/generate_pyi.py

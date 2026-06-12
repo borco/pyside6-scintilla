@@ -100,7 +100,7 @@ testpaths = ["tests"]
 # ---------------------------------------------------------------------------
 
 [tool.cibuildwheel]
-build = "cp31{1,2,3,4}-win_amd64 cp313-manylinux_x86_64"
+build = "cp31{1,2,3,4}-win_amd64 cp31{1,2,3,4}-manylinux_x86_64"
 test-requires = ["pytest>=8.0", "pytest-qt>=4.4"]
 test-command = "pytest {project}/tests"
 

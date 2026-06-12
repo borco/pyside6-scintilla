@@ -1,0 +1,38 @@
+name: Wheels
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: build (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest]
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: "6.11.1"
+          modules: qt5compat
+          # aqtinstall 3.3.* can't locate Qt 6.11+ on Windows - the online
+          # repo dropped the combined qt6_XXXX/qt6_XXXX/Updates.xml in favor
+          # of per-arch dirs (miurahr/aqtinstall#959). Use the patched
+          # aqtinstall until a release containing PR #1000 lands on PyPI.
+          aqtsource: git+https://github.com/miurahr/aqtinstall.git@8c3695d4a4e1ceabf6a74dc6c79681656dc6b74b
+
+      - name: Set Qt env vars
+        shell: bash
+        run: echo "CMAKE_PREFIX_PATH=$QT_ROOT_DIR" >> "$GITHUB_ENV"
+
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v4.1.0
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wheels-${{ matrix.os }}
+          path: wheelhouse/*.whl

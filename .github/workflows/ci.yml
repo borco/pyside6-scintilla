@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+    branches: [master]
+
+jobs:
+  build:
+    name: build (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Qt
+        id: qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: "6.11.1"
+          modules: qt5compat
+
+      - name: Set CMAKE_PREFIX_PATH
+        shell: bash
+        run: echo "CMAKE_PREFIX_PATH=${{ steps.qt.outputs.qtPath }}" >> "$GITHUB_ENV"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          python-version: "3.13"
+
+      - name: uv sync
+        run: uv sync

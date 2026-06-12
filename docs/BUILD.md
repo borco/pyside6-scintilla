@@ -60,13 +60,13 @@ To avoid setting this every time, copy it into a gitignored
 files -- it may print "Checked N packages" without rebuilding. Force a
 rebuild + reinstall with:
 
-```
+```bash
 uv sync --reinstall-package pyside6-scintilla
 ```
 
 ### Verifying the build
 
-```
+```bash
 uv run python -c "from pyside6_scintilla import Scintilla, ScintillaEditBase; print(Scintilla.Message.SetText)"
 uv run pytest
 uv run ruff check .
@@ -74,7 +74,7 @@ uv run ruff check .
 
 or, via the `Makefile`:
 
-```
+```bash
 make setup
 make test
 make lint
@@ -82,7 +82,7 @@ make lint
 
 ## Building wheels
 
-```
+```bash
 uv build
 ```
 

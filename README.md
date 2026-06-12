@@ -31,7 +31,22 @@ core directly to PySide6 users.
   and macOS (arm64, x86_64)
 - **Not affiliated** with Riverbank Computing or the QScintilla project
 
-See [MISSION.md](MISSION.md) for the full background and design decisions.
+## Versioning
+
+Version numbers follow `<Scintilla version>.<binding revision>` — e.g. `5.6.3.0`
+is binding revision `0` for Scintilla `5.6.3`. The binding revision increments
+for releases of this package that don't correspond to a new Scintilla version
+(bug fixes, new API surface, CI changes, etc.), and resets to `0` when Scintilla
+itself releases a new version.
+
+## Documentation
+
+| Doc | Contents |
+| --- | --- |
+| [docs/AUDITING.md](docs/AUDITING.md) | How to verify the vendored Scintilla source matches upstream |
+| [docs/BINDINGS.md](docs/BINDINGS.md) | How the shiboken6 bindings are built, generated files, and the Scintilla-update procedure |
+| [docs/BUILD.md](docs/BUILD.md) | Build prerequisites, local build/rebuild, wheels, and publishing |
+| [docs/MISSION.md](docs/MISSION.md) | Project background, goals, and design decisions |
 
 ## License
 

@@ -64,6 +64,27 @@ rebuild + reinstall with:
 uv sync --reinstall-package pyside6-scintilla
 ```
 
+### Faster C++/binding-only iteration
+
+For changes to `CMakeLists.txt`, `bindings.xml`, or the binding glue, `uv
+sync --reinstall-package` does a clean, isolated rebuild every time. The
+`configure`/`build`/`install` Make targets are faster for repeated
+iteration: they reuse an incremental CMake build tree (`build/venv/`) and,
+via the `venv` preset's `CMAKE_INSTALL_PREFIX`, drop the rebuilt extension
+and shared libs directly into `src/pyside6_scintilla/`, where `import
+pyside6_scintilla` picks them up immediately.
+
+```bash
+make configure   # once, to set up build/venv/
+make install      # rebuild + drop the extension into src/pyside6_scintilla/
+```
+
+**Windows**: the `venv` preset uses the Ninja generator, which needs
+`cl.exe` on `PATH` -- run these from an **x64 Native Tools Command Prompt
+for VS 2022** (or call `vcvarsall.bat x64` first). `uv sync` doesn't need
+this, since scikit-build-core uses the Visual Studio generator, which
+locates MSVC itself.
+
 ### Verifying the build
 
 ```bash

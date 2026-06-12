@@ -11,7 +11,10 @@
         {
             "inherits": "default",
             "name": "venv",
-            "description": "Use Python3 installed in .venv with `uv sync`"
+            "description": "Use Python3 installed in .venv with `uv sync`",
+            "cacheVariables": {
+                "CMAKE_INSTALL_PREFIX": "${sourceDir}/src"
+            }
         }
     ],
     "buildPresets": [

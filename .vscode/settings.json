@@ -1,6 +1,7 @@
 {
     "pylint.enabled": false,
     "mypy-type-checker.enabled": false,
+    "flake8.enabled": false,
 
     "ruff.importStrategy": "fromEnvironment",
 

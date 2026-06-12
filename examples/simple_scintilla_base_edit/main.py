@@ -15,13 +15,6 @@ from PySide6.QtWidgets import QApplication, QMainWindow, QToolBar
 
 from pyside6_scintilla import Scintilla, ScintillaEditBase
 
-# Not yet exposed as wrapped enums (see docs/BINDINGS.md) -- raw values from
-# src/scintilla/include/Scintilla.h.
-SC_MARGIN_NUMBER = 1
-SCVS_RECTANGULARSELECTION = 1
-SCVS_USERACCESSIBLE = 2
-STYLE_LINENUMBER = 33
-
 LINE_NUMBER_MARGIN = 0
 
 SAMPLE_TEXT = """\
@@ -47,7 +40,7 @@ def _line_number_margin_width(editor: ScintillaEditBase) -> int:
     """Pixel width that fits the current number of lines, plus a little padding."""
     line_count = editor.send(int(Scintilla.Message.GetLineCount))
     digits = max(2, len(str(line_count)))
-    return editor.sends(int(Scintilla.Message.TextWidth), STYLE_LINENUMBER, "9" * digits) + 4
+    return editor.sends(int(Scintilla.Message.TextWidth), int(Scintilla.StylesCommon.LineNumber), "9" * digits) + 4
 
 
 class MainWindow(QMainWindow):
@@ -69,7 +62,7 @@ class MainWindow(QMainWindow):
         editor.sends(int(message.SetText), 0, SAMPLE_TEXT)
 
         # Line-number margin, shown by default.
-        editor.send(int(message.SetMarginTypeN), LINE_NUMBER_MARGIN, SC_MARGIN_NUMBER)
+        editor.send(int(message.SetMarginTypeN), LINE_NUMBER_MARGIN, int(Scintilla.MarginType.Number))
         editor.send(int(message.SetMarginWidthN), LINE_NUMBER_MARGIN, _line_number_margin_width(editor))
 
         # Block (rectangular) selection and block editing: Alt+drag or
@@ -78,7 +71,10 @@ class MainWindow(QMainWindow):
         editor.send(int(message.SetMouseSelectionRectangularSwitch), 1)
         editor.send(int(message.SetMultipleSelection), 1)
         editor.send(int(message.SetAdditionalSelectionTyping), 1)
-        editor.send(int(message.SetVirtualSpaceOptions), SCVS_RECTANGULARSELECTION | SCVS_USERACCESSIBLE)
+        editor.send(
+            int(message.SetVirtualSpaceOptions),
+            int(Scintilla.VirtualSpace.RectangularSelection) | int(Scintilla.VirtualSpace.UserAccessible),
+        )
 
     def _setup_toolbar(self) -> None:
         toolbar = QToolBar("Main")

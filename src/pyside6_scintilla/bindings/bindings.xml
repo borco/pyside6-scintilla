@@ -26,6 +26,9 @@
         <enum-type name="CompletionMethods"/>
         <enum-type name="CharacterSource"/>
         <enum-type name="Message"/>
+        <enum-type name="MarginType"/>
+        <enum-type name="StylesCommon"/>
+        <enum-type name="VirtualSpace"/>
 
         <value-type name="NotificationData">
             <!-- Scintilla::Message is registered twice when this field is

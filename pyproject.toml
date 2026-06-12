@@ -96,11 +96,11 @@ testpaths = ["tests"]
 
 
 # ---------------------------------------------------------------------------
-# cibuildwheel — wheel builds (Windows x86_64; Linux x86_64/aarch64 follow-up)
+# cibuildwheel — wheel builds (Windows x86_64, Linux x86_64; aarch64 follow-up)
 # ---------------------------------------------------------------------------
 
 [tool.cibuildwheel]
-build = "cp31{1,2,3,4}-win_amd64"
+build = "cp31{1,2,3,4}-win_amd64 cp31{1,2,3,4}-manylinux_x86_64"
 test-requires = ["pytest>=8.0", "pytest-qt>=4.4"]
 test-command = "pytest {project}/tests"
 
@@ -113,6 +113,40 @@ test-environment = { QT_QPA_PLATFORM = "offscreen" }
 # the Qt SDK. --ignore-existing lets delvewheel find scintilla_qt.dll and
 # Qt6Core5Compat.dll, which are already bundled inside the wheel itself.
 repair-wheel-command = "delvewheel repair -w {dest_dir} -v --ignore-existing --exclude Qt6Core.dll --exclude Qt6Gui.dll --exclude Qt6Widgets.dll --exclude pyside6.abi3.dll --exclude shiboken6.abi3.dll {wheel}"
+
+[tool.cibuildwheel.linux]
+# manylinux_2_34 matches PySide6 6.11.1's own wheel tag
+# (manylinux_2_34_x86_64), so `pip install PySide6` inside the build container
+# resolves to a compatible wheel.
+manylinux-x86_64-image = "manylinux_2_34"
+# The manylinux image has no Qt SDK, so install one via aqtinstall (pure
+# Python, works with the container's system Python) plus the runtime
+# libraries Qt6Gui needs under QT_QPA_PLATFORM=offscreen.
+# aqtinstall 3.3.* can't locate Qt 6.11+ (miurahr/aqtinstall#959, same issue
+# as the Windows wheels.yml Qt install) - use the patched commit until a
+# release containing PR #1000 lands on PyPI. The patched aqtinstall requires
+# Python >=3.10, but before-all runs with the container's default Python
+# (3.9), so use one of the bundled CPython interpreters instead. The Linux
+# desktop arch is "linux_gcc_64" (unlike Windows' "win64_msvc2022_64").
+# clang/libxslt: shiboken6-generator's bundled libclang can't locate its
+# builtin headers (stddef.h etc., same issue as ci.yml's CLANG_INSTALL_DIR)
+# without an installed clang - symlink dnf's clang resource dir under a few
+# version numbers since the bundled libclang's version doesn't necessarily
+# match dnf's. mesa-libGL/mesa-libEGL/libxkbcommon*/fontconfig: needed for
+# Qt6Gui to load under QT_QPA_PLATFORM=offscreen for the test suite.
+before-all = "/opt/python/cp313-cp313/bin/pip install git+https://github.com/miurahr/aqtinstall.git@8c3695d4a4e1ceabf6a74dc6c79681656dc6b74b && /opt/python/cp313-cp313/bin/python -m aqt install-qt linux desktop 6.11.1 linux_gcc_64 -m qt5compat -O /opt/qt && dnf install -y mesa-libGL mesa-libEGL libxkbcommon libxkbcommon-x11 fontconfig libxslt clang && RESOURCE_DIR=$(clang -print-resource-dir) && CLANG_DIR=$(dirname $RESOURCE_DIR) && CLANG_VER=$(basename $RESOURCE_DIR) && for v in 18 19 20 21 22 23 24; do [ $v = $CLANG_VER ] || ln -sfn $CLANG_VER $CLANG_DIR/$v; done"
+environment = { CMAKE_PREFIX_PATH = "/opt/qt/6.11.1/gcc_64", CLANG_INSTALL_DIR = "/usr" }
+test-environment = { QT_QPA_PLATFORM = "offscreen" }
+# Qt6Core, Qt6Gui, Qt6Widgets, and the PySide6/shiboken6 shared objects are
+# provided at runtime by the installed PySide6 package (same rationale as the
+# Windows delvewheel excludes above) - exclude them so auditwheel doesn't
+# bundle conflicting copies from the Qt SDK used to build. Qt6Core5Compat in
+# turn depends on the ICU libraries (libicui18n/libicuuc/libicudata.so.73)
+# from the same Qt SDK build - PySide6's bundled Qt6Core is built against the
+# same ICU version and provides these at runtime too, so exclude them as well.
+# Everything else scintilla_qt depends on (notably libQt6Core5Compat.so.6)
+# gets bundled.
+repair-wheel-command = "auditwheel repair -w {dest_dir} --exclude libQt6Core.so.6 --exclude libQt6Gui.so.6 --exclude libQt6Widgets.so.6 --exclude libpyside6.abi3.so.6.11 --exclude libshiboken6.abi3.so.6.11 --exclude libicui18n.so.73 --exclude libicuuc.so.73 --exclude libicudata.so.73 {wheel}"
 
 
 # ---------------------------------------------------------------------------

@@ -10,11 +10,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest]
+        os: [windows-latest, ubuntu-latest]
     steps:
       - uses: actions/checkout@v5
 
       - name: Install Qt
+        if: runner.os == 'Windows'
         uses: jurplel/install-qt-action@v4
         with:
           version: "6.11.1"
@@ -26,13 +27,14 @@ jobs:
           aqtsource: git+https://github.com/miurahr/aqtinstall.git@8c3695d4a4e1ceabf6a74dc6c79681656dc6b74b
 
       - name: Set Qt env vars
+        if: runner.os == 'Windows'
         shell: bash
         run: echo "CMAKE_PREFIX_PATH=$QT_ROOT_DIR" >> "$GITHUB_ENV"
 
       - name: Build wheels
         uses: pypa/cibuildwheel@v4.1.0
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: wheels-${{ matrix.os }}
           path: wheelhouse/*.whl

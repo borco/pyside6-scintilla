@@ -75,4 +75,29 @@ elseif(UNIX AND NOT APPLE)
     # then silently drops from the wheel - so install the real file and rename
     # it to the SONAME the loader/auditwheel expect.
     install(FILES $<TARGET_FILE:Qt6::Core5Compat> DESTINATION pyside6_scintilla RENAME libQt6Core5Compat.so.6)
+elseif(APPLE)
+    # Same underlying problem as the other two platforms, but Qt6Core5Compat
+    # is a framework bundle (QtCore5Compat.framework), not a flat
+    # dylib/so - install the whole bundle alongside _pyside6_scintilla.abi3.so,
+    # which resolves its @rpath/QtCore5Compat.framework/... reference via its
+    # @loader_path INSTALL_RPATH (set below).
+    #
+    # QtCore5Compat's own @rpath/QtCore.framework/... reference carries an
+    # SDK-relative rpath (@loader_path/../../../, i.e. the SDK's lib/ dir
+    # where all Qt frameworks are siblings) that doesn't reach PySide6's
+    # bundled QtCore.framework. Add an rpath that does: PySide6 and
+    # pyside6_scintilla are always sibling top-level packages in
+    # site-packages, so from QtCore5Compat.framework/Versions/A/ inside
+    # pyside6_scintilla/, ../../../../PySide6/Qt/lib is PySide6's Qt frameworks
+    # dir. dyld then reuses the QtCore.framework PySide6 already loaded
+    # (matching the @rpath-relative path against PySide6's own
+    # already-resolved load), rather than loading a second copy.
+    set(QT_CORE5COMPAT_FRAMEWORK_DIR "$<PATH:GET_PARENT_PATH,$<PATH:GET_PARENT_PATH,$<PATH:GET_PARENT_PATH,$<TARGET_FILE:Qt6::Core5Compat>>>>")
+    install(DIRECTORY "${QT_CORE5COMPAT_FRAMEWORK_DIR}" DESTINATION pyside6_scintilla USE_SOURCE_PERMISSIONS)
+    set(QT_CORE5COMPAT_INSTALLED_BINARY "\${CMAKE_INSTALL_PREFIX}/pyside6_scintilla/QtCore5Compat.framework/Versions/A/QtCore5Compat")
+    install(CODE "execute_process(COMMAND install_name_tool -add_rpath @loader_path/../../../../PySide6/Qt/lib \"${QT_CORE5COMPAT_INSTALLED_BINARY}\")")
+    # install_name_tool invalidates Qt's original codesign signature; macOS
+    # refuses to load (SIGKILL) an arm64 binary with an invalid signature, so
+    # re-sign ad-hoc.
+    install(CODE "execute_process(COMMAND codesign --force -s - \"${QT_CORE5COMPAT_INSTALLED_BINARY}\")")
 endif()

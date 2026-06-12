@@ -100,7 +100,7 @@ testpaths = ["tests"]
 # ---------------------------------------------------------------------------
 
 [tool.cibuildwheel]
-build = "cp31{1,2,3,4}-win_amd64 cp31{1,2,3,4}-manylinux_x86_64"
+build = "cp31{1,2,3,4}-win_amd64 cp31{1,2,3,4}-manylinux_x86_64 cp31{1,2,3,4}-macosx_arm64 cp31{1,2,3,4}-macosx_x86_64"
 test-requires = ["pytest>=8.0", "pytest-qt>=4.4"]
 test-command = "pytest {project}/tests"
 
@@ -147,6 +147,37 @@ test-environment = { QT_QPA_PLATFORM = "offscreen" }
 # Everything else scintilla_qt depends on (notably libQt6Core5Compat.so.6)
 # gets bundled.
 repair-wheel-command = "auditwheel repair -w {dest_dir} --exclude libQt6Core.so.6 --exclude libQt6Gui.so.6 --exclude libQt6Widgets.so.6 --exclude libpyside6.abi3.so.6.11 --exclude libshiboken6.abi3.so.6.11 --exclude libicui18n.so.73 --exclude libicuuc.so.73 --exclude libicudata.so.73 {wheel}"
+
+[tool.cibuildwheel.macos]
+# macOS Intel (macos-13) GitHub Actions runners have very limited availability
+# (Intel macOS images are on GitHub's deprecation path) and can queue
+# indefinitely. Build both architectures on the Apple Silicon macos-latest
+# runner instead: arm64 natively, x86_64 cross-built via Rosetta 2 (verified
+# locally on an M1 Mac Mini).
+archs = ["arm64", "x86_64"]
+# cibuildwheel runs macOS builds natively on the runner (no container), so
+# install Qt straight to /tmp/qt via aqtinstall, same patched commit as the
+# Linux/Windows before-all steps. Qt for macOS desktop ("clang_64") ships
+# universal (arm64 + x86_64) binaries, so this one install covers both
+# wheel architectures - including the cp313-macosx_x86_64 build, which runs
+# under Rosetta 2 on Apple Silicon runners/hosts. Skip if /tmp/qt already
+# has it (local iteration on the M1 Mac Mini pre-populates this path).
+before-all = "[ -d /tmp/qt/6.11.1/macos ] || (python3 -m pip install --break-system-packages 'aqtinstall @ git+https://github.com/miurahr/aqtinstall.git@8c3695d4a4e1ceabf6a74dc6c79681656dc6b74b' && python3 -m aqt install-qt mac desktop 6.11.1 clang_64 -m qt5compat -O /tmp/qt)"
+# Qt 6.11's QtCore5Compat.framework has a minimum target of macOS 13.0 -
+# bump MACOSX_DEPLOYMENT_TARGET to match (cibuildwheel's arm64 default is
+# 11.0), so delocate doesn't reject the wheel and the resulting wheel tag
+# (macosx_13_0_arm64) accurately reflects what it needs.
+environment = { CMAKE_PREFIX_PATH = "/tmp/qt/6.11.1/macos", MACOSX_DEPLOYMENT_TARGET = "13.0" }
+test-environment = { QT_QPA_PLATFORM = "offscreen" }
+# QtWidgets.framework, QtGui.framework, QtCore.framework, libpyside6 and
+# libshiboken6 aren't bundled in the wheel - they're provided at runtime by
+# the installed PySide6 package (same rationale as the Linux/Windows
+# excludes above). delocate's dependency scan can't resolve these @rpath
+# references (they only resolve once PySide6 is actually installed next to
+# pyside6_scintilla), so it errors out unless told to skip what it can't
+# find. Everything delocate *can* resolve - i.e. files actually bundled in
+# the wheel, like QtCore5Compat.framework - is still delocated normally.
+repair-wheel-command = "delocate-wheel --require-archs {delocate_archs} --ignore-missing-dependencies -w {dest_dir} -v {wheel}"
 
 
 # ---------------------------------------------------------------------------

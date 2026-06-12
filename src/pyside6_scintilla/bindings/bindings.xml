@@ -12,6 +12,16 @@
 <typesystem package="_pyside6_scintilla">
     <load-typesystem name="typesystem_widgets.xml" generate="no"/>
 
+    <!-- ScintillaEditBase::send/sends use the global ::sptr_t (Scintilla.h's
+         "typedef intptr_t sptr_t"), not Scintilla::sptr_t. shiboken
+         auto-registers single-step typedefs to known primitives (e.g.
+         uintptr_t -> unsigned long), but on macOS intptr_t is a two-step
+         typedef (intptr_t -> __darwin_intptr_t -> long), which it doesn't
+         auto-resolve - leaving ::sptr_t unrecognized and silently dropping
+         send/sends entirely. Register it explicitly so this matches the
+         Linux/Windows behavior. -->
+    <primitive-type name="sptr_t"/>
+
     <namespace-type name="Scintilla">
         <!-- Integer typedefs used throughout ScintillaEditBase's public API -->
         <primitive-type name="Position"/>

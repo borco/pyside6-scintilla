@@ -2,6 +2,11 @@ name: Wheels
 
 on:
   workflow_dispatch:
+  # Temporary: workflow_dispatch is only invocable from the default branch, so
+  # this push trigger (scoped to this branch) lets us verify on an actual
+  # GitHub Actions runner before merging to master. Remove once green.
+  push:
+    branches: [ci/phase2-wheels-macos]
 
 jobs:
   build:
@@ -10,7 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest, ubuntu-latest]
+        os: [windows-latest, ubuntu-latest, macos-latest, macos-13]
     steps:
       - uses: actions/checkout@v5
 

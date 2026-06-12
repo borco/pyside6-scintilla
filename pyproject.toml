@@ -100,7 +100,7 @@ testpaths = ["tests"]
 # ---------------------------------------------------------------------------
 
 [tool.cibuildwheel]
-build = "cp31{1,2,3,4}-win_amd64 cp31{1,2,3,4}-manylinux_x86_64 cp313-macosx_arm64 cp313-macosx_x86_64"
+build = "cp31{1,2,3,4}-win_amd64 cp31{1,2,3,4}-manylinux_x86_64 cp31{1,2,3,4}-macosx_arm64 cp31{1,2,3,4}-macosx_x86_64"
 test-requires = ["pytest>=8.0", "pytest-qt>=4.4"]
 test-command = "pytest {project}/tests"
 
@@ -149,6 +149,12 @@ test-environment = { QT_QPA_PLATFORM = "offscreen" }
 repair-wheel-command = "auditwheel repair -w {dest_dir} --exclude libQt6Core.so.6 --exclude libQt6Gui.so.6 --exclude libQt6Widgets.so.6 --exclude libpyside6.abi3.so.6.11 --exclude libshiboken6.abi3.so.6.11 --exclude libicui18n.so.73 --exclude libicuuc.so.73 --exclude libicudata.so.73 {wheel}"
 
 [tool.cibuildwheel.macos]
+# macOS Intel (macos-13) GitHub Actions runners have very limited availability
+# (Intel macOS images are on GitHub's deprecation path) and can queue
+# indefinitely. Build both architectures on the Apple Silicon macos-latest
+# runner instead: arm64 natively, x86_64 cross-built via Rosetta 2 (verified
+# locally on an M1 Mac Mini).
+archs = ["arm64", "x86_64"]
 # cibuildwheel runs macOS builds natively on the runner (no container), so
 # install Qt straight to /tmp/qt via aqtinstall, same patched commit as the
 # Linux/Windows before-all steps. Qt for macOS desktop ("clang_64") ships

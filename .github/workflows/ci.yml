@@ -21,6 +21,11 @@ jobs:
         with:
           version: "6.11.1"
           modules: qt5compat
+          # aqtinstall 3.3.* can't locate Qt 6.11+ on Windows - the online
+          # repo dropped the combined qt6_XXXX/qt6_XXXX/Updates.xml in favor
+          # of per-arch dirs (miurahr/aqtinstall#959). Use the patched
+          # aqtinstall until a release containing PR #1000 lands on PyPI.
+          aqtsource: ${{ runner.os == 'Windows' && 'git+https://github.com/miurahr/aqtinstall.git@8c3695d4a4e1ceabf6a74dc6c79681656dc6b74b' || '' }}
 
       - name: Set Qt env vars
         shell: bash

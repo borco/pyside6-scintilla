@@ -93,5 +93,7 @@ nav:
       - Editing:
           - scintilla/editing/text-retrieval-and-modification.md
           - scintilla/editing/information.md
+      - Selection & Search:
+          - scintilla/selection-search/selection.md
   - Reference: reference.md
   - PyPI: https://pypi.org/project/pyside6-scintilla/

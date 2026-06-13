@@ -11,7 +11,7 @@ Run with:
 import sys
 from typing import Final
 
-from PySide6.QtGui import QAction
+from PySide6.QtGui import QAction, QFontDatabase
 from PySide6.QtWidgets import QApplication, QMainWindow, QToolBar
 
 from pyside6_scintilla import Scintilla, ScintillaEditBase
@@ -59,6 +59,13 @@ class MainWindow(QMainWindow):
     def __setup_editor(self) -> None:
         editor = self.__editor
         message = Scintilla.Message
+
+        # Use the platform's default fixed-width font instead of Scintilla's
+        # built-in default (a proportional font), as is conventional for a
+        # code editor.
+        fixed_font = QFontDatabase.systemFont(QFontDatabase.SystemFont.FixedFont)
+        editor.sends(message.StyleSetFont, Scintilla.StylesCommon.Default, fixed_font.family())
+        editor.send(message.StyleClearAll)
 
         editor.sends(message.SetText, 0, SAMPLE_TEXT)
 

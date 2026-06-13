@@ -11,6 +11,21 @@ extra:
 extra_css:
   - stylesheets/extra.css
 
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [src]
+          options:
+            # The .pyi stub has no docstrings on individual members (see
+            # tools/generate_pyi.py) - show them anyway, since the signature
+            # itself is the documentation for most of this binding's API.
+            show_if_no_docstring: true
+            # Source shown would be the generated .pyi stub (`def foo(...) -> T: ...`),
+            # not the real implementation - not useful to readers.
+            show_source: false
+
 theme:
   name: material
   icon:
@@ -64,4 +79,5 @@ nav:
       - Build instructions: build.md
       - Verifying vendored Scintilla: auditing.md
       - TestPyPI: testpypi.md
+  - Reference: reference.md
   - PyPI: https://pypi.org/project/pyside6-scintilla/

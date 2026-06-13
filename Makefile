@@ -5,6 +5,7 @@ setup:
 
 lint:
 	uv run ruff check .
+	uv run python tools/check_docs_sync.py
 
 format:
 	uv run ruff format .

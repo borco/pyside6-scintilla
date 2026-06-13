@@ -1,0 +1,67 @@
+site_name: pyside6-scintilla
+site_description: Permissively-licensed PySide6 bindings for the Scintilla code editor component
+site_url: https://borco.github.io/pyside6-scintilla/
+repo_url: https://github.com/borco/pyside6-scintilla
+repo_name: borco/pyside6-scintilla
+edit_uri: edit/master/docs/
+
+extra:
+  generator: false
+
+extra_css:
+  - stylesheets/extra.css
+
+theme:
+  name: material
+  icon:
+    logo: material/code-braces
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: teal
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: black
+      accent: teal
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.indexes
+    - navigation.top
+    - navigation.tracking
+    - navigation.footer
+    - toc.follow
+    - search.suggest
+    - search.highlight
+    - search.share
+    - content.code.copy
+    - content.code.annotate
+    - content.tabs.link
+
+markdown_extensions:
+  - admonition
+  - footnotes
+  - tables
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.highlight
+  - pymdownx.inlinehilite
+
+nav:
+  - Home: index.md
+  - Development:
+      - Project mission: mission.md
+      - Bindings architecture: bindings.md
+      - Build instructions: build.md
+      - Verifying vendored Scintilla: auditing.md
+      - TestPyPI: testpypi.md
+  - PyPI: https://pypi.org/project/pyside6-scintilla/

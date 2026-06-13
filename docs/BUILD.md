@@ -119,9 +119,9 @@ make lint
    headless `pytest-qt`), and `uv run ruff check .` / `ruff format --check .`
    -- the same commands as [Verifying the build](#verifying-the-build) above.
 
-CI doesn't build wheels or run the example app -- see [Building
-wheels](#building-wheels) below for the (currently manual) wheel-building
-process.
+CI doesn't run the example app, and only builds the dev install (not wheels)
+-- see [Building wheels](#building-wheels) below for the wheel-building
+workflow.
 
 ## Building wheels
 
@@ -129,19 +129,25 @@ process.
 uv build
 ```
 
-produces a wheel + sdist in `dist/`, for the **current platform only**. There
-is no multi-platform CI build (cibuildwheel) yet -- see `MISSION.md` for the
-intended Linux x86_64/aarch64, Windows x86_64, and macOS arm64/x86_64 targets.
-Until that's set up, release wheels must be built manually on each platform.
+produces a wheel + sdist in `dist/`, for the **current platform only**.
+Multi-platform wheels are built in CI by
+`.github/workflows/wheels.yml` via [cibuildwheel](https://cibuildwheel.pypa.io/),
+covering `cp31{1,2,3,4}` for Linux x86_64 (`manylinux_2_34`), Windows x86_64,
+and macOS arm64/x86_64 (the latter cross-built via Rosetta 2 on the
+`macos-latest` runner). It's `workflow_dispatch`-only for manual/ad-hoc builds,
+and also exposed as a reusable `workflow_call` job consumed by
+`publish.yml` (see [Publishing to PyPI](#publishing-to-pypi)).
 
 ### Platform-specific bundling caveats
 
 `Qt6Core5Compat` is required by `scintilla_qt` but isn't bundled in the
-PySide6 wheel on any platform. On Windows, `bindings/CMakeLists.txt` installs
-`Qt6Core5Compat.dll` alongside the extension. **Linux/macOS still need an
-equivalent step** (`delvewheel`/`auditwheel`/`delocate`, or an
-`install(FILES ...)` analogous to the Windows one) -- see
-[BINDINGS.md](BINDINGS.md) issue 3.
+PySide6 wheel on any platform. `bindings/CMakeLists.txt` installs it
+alongside the extension for all three platforms (a flat `.dll`/`.so` on
+Windows/Linux, a framework bundle on macOS), and each platform's
+`repair-wheel-command` in `pyproject.toml`
+(`delvewheel`/`auditwheel`/`delocate`) excludes the Qt/PySide6/shiboken6
+libraries provided at runtime by the installed PySide6 package. See
+[BINDINGS.md](BINDINGS.md) issue 3 for the details and history.
 
 ## Publishing to PyPI
 
@@ -152,12 +158,18 @@ equivalent step** (`delvewheel`/`auditwheel`/`delocate`, or an
    vendored Scintilla release and `N` increments for binding-only changes
    against that release. See [BINDINGS.md](BINDINGS.md) for the Scintilla
    update process.
-2. Build wheels for all target platforms (manually, until CI is wired up).
-3. `uv build`
-4. `uv publish` (requires a PyPI API token, e.g. via
-   `uv publish --token <token>` or the `UV_PUBLISH_TOKEN` environment
-   variable).
+2. Push the version bump to `master`.
+3. Create a GitHub Release with a tag matching the version (e.g. `v5.6.3.0`).
+   This triggers `.github/workflows/publish.yml`, which builds the sdist and
+   all wheels (via `wheels.yml`), publishes them to TestPyPI, and then -- for
+   real releases only -- to PyPI.
+
+No PyPI API tokens are involved: both the TestPyPI and PyPI publish steps use
+[PyPI trusted publishing](https://docs.pypi.org/trusted-publishers/) (GitHub
+OIDC), configured per-project on test.pypi.org/pypi.org against this repo's
+`publish.yml` workflow and the `testpypi`/`pypi` GitHub environments.
 
 The `pyside6-scintilla` PyPI name was claimed early with a placeholder `0.0.0`
-release (pure-Python, hatchling backend) to prevent squatting -- the first
-real release will be the first one built from this binding.
+release (pure-Python, hatchling backend, published manually via `uv publish`)
+to prevent squatting -- the first real release is the first one published via
+`publish.yml`.

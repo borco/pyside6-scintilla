@@ -6,7 +6,7 @@
      wrappers generated. Only types actually referenced by ScintillaEditBase's
      public signals/slots/methods need to be listed; shiboken errors out
      (naming the missing type) if a wrapped member references something not
-     declared here. See docs/BINDINGS.md for the iterative process of growing
+     declared here. See docs/bindings.md for the iterative process of growing
      this file (e.g. for Phase 2's ScintillaEdit).
 -->
 <typesystem package="_pyside6_scintilla">

@@ -4,7 +4,7 @@
 Pylance/mypy/ruff full signatures and autocomplete for `Scintilla.*` and
 `ScintillaEditBase`. Running it directly on the built extension fails for two
 reasons that don't affect PySide6's own `pyside6-genpyi` (see "Type stubs" in
-docs/BINDINGS.md):
+docs/bindings.md):
 
 1. genpyi re-imports the extension from a bare path, bypassing
    `pyside6_scintilla/__init__.py`'s `import PySide6.QtWidgets` DLL-path

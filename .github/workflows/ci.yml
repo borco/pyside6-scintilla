@@ -35,7 +35,7 @@ jobs:
           echo "CMAKE_PREFIX_PATH=$QT_ROOT_DIR" >> "$GITHUB_ENV"
           if [ "${{ runner.os }}" = "Linux" ]; then
             # Qt6Core5Compat isn't bundled with the PySide6 wheel (see
-            # docs/BINDINGS.md issue 3), so scintilla_qt's dependency on it
+            # docs/bindings.md issue 3), so scintilla_qt's dependency on it
             # must resolve to the aqtinstall'd Qt at runtime.
             echo "LD_LIBRARY_PATH=$QT_ROOT_DIR/lib" >> "$GITHUB_ENV"
           fi

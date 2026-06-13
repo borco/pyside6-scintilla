@@ -45,7 +45,7 @@ publish: format test lint
 	uv publish
 
 # Regenerate src/pyside6_scintilla/_pyside6_scintilla.pyi (see tools/generate_pyi.py
-# and docs/BINDINGS.md). Run after `make install` / `uv sync --reinstall-package
+# and docs/bindings.md). Run after `make install` / `uv sync --reinstall-package
 # pyside6-scintilla` whenever bindings.xml/bindings.h change the public API.
 stubs:
 	uv run python tools/generate_pyi.py

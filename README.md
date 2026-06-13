@@ -13,7 +13,7 @@ The `ScintillaEditBase` binding is implemented and working — see
 for a runnable demo. Pre-built wheels aren't published yet; build from
 source (see [Installation](#installation)). `ScintillaEdit` (Scintilla's full
 ~700-method API) and CI-built wheels for Linux/Windows/macOS are planned —
-see [docs/MISSION.md](docs/MISSION.md) for the roadmap.
+see [docs/mission.md](docs/mission.md) for the roadmap.
 
 ## Why this exists
 
@@ -52,7 +52,7 @@ uv sync
 ```
 
 This requires Qt 6.10+ (including the `Qt6Core5Compat` module) and a C++17
-compiler — see [docs/BUILD.md](docs/BUILD.md) for prerequisites and
+compiler — see [docs/build.md](docs/build.md) for prerequisites and
 platform-specific setup.
 
 ## Usage
@@ -86,10 +86,10 @@ itself releases a new version.
 
 | Doc | Contents |
 | --- | --- |
-| [docs/AUDITING.md](docs/AUDITING.md) | How to verify the vendored Scintilla source matches upstream |
-| [docs/BINDINGS.md](docs/BINDINGS.md) | How the shiboken6 bindings are built, generated files, and the Scintilla-update procedure |
-| [docs/BUILD.md](docs/BUILD.md) | Build prerequisites, local build/rebuild, wheels, and publishing |
-| [docs/MISSION.md](docs/MISSION.md) | Project background, goals, and design decisions |
+| [docs/auditing.md](docs/auditing.md) | How to verify the vendored Scintilla source matches upstream |
+| [docs/bindings.md](docs/bindings.md) | How the shiboken6 bindings are built, generated files, and the Scintilla-update procedure |
+| [docs/build.md](docs/build.md) | Build prerequisites, local build/rebuild, wheels, and publishing |
+| [docs/mission.md](docs/mission.md) | Project background, goals, and design decisions |
 
 ## License
 

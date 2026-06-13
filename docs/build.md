@@ -114,7 +114,7 @@ make lint
    [Prerequisites](#prerequisites) above).
 2. Points `CMAKE_PREFIX_PATH` at that Qt install, and on Linux also sets
    `LD_LIBRARY_PATH` so `scintilla_qt.so` can find `libQt6Core5Compat.so.6` at
-   runtime (see [BINDINGS.md](BINDINGS.md) issue 3).
+   runtime (see [bindings.md](bindings.md) issue 3).
 3. Runs `uv sync`, `uv run pytest` (with `QT_QPA_PLATFORM=offscreen` for a
    headless `pytest-qt`), and `uv run ruff check .` / `ruff format --check .`
    -- the same commands as [Verifying the build](#verifying-the-build) above.
@@ -147,7 +147,7 @@ Windows/Linux, a framework bundle on macOS), and each platform's
 `repair-wheel-command` in `pyproject.toml`
 (`delvewheel`/`auditwheel`/`delocate`) excludes the Qt/PySide6/shiboken6
 libraries provided at runtime by the installed PySide6 package. See
-[BINDINGS.md](BINDINGS.md) issue 3 for the details and history.
+[bindings.md](bindings.md) issue 3 for the details and history.
 
 ## Publishing to PyPI
 
@@ -156,7 +156,7 @@ libraries provided at runtime by the installed PySide6 package. See
    (`[tool.scikit-build.metadata.version]` in `pyproject.toml` reads it via
    regex). Follow Scintilla's version: `X.Y.Z.N`, where `X.Y.Z` is the
    vendored Scintilla release and `N` increments for binding-only changes
-   against that release. See [BINDINGS.md](BINDINGS.md) for the Scintilla
+   against that release. See [bindings.md](bindings.md) for the Scintilla
    update process.
 2. Push the version bump to `master`.
 3. Create a GitHub Release with a tag matching the version (e.g. `v5.6.3.0`).

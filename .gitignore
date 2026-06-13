@@ -3,6 +3,7 @@ CMakeLists.txt.user
 build/
 dist/
 wheelhouse/
+/site/
 .*_cache/
 __pycache__/
 .venv

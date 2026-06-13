@@ -1,0 +1,5 @@
+/* Hide the copyright/social-links footer bar (.md-footer-meta) entirely -
+   the prev/next page links in .md-footer__inner (navigation.footer) stay. */
+.md-footer-meta {
+  display: none;
+}

@@ -88,5 +88,8 @@ nav:
   - Examples:
       - examples/index.md
       - examples/simple_scintilla_base_edit.md
+  - Scintilla API:
+      - Editing:
+          - scintilla/editing/text-retrieval-and-modification.md
   - Reference: reference.md
   - PyPI: https://pypi.org/project/pyside6-scintilla/

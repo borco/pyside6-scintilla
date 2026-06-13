@@ -28,6 +28,7 @@ plugins:
 
 theme:
   name: material
+  favicon: assets/images/favicon.svg
   icon:
     logo: material/code-braces
   palette:

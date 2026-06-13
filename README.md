@@ -10,9 +10,10 @@
 
 The `ScintillaEditBase` binding is implemented and working — see
 [examples/simple_scintilla_base_edit/](https://github.com/borco/pyside6-scintilla/tree/master/examples/simple_scintilla_base_edit/)
-for a runnable demo. Pre-built wheels aren't published yet; build from
-source (see [Installation](#installation)). `ScintillaEdit` (Scintilla's full
-~700-method API) and CI-built wheels for Linux/Windows/macOS are planned —
+for a runnable demo. Pre-built wheels are published on PyPI for Linux
+(x86_64), Windows (x86_64), and macOS (arm64, x86_64), Python 3.11-3.14 —
+see [Installation](#installation). `ScintillaEdit` (Scintilla's full
+~700-method API) and Linux aarch64 wheels are planned —
 see [docs/mission.md](https://github.com/borco/pyside6-scintilla/blob/master/docs/mission.md) for the roadmap.
 
 ## Why this exists
@@ -41,18 +42,16 @@ core directly to PySide6 users.
 
 ## Installation
 
-`pyside6-scintilla` isn't published as a working package yet — the PyPI
-listing is a placeholder reserving the name (see [Versioning](#versioning)).
-For now, build it from source:
-
 ```bash
-git clone https://github.com/borco/pyside6-scintilla.git
-cd pyside6-scintilla
-uv sync
+pip install pyside6-scintilla
 ```
 
-This requires Qt 6.10+ (including the `Qt6Core5Compat` module) and a C++17
-compiler — see [docs/build.md](https://github.com/borco/pyside6-scintilla/blob/master/docs/build.md) for prerequisites and
+PySide6 6.10+ is installed automatically as a dependency; the wheels bundle
+everything else `ScintillaEditBase` needs at runtime.
+
+To build from source instead (e.g. for development), see
+[docs/build.md](https://github.com/borco/pyside6-scintilla/blob/master/docs/build.md)
+for prerequisites (Qt 6.10+ with `Qt6Core5Compat`, a C++17 compiler) and
 platform-specific setup.
 
 ## Usage

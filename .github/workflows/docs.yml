@@ -39,7 +39,9 @@ jobs:
       # _pyside6_scintilla extension (no Qt/CMake toolchain in this job).
       - run: uv sync --group docs --no-install-project
 
-      - run: uv run mkdocs build --strict
+      # --no-sync: `uv run` would otherwise re-sync without
+      # --no-install-project and try to build the CMake extension.
+      - run: uv run --no-sync mkdocs build --strict
 
       - uses: actions/upload-pages-artifact@v3
         with:

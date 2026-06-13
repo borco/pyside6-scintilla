@@ -57,6 +57,10 @@ jobs:
       - uses: pypa/gh-action-pypi-publish@release/v1
         with:
           repository-url: https://test.pypi.org/legacy/
+          # A real-PyPI release re-publishes the same version to TestPyPI
+          # too (the tracer already uploaded it earlier) - don't fail on
+          # TestPyPI's "file already exists" for identical files.
+          skip-existing: true
 
   # Real PyPI publish only happens for an actual GitHub Release - the
   # workflow_dispatch tracer trigger stops at TestPyPI above. Requires a

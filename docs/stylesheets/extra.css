@@ -3,3 +3,15 @@
 .md-footer-meta {
   display: none;
 }
+
+/* Subtle "link to upstream docs" icon next to a heading - matches the
+   muted, smaller style of Material's own permalink anchors. */
+.heading-link {
+  font-size: 0.7em;
+  vertical-align: middle;
+  color: var(--md-default-fg-color--lighter);
+}
+
+.heading-link:hover {
+  color: var(--md-accent-fg-color);
+}

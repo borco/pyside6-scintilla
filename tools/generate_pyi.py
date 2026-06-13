@@ -34,6 +34,10 @@ After generation, this script also:
   shiboken's `const char *` converter accepts a Python `str` (UTF-8 encoded)
   at runtime, but genpyi only types it as `bytes | bytearray | memoryview |
   None`.
+- Adds hand-written docstrings to `ScintillaEditBase.send`/`sends` -- the two
+  entry points users actually call, but genpyi only emits their bare
+  signatures (no Qt docstrings exist for them since they're not Qt
+  overrides). See `SEND_DOCS` below.
 
 Run after rebuilding the extension (`make install` or `uv sync
 --reinstall-package pyside6-scintilla`), and whenever `bindings.xml`/
@@ -58,6 +62,25 @@ FEATURE_RE: Final = re.compile(r"^(?:fun|get|set|evt)\s+\S+\s+(\w+)=")
 
 # Matches a genpyi-generated enum member line, e.g. "        AddText  = 0x7d1".
 MEMBER_RE: Final = re.compile(r"^(\s+)(\w+)\s*= 0x[0-9a-fA-F]+\n?$")
+
+# Matches a genpyi-generated one-line method stub, e.g.
+# "    def send(self, iMessage: int, /, ...) -> int: ...".
+METHOD_RE: Final = re.compile(r"^(\s+)def (\w+)\(.*\) -> .+: \.\.\.\n?$")
+
+# genpyi's resolution of `send`/`sends`' `sptr_t`/`uptr_t` return and `lParam`
+# types is inconsistent across regenerations -- sometimes `int` directly (the
+# desired form below), sometimes an unresolvable `'sptr_t'`/
+# `typing.Optional[ForwardRef('sptr_t')]` forward ref (genpyi prints
+# "UNRECOGNIZED: 'sptr_t'" warnings for these two methods when this happens).
+SEND_LINE_RE: Final = re.compile(r"^    def send\(self,.*\) -> .+: \.\.\.$", re.M)
+SEND_SIGNATURE: Final = (
+    "    def send(self, iMessage: int, /, wParam: int | None = ..., lParam: int | None = ...) -> int: ..."
+)
+SENDS_LINE_RE: Final = re.compile(r"^    def sends\(self,.*\) -> .+: \.\.\.$", re.M)
+SENDS_SIGNATURE: Final = (
+    "    def sends(self, iMessage: int, /, wParam: int | None = ..., "
+    "s: bytes | bytearray | memoryview | None = ...) -> int: ..."
+)
 
 # Matches Scintilla.iface's "enu CharacterSource=SC_CHARACTERSOURCE_" line, capturing
 # the value-name prefix ("SC_CHARACTERSOURCE_") shared by its `val` lines.
@@ -130,6 +153,26 @@ MODIFICATION_FLAGS_DOCS: Final = {
     "ChangeTabStops": "The explicit tab stops on a line have changed because SCI_CLEARTABSTOPS or SCI_ADDTABSTOP was called.",
     "ChangeEOLAnnotation": "An EOL annotation has changed.",
     "EventMaskAll": "Mask for all valid flags; the default mask state set by SCI_SETMODEVENTMASK.",
+}
+
+
+# Hand-written -- ScintillaEditBase.send/sends are this binding's two entry
+# points for the ~800 Scintilla.Message commands, but they're plain C++
+# methods (not Qt overrides), so genpyi emits only their bare signatures.
+SEND_DOCS: Final = {
+    "send": (
+        "Send a message to the underlying Scintilla editor and return its result.\n\n"
+        "        `iMessage` is usually a `Scintilla.Message` value, e.g. "
+        "`Scintilla.Message.GetTextLength`. `wParam` and `lParam` are that message's "
+        "two generic parameters, interpreted as documented for the message in the "
+        "upstream Scintilla documentation."
+    ),
+    "sends": (
+        "Like `send`, but pass `s` as the message's string `lParam`.\n\n"
+        "        Use this for messages whose `lParam` is a string, e.g. "
+        "`Scintilla.Message.AddText` or `Scintilla.Message.SetText`. `s` accepts "
+        "`bytes`, `bytearray`, `memoryview`, or `str` (encoded as UTF-8)."
+    ),
 }
 
 
@@ -225,6 +268,39 @@ def add_enum_docstrings(text: str, enum_class: str, docs: dict[str, str]) -> str
     return "".join(out)
 
 
+def normalize_send_signatures(text: str) -> str:
+    """Force `ScintillaEditBase.send`/`sends` back to their `int`-based signatures.
+
+    See `SEND_LINE_RE`/`SENDS_LINE_RE` above for why this is needed.
+    """
+    text = SEND_LINE_RE.sub(SEND_SIGNATURE, text, count=1)
+    text = SENDS_LINE_RE.sub(SENDS_SIGNATURE, text, count=1)
+    return text
+
+
+def add_method_docstrings(text: str, class_name: str, docs: dict[str, str]) -> str:
+    """Expand `def <name>(...) -> T: ...` one-liners in `class_name` into a body with a docstring."""
+    out: list[str] = []
+    in_class = False
+    class_line = f"class {class_name}("
+    for line in text.splitlines(keepends=True):
+        if line.startswith(class_line):
+            in_class = True
+        elif in_class and line.startswith("class "):
+            in_class = False
+        if in_class:
+            match = METHOD_RE.match(line)
+            if match:
+                indent, name = match.group(1), match.group(2)
+                doc = docs.get(name)
+                if doc:
+                    signature = line.rstrip("\n").removesuffix(" ...")
+                    out.append(f'{signature}\n{indent}    r"""{doc}"""\n')
+                    continue
+        out.append(line)
+    return "".join(out)
+
+
 def widen_sends_string_param(text: str) -> str:
     """Add `str` to `ScintillaEditBase.sends`'s `s` parameter type."""
     return text.replace(SENDS_OLD, SENDS_NEW, 1)
@@ -246,12 +322,14 @@ def main() -> None:
     """Generate `_pyside6_scintilla.pyi`, then post-process it in place."""
     run_genpyi()
     text = PYI_PATH.read_text()
+    text = normalize_send_signatures(text)
     text = add_primitive_aliases(text)
     text = add_enum_docstrings(text, "Message", parse_iface_docs(IFACE_PATH))
     text = add_enum_docstrings(text, "CharacterSource", parse_character_source_docs(IFACE_PATH))
     text = add_enum_docstrings(text, "VirtualSpace", VIRTUAL_SPACE_DOCS)
     text = add_enum_docstrings(text, "Update", UPDATE_DOCS)
     text = add_enum_docstrings(text, "ModificationFlags", MODIFICATION_FLAGS_DOCS)
+    text = add_method_docstrings(text, "ScintillaEditBase", SEND_DOCS)
     text = widen_sends_string_param(text)
     PYI_PATH.write_text(text)
 

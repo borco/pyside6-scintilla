@@ -1,5 +1,7 @@
 # Text retrieval and modification
 
+[:material-open-in-new: Upstream documentation](https://www.scintilla.org/ScintillaDoc.html#TextRetrievalAndModification)
+
 !!! note
     This page is adapted from the upstream Scintilla **5.6.3** documentation
     (`ScintillaDoc.html`), converted to Markdown for this site. It documents
@@ -205,6 +207,8 @@ struct Sci_TextRangeFull {
 ```
 
 ## Specific to GTK, Cocoa and Windows only: Access to encoded text
+
+[:material-open-in-new: Upstream documentation](https://www.scintilla.org/ScintillaDoc.html#EncodedAccess)
 
 ### `SCI_TARGETASUTF8(<unused>, char *s) → position` {: #SCI_TARGETASUTF8 }
 

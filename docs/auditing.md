@@ -1,9 +1,9 @@
 # Auditing the vendored Scintilla source
 
-> [!NOTE]
-> `src/scintilla/` is vendored unmodified from Scintilla's official release. If
-> you'd like to confirm that for yourself, here's one way -- use whatever
-> approach you're comfortable with.
+!!! note
+    `src/scintilla/` is vendored unmodified from Scintilla's official release. If
+    you'd like to confirm that for yourself, here's one way -- use whatever
+    approach you're comfortable with.
 
 Scintilla **5.6.3** is extracted as it in `src/scintilla/`.
 

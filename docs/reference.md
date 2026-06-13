@@ -1,3 +1,3 @@
 # API reference
 
-::: pyside6_scintilla.ScintillaEditBase
+::: pyside6_scintilla.Scintilla.Message

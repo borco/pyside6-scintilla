@@ -1,7 +1,7 @@
 # pyside6-scintilla
 
 [![CI](https://github.com/borco/pyside6-scintilla/actions/workflows/ci.yml/badge.svg)](https://github.com/borco/pyside6-scintilla/actions/workflows/ci.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://github.com/borco/pyside6-scintilla/blob/master/LICENSE)
 ![Python](https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13%20%7C%203.14-blue)
 
 *Permissively-licensed PySide6 bindings for the [Scintilla](https://www.scintilla.org/) code editor component.*
@@ -9,11 +9,11 @@
 ## Status
 
 The `ScintillaEditBase` binding is implemented and working — see
-[examples/simple_scintilla_base_edit/](examples/simple_scintilla_base_edit/)
+[examples/simple_scintilla_base_edit/](https://github.com/borco/pyside6-scintilla/tree/master/examples/simple_scintilla_base_edit/)
 for a runnable demo. Pre-built wheels aren't published yet; build from
 source (see [Installation](#installation)). `ScintillaEdit` (Scintilla's full
 ~700-method API) and CI-built wheels for Linux/Windows/macOS are planned —
-see [docs/mission.md](docs/mission.md) for the roadmap.
+see [docs/mission.md](https://github.com/borco/pyside6-scintilla/blob/master/docs/mission.md) for the roadmap.
 
 ## Why this exists
 
@@ -52,7 +52,7 @@ uv sync
 ```
 
 This requires Qt 6.10+ (including the `Qt6Core5Compat` module) and a C++17
-compiler — see [docs/build.md](docs/build.md) for prerequisites and
+compiler — see [docs/build.md](https://github.com/borco/pyside6-scintilla/blob/master/docs/build.md) for prerequisites and
 platform-specific setup.
 
 ## Usage
@@ -71,7 +71,7 @@ app.exec()
 `ScintillaEditBase` exposes Scintilla's low-level message API via `.send()`/
 `.sends()` — the same `SCI_*` messages as the C interface, not a
 QScintilla-style high-level API. See
-[examples/simple_scintilla_base_edit/](examples/simple_scintilla_base_edit/)
+[examples/simple_scintilla_base_edit/](https://github.com/borco/pyside6-scintilla/tree/master/examples/simple_scintilla_base_edit/)
 for a complete example (line-number margin, block selection/editing).
 
 ## Versioning
@@ -86,13 +86,13 @@ itself releases a new version.
 
 | Doc | Contents |
 | --- | --- |
-| [docs/auditing.md](docs/auditing.md) | How to verify the vendored Scintilla source matches upstream |
-| [docs/bindings.md](docs/bindings.md) | How the shiboken6 bindings are built, generated files, and the Scintilla-update procedure |
-| [docs/build.md](docs/build.md) | Build prerequisites, local build/rebuild, wheels, and publishing |
-| [docs/mission.md](docs/mission.md) | Project background, goals, and design decisions |
+| [docs/auditing.md](https://github.com/borco/pyside6-scintilla/blob/master/docs/auditing.md) | How to verify the vendored Scintilla source matches upstream |
+| [docs/bindings.md](https://github.com/borco/pyside6-scintilla/blob/master/docs/bindings.md) | How the shiboken6 bindings are built, generated files, and the Scintilla-update procedure |
+| [docs/build.md](https://github.com/borco/pyside6-scintilla/blob/master/docs/build.md) | Build prerequisites, local build/rebuild, wheels, and publishing |
+| [docs/mission.md](https://github.com/borco/pyside6-scintilla/blob/master/docs/mission.md) | Project background, goals, and design decisions |
 
 ## License
 
 - `src/scintilla/` — [HPND License](https://www.scintilla.org/License.txt)
   (Scintilla, copyright Neil Hodgson)
-- Everything else — [MIT License](LICENSE)
+- Everything else — [MIT License](https://github.com/borco/pyside6-scintilla/blob/master/LICENSE)

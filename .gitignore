@@ -10,7 +10,7 @@ __pycache__/
 /.build_install/
 
 # Compiled extension + shared libs dropped into src/ by `make install`
-# (see docs/BUILD.md)
+# (see docs/build.md)
 /src/pyside6_scintilla/*.pyd
 /src/pyside6_scintilla/*.so
 /src/pyside6_scintilla/*.dylib

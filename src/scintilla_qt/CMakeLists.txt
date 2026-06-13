@@ -4,7 +4,7 @@
 #
 # The source list mirrors ../scintilla/qt/ScintillaEditBase/ScintillaEditBase.pro.
 # When vendoring a new Scintilla release, diff that .pro file's SOURCES/HEADERS
-# against the list below and add/remove entries to match (see docs/BINDINGS.md).
+# against the list below and add/remove entries to match (see docs/bindings.md).
 
 set(LIB_NAME scintilla_qt)
 

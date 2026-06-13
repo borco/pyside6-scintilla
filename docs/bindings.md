@@ -7,7 +7,7 @@ everything when a new Scintilla release is vendored.
 ## How it fits together
 
 - `src/scintilla/` -- vendored Scintilla release tarball, unmodified (see
-  `.gitattributes`; see [docs/AUDITING.md](AUDITING.md) for how to verify
+  `.gitattributes`; see [docs/auditing.md](auditing.md) for how to verify
   this).
 - `src/scintilla_qt/CMakeLists.txt` -- builds the vendored Scintilla core plus
   its Qt widget glue (`PlatQt`, `ScintillaQt`, `ScintillaEditBase`) as a shared
@@ -157,7 +157,7 @@ public API surface. The script:
 
 ## Updating to a new Scintilla release
 
-Per `MISSION.md`, Scintilla updates are deliberate and tested, not automatic.
+Per `mission.md`, Scintilla updates are deliberate and tested, not automatic.
 When vendoring a new release tarball:
 
 1. Replace `src/scintilla/` with the new release's contents (remove the old
@@ -186,4 +186,4 @@ When vendoring a new release tarball:
    against the same Scintilla release increment `N`).
 6. Rebuild with `uv sync --reinstall-package pyside6-scintilla` (`uv sync`
    alone doesn't always pick up CMake/typesystem changes), then
-   `uv run pytest` and `uv run ruff check .`. See `docs/BUILD.md`.
+   `uv run pytest` and `uv run ruff check .`. See `docs/build.md`.

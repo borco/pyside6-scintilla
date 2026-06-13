@@ -19,6 +19,15 @@ jobs:
 
       - uses: astral-sh/setup-uv@v7
 
+      # `[tool.uv] no-build-isolation-package` (pyproject.toml) makes `uv
+      # build` use the project's own environment instead of an isolated build
+      # env for this package, expecting [build-system].requires to already be
+      # installed there. `--no-install-project` populates .venv with those
+      # deps (and PySide6/shiboken6, pure-Python wheels - no Qt SDK needed)
+      # without building/installing pyside6-scintilla itself.
+      - name: Install build dependencies
+        run: uv sync --no-install-project
+
       - name: Build sdist
         run: uv build --sdist
 

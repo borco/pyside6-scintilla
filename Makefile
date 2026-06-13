@@ -1,4 +1,4 @@
-.PHONY: setup lint format test clean clean-setup configure build install publish stubs
+.PHONY: setup lint format test clean clean-setup configure build install publish stubs docs-serve
 
 setup:
 	uv sync
@@ -6,6 +6,10 @@ setup:
 lint:
 	uv run ruff check .
 	uv run python tools/check_docs_sync.py
+
+# Serve the docs site locally with live-reload (http://127.0.0.1:8000/pyside6-scintilla/).
+docs-serve:
+	uv run --group docs mkdocs serve
 
 format:
 	uv run ruff format .

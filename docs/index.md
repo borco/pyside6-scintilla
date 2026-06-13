@@ -1,3 +1,4 @@
+<!-- sync:header -->
 # pyside6-scintilla
 
 [![CI](https://github.com/borco/pyside6-scintilla/actions/workflows/ci.yml/badge.svg)](https://github.com/borco/pyside6-scintilla/actions/workflows/ci.yml)
@@ -7,6 +8,7 @@
 [![Python versions](https://img.shields.io/pypi/pyversions/pyside6-scintilla)](https://pypi.org/project/pyside6-scintilla/)
 
 *Permissively-licensed PySide6 bindings for the [Scintilla](https://www.scintilla.org/) code editor component.*
+<!-- /sync:header -->
 
 ## Status
 
@@ -18,15 +20,18 @@ Windows (x86_64), and macOS (arm64, x86_64), Python 3.11-3.14.
 
 ## Installation
 
+<!-- sync:installation -->
 ```bash
 pip install pyside6-scintilla
 ```
 
 PySide6 6.10+ is installed automatically as a dependency; the wheels bundle
 everything else `ScintillaEditBase` needs at runtime.
+<!-- /sync:installation -->
 
 ## Usage
 
+<!-- sync:usage-example -->
 ```python
 from PySide6.QtWidgets import QApplication
 from pyside6_scintilla import Scintilla, ScintillaEditBase
@@ -37,6 +42,7 @@ editor.sends(int(Scintilla.Message.SetText), 0, "hello, world")
 editor.show()
 app.exec()
 ```
+<!-- /sync:usage-example -->
 
 `ScintillaEditBase` exposes Scintilla's low-level message API via `.send()`/
 `.sends()` — the same `SCI_*` messages as the C interface, not a

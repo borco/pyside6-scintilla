@@ -14,9 +14,9 @@
 
 ## Status
 
-The `ScintillaEditBase` binding is implemented and working — see
-[examples/simple_scintilla_base_edit](https://github.com/borco/pyside6-scintilla/tree/master/examples/simple_scintilla_base_edit/)
-for a runnable demo. Pre-built wheels are published on
+The `ScintillaEditBase` and `ScintillaEdit` bindings are implemented and
+working — see the [examples gallery](examples/index.md) for runnable demos.
+Pre-built wheels are published on
 [PyPI](https://pypi.org/project/pyside6-scintilla/) for Linux (x86_64),
 Windows (x86_64), and macOS (arm64, x86_64), Python 3.11-3.14.
 
@@ -38,19 +38,21 @@ everything else `ScintillaEditBase` needs at runtime.
 <!-- sync:usage-example -->
 ```python
 from PySide6.QtWidgets import QApplication
-from pyside6_scintilla import Scintilla, ScintillaEditBase
+from pyside6_scintilla import ScintillaEdit
 
 app = QApplication([])
-editor = ScintillaEditBase()
-editor.sends(int(Scintilla.Message.SetText), 0, "hello, world")
+editor = ScintillaEdit()
+editor.setText("hello, world")
 editor.show()
 app.exec()
 ```
 <!-- /sync:usage-example -->
 
-`ScintillaEditBase` exposes Scintilla's low-level message API via `.send()`/
-`.sends()` — the same `SCI_*` messages as the C interface, not a
-QScintilla-style high-level API.
+`ScintillaEdit` exposes a typed method per Scintilla message (e.g.
+`setText()`, `textLength()`, `gotoLine()`) on top of `ScintillaEditBase`'s
+raw `.send()`/`.sends()` message API — the same `SCI_*` messages as the C
+interface, not a QScintilla-style high-level API. See the
+[examples gallery](examples/index.md) for complete examples of both.
 
 ## Why this exists
 

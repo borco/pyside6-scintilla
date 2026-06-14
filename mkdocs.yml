@@ -81,6 +81,7 @@ nav:
   - Home: index.md
   - Development:
       - Project mission: mission.md
+      - Alternatives & landscape: alternatives.md
       - Bindings architecture: bindings.md
       - Build instructions: build.md
       - Verifying vendored Scintilla: auditing.md
@@ -89,6 +90,7 @@ nav:
   - Examples:
       - examples/index.md
       - examples/simple_scintilla_base_edit.md
+      - examples/simple_scintilla_edit.md
   - Scintilla API:
       - Editing:
           - scintilla/editing/text-retrieval-and-modification.md
@@ -154,5 +156,10 @@ nav:
           - scintilla/appendix-reference/edit-messages-never-supported-by-scintilla.md
           - scintilla/appendix-reference/removed-features.md
           - scintilla/appendix-reference/building-scintilla.md
-  - Reference: reference.md
+  - Reference:
+      - reference/index.md
+      - ScintillaEditBase: reference/scintilla-edit-base.md
+      - ScintillaEdit: reference/scintilla-edit.md
+      - ScintillaDocument: reference/scintilla-document.md
+      - Scintilla.Message: reference/message.md
   - PyPI: https://pypi.org/project/pyside6-scintilla/

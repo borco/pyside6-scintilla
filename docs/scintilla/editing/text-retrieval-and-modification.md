@@ -4,7 +4,7 @@
     This page is adapted from the upstream Scintilla **5.6.3** documentation
     (`ScintillaDoc.html`), converted to Markdown for this site. It documents
     the underlying `ScintillaEditBase.send`/`sends` message API -- see the
-    [API reference](../../reference.md) for the Python bindings themselves.
+    [API reference](../../reference/index.md) for the Python bindings themselves.
 
 Each byte in a Scintilla document is associated with a byte of styling information. The combination of a character byte and a style byte is called a cell. Style bytes are interpreted an index into an array of styles.
 

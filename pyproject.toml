@@ -45,7 +45,7 @@ dependencies = [
 
 
 [project.urls]
-Homepage = "https://github.com/borco/pyside6-scintilla"
+Homepage = "https://borco.github.io/pyside6-scintilla/"
 Repository = "https://github.com/borco/pyside6-scintilla"
 Issues = "https://github.com/borco/pyside6-scintilla/issues"
 

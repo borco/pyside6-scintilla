@@ -19,4 +19,14 @@ uv run python examples/<example>/main.py
 
     [:octicons-arrow-right-24: More](simple_scintilla_base_edit.md)
 
+-   :material-form-textbox:{ .lg .middle } __Simple ScintillaEdit edit__
+
+    ---
+
+    A minimal `QMainWindow` built around `ScintillaEdit`'s typed methods,
+    with a line-number margin toggle, "Go to Line", and block (rectangular)
+    selection/editing.
+
+    [:octicons-arrow-right-24: More](simple_scintilla_edit.md)
+
 </div>

@@ -51,4 +51,23 @@
     </namespace-type>
 
     <object-type name="ScintillaEditBase"/>
+
+    <!-- shiboken handles the ScintillaDocument(QObject *parent = 0,
+         void *pdoc_ = 0) constructor's void* fine as-is (surfaced as
+         shiboken6.Shiboken.VoidPtr), so ScintillaDocument() can be
+         constructed standalone in Python - e.g. to create a document up
+         front and attach it to multiple ScintillaEdit widgets via
+         set_doc() before any of them have text. -->
+    <object-type name="ScintillaDocument"/>
+
+    <object-type name="ScintillaEdit">
+        <!-- get_doc() returns a fresh heap ScintillaDocument with no Qt parent;
+             give Python ownership so it's freed when the wrapper is garbage
+             collected. -->
+        <modify-function signature="get_doc()">
+            <modify-argument index="return">
+                <define-ownership owner="target"/>
+            </modify-argument>
+        </modify-function>
+    </object-type>
 </typesystem>

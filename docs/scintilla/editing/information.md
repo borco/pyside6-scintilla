@@ -4,7 +4,7 @@
     This page is adapted from the upstream Scintilla **5.6.3** documentation
     (`ScintillaDoc.html`), converted to Markdown for this site. It documents
     the underlying `ScintillaEditBase.send`/`sends` message API -- see the
-    [API reference](../../reference.md) for the Python bindings themselves.
+    [API reference](../../reference/index.md) for the Python bindings themselves.
 
 - [`SCI_GETTEXTLENGTH → position`](#SCI_GETTEXTLENGTH)
 - [`SCI_GETLENGTH → position`](#SCI_GETLENGTH)

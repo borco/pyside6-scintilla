@@ -124,9 +124,9 @@ sessions) -- not part of the repo, since each section needs small
 adjustments. This page is kept up to date with any new wrinkles found along
 the way.
 
-## The "Reference" page
+## The "Reference" pages
 
-`docs/reference.md` is generated from
+`docs/reference/` is generated from
 `src/pyside6_scintilla/_pyside6_scintilla.pyi` (the type stub for the
 compiled `_pyside6_scintilla` extension) via the
 [mkdocstrings](https://mkdocstrings.github.io/)/`mkdocstrings-python`
@@ -134,20 +134,29 @@ plugin, configured in `mkdocs.yml`'s `plugins:` section. Griffe reads the
 stub directly -- no compiled extension or Sphinx fallback is needed at docs-
 build time (`docs.yml` runs with `--no-install-project`).
 
-The page currently renders:
+It's one page per class/enum (one `::: pyside6_scintilla.<name>` block each,
+with `show_root_heading: true` and `heading_level: 1`), listed in
+`mkdocs.yml`'s `nav:` under "Reference", with `docs/reference/index.md` as a
+landing page linking to each:
 
-- `ScintillaEditBase.send`/`.sends` (the two entry points for the message
-  API) with hand-written docstrings, via `::: pyside6_scintilla.ScintillaEditBase.send`
-  / `.sends` blocks with `show_root_heading: true`.
-- `Scintilla.Message` as a glossary (`::: pyside6_scintilla.Scintilla.Message`)
-  -- 815+ of 819 members have a one-line docstring stitched in from
+- `reference/scintilla-edit-base.md` -- `ScintillaEditBase` (the raw
+  `send`/`sends` message API plus Scintilla's notification signals), with
+  hand-written docstrings for `send`/`sends`.
+- `reference/scintilla-edit.md` -- `ScintillaEdit`'s ~780 typed methods, with
+  docstrings stitched from `Scintilla.iface` (see `tools/generate_pyi.py`'s
+  `parse_widget_method_docs()`).
+- `reference/scintilla-document.md` -- `ScintillaDocument`'s ~40 methods,
+  hand-transcribed docstrings (`SCINTILLA_DOCUMENT_DOCS`).
+- `reference/message.md` -- `Scintilla.Message` as a glossary -- 815+ of 819
+  members have a one-line docstring stitched in from
   `Scintilla.iface`/`ScintillaDoc.html`.
 
-To add another enum or class to this page, add a `::: pyside6_scintilla.<name>`
-block. If it needs per-member docstrings that don't exist yet, see
-`tools/generate_pyi.py` (`add_enum_docstrings()` and the various `*_DOCS`
-dicts) and `docs/bindings.md`'s "Type stubs" section -- after changing it,
-regenerate with `make stubs` and re-check `docs/reference.md`.
+To add another enum or class, add a new `docs/reference/<name>.md` page with
+a `::: pyside6_scintilla.<name>` block and list it in `mkdocs.yml`'s `nav:`.
+If it needs per-member docstrings that don't exist yet, see
+`tools/generate_pyi.py` (`add_enum_docstrings()`/`add_method_docstrings()` and
+the various `*_DOCS` dicts) and `docs/bindings.md`'s "Type stubs" section --
+after changing it, regenerate with `make stubs` and re-check `docs/reference/`.
 
 ## Keeping docs and code in sync
 

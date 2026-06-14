@@ -4,7 +4,7 @@
     This page is adapted from the upstream Scintilla **5.6.3** documentation
     (`ScintillaDoc.html`), converted to Markdown for this site. It documents
     the underlying `ScintillaEditBase.send`/`sends` message API -- see the
-    [API reference](../../reference.md) for the Python bindings themselves.
+    [API reference](../../reference/index.md) for the Python bindings themselves.
 
 Scintilla maintains a selection that stretches between two points, the anchor and the current position. If the anchor and the current position are the same, there is no selected text. Positions in the document range from 0 (before the first character), to the document size (after the last character). If you use messages, there is nothing to stop you setting a position that is in the middle of a CRLF pair, or in the middle of a 2 byte character. However, keyboard commands will not move the caret into such positions.
 

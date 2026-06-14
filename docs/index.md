@@ -8,6 +8,8 @@
 [![Python versions](https://img.shields.io/pypi/pyversions/pyside6-scintilla)](https://pypi.org/project/pyside6-scintilla/)
 
 *Permissively-licensed PySide6 bindings for the [Scintilla](https://www.scintilla.org/) code editor component.*
+
+[View on PyPI](https://pypi.org/project/pyside6-scintilla/)
 <!-- /sync:header -->
 
 ## Status
@@ -21,6 +23,8 @@ Windows (x86_64), and macOS (arm64, x86_64), Python 3.11-3.14.
 ## Installation
 
 <!-- sync:installation -->
+Install from [PyPI](https://pypi.org/project/pyside6-scintilla/):
+
 ```bash
 pip install pyside6-scintilla
 ```

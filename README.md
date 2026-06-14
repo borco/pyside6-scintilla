@@ -8,13 +8,16 @@
 [![Python versions](https://img.shields.io/pypi/pyversions/pyside6-scintilla)](https://pypi.org/project/pyside6-scintilla/)
 
 *Permissively-licensed PySide6 bindings for the [Scintilla](https://www.scintilla.org/) code editor component.*
+
+[View on PyPI](https://pypi.org/project/pyside6-scintilla/)
 <!-- /sync:header -->
 
 ## Status
 
 The `ScintillaEditBase` binding is implemented and working — see
 [examples/simple_scintilla_base_edit/](https://github.com/borco/pyside6-scintilla/tree/master/examples/simple_scintilla_base_edit/)
-for a runnable demo. Pre-built wheels are published on PyPI for Linux
+for a runnable demo. Pre-built wheels are published on
+[PyPI](https://pypi.org/project/pyside6-scintilla/) for Linux
 (x86_64), Windows (x86_64), and macOS (arm64, x86_64), Python 3.11-3.14 —
 see [Installation](#installation). `ScintillaEdit` (Scintilla's full
 ~700-method API) and Linux aarch64 wheels are planned —
@@ -47,6 +50,8 @@ core directly to PySide6 users.
 ## Installation
 
 <!-- sync:installation -->
+Install from [PyPI](https://pypi.org/project/pyside6-scintilla/):
+
 ```bash
 pip install pyside6-scintilla
 ```

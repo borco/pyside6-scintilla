@@ -1,4 +1,4 @@
-# Searching [:material-link-variant:](https://www.scintilla.org/ScintillaDoc.html#Searching "Upstream documentation"){ .heading-link }
+# Searching [:material-link-variant:](../../scintilla-original/ScintillaDoc.html#Searching "Upstream documentation"){ .heading-link }
 
 !!! note
     This page is adapted from the upstream Scintilla **5.6.3** documentation
@@ -10,7 +10,7 @@ There are methods to search for text and for regular expressions. Most applicati
 
 The base regular expression support is limited and should only be used for simple cases and initial development. The C++ runtime `<regex>` library may be used by setting the `SCFIND_CXX11REGEX` search flag. The C++11 `<regex>` support may be disabled by compiling Scintilla with `NO_CXX11_REGEX` defined. A different regular expression library can be integrated into Scintilla or can be called from the container using direct access to the buffer contents through `SCI_GETCHARACTERPOINTER`.
 
-## Search and replace using the target [:material-link-variant:](https://www.scintilla.org/ScintillaDoc.html#SearchAndReplaceUsingTheTarget "Upstream documentation"){ .heading-link }
+## Search and replace using the target [:material-link-variant:](../../scintilla-original/ScintillaDoc.html#SearchAndReplaceUsingTheTarget "Upstream documentation"){ .heading-link }
 
 Searching can be performed within the target range with `SCI_SEARCHINTARGET`, which uses a counted string to allow searching for null characters. It returns the position of the start of the matching text range or -1 for failure, in which case the target is not moved. The flags used by `SCI_SEARCHINTARGET` such as `SCFIND_MATCHCASE`, `SCFIND_WHOLEWORD`, `SCFIND_WORDSTART`, and `SCFIND_REGEXP` can be set with `SCI_SETSEARCHFLAGS`.
 

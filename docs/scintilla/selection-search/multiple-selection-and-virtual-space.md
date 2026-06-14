@@ -1,4 +1,4 @@
-# Multiple Selection and Virtual Space [:material-link-variant:](https://www.scintilla.org/ScintillaDoc.html#MultipleSelectionAndVirtualSpace "Upstream documentation"){ .heading-link }
+# Multiple Selection and Virtual Space [:material-link-variant:](../../scintilla-original/ScintillaDoc.html#MultipleSelectionAndVirtualSpace "Upstream documentation"){ .heading-link }
 
 !!! note
     This page is adapted from the upstream Scintilla **5.6.3** documentation

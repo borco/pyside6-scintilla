@@ -23,6 +23,16 @@ see [Installation](#installation). `ScintillaEdit` (Scintilla's full
 ~700-method API) and Linux aarch64 wheels are planned —
 see [docs/mission.md](https://github.com/borco/pyside6-scintilla/blob/master/docs/mission.md) for the roadmap.
 
+The [docs site](https://borco.github.io/pyside6-scintilla/) has a full
+"Scintilla API" navigation tree, but most pages are still placeholders
+pending conversion from the upstream `ScintillaDoc.html`:
+
+| | Pages | % |
+| --- | --- | --- |
+| Total | 59 | 100% |
+| Converted | 10 | 17% |
+| Work in progress | 49 | 83% |
+
 ## Why this exists
 
 The standard way to use Scintilla from Python + Qt is

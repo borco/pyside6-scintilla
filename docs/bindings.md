@@ -155,6 +155,45 @@ public API surface. The script:
 `_pyside6_scintilla.pyi` is excluded from `ruff` (`extend-exclude` in
 `pyproject.toml`) since it's machine-generated and not ruff-format-compliant.
 
+## Lifetime & ownership
+
+Audit of the wrapped types for memory-safety/lifetime surprises beyond
+standard PySide6/Qt semantics (Phase 3 Tracer 6).
+
+### `ScintillaEditBase`/`ScintillaEdit` as `QWidget`s
+
+No caveat: standard Qt/PySide6 ownership rules apply. A parentless widget is
+kept alive by Python references, and is destroyed -- its signals included --
+once the last reference is dropped. A widget with a Qt parent is kept alive
+by that parent regardless of Python references, and its signals (`notify`,
+`command`, `macroRecord`, etc.) keep firing as long as the widget exists.
+
+### `NotificationData` (delivered via `notify`)
+
+`ScintillaEditBase.notify(NotificationData *pscn)` hands Python a wrapper
+around a transient struct that Scintilla reuses across notifications.
+
+- Reading a field during the handler call is safe -- e.g. `text` (a
+  `const char *` in C++) is eagerly copied into an independent Python `str`
+  at access time, valid for as long as you like afterwards.
+- The `NotificationData` object itself must **not** be retained past the
+  handler call: once later notifications overwrite the shared struct, its
+  fields no longer reflect the notification it was originally delivered for
+  (see `tests/test_scintilla_notify.py`).
+
+Where available, prefer `ScintillaEditBase`'s typed per-notification signals
+(`modified`, `charAdded`, `marginClicked`, etc.) instead -- e.g. `modified`'s
+`text` parameter is already a `QByteArray`, with no such caveat.
+
+### `ScintillaDocument` from `get_doc()`
+
+Already documented on `ScintillaEdit.get_doc()`'s docstring and its reference
+page: the returned `ScintillaDocument` has no Qt parent, so it's kept alive
+only by your Python reference to it -- drop it and its `modified`/
+`save_point`/etc. signals stop firing, even though the underlying document
+buffer stays alive via Scintilla's own refcounting as long as an editor uses
+it (see `tests/test_scintilla_document.py`).
+
 ## Updating to a new Scintilla release
 
 Per `mission.md`, Scintilla updates are deliberate and tested, not automatic.

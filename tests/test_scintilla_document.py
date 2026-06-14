@@ -5,6 +5,8 @@ document buffer, that a standalone ScintillaDocument() can be created and
 attached up front, and that ScintillaDocument's Qt signals fire as expected.
 """
 
+import gc
+
 from pyside6_scintilla import ScintillaDocument, ScintillaEdit
 
 
@@ -50,3 +52,23 @@ def test_modified_signal_fires_on_edit(qtbot):
 
     with qtbot.waitSignal(doc.modified, timeout=1000):
         editor.setText("hello")
+
+
+def test_dropped_get_doc_wrapper_stops_receiving_signals(qtbot):
+    """Dropping the only Python reference to a get_doc() result silences its
+    signals, even though the underlying document (and the editor using it)
+    is unaffected -- see the get_doc() lifetime caveat in docs/bindings.md."""
+    editor = ScintillaEdit()
+    qtbot.addWidget(editor)
+
+    fired = []
+    doc = editor.get_doc()
+    doc.modified.connect(lambda *args: fired.append(args))
+
+    del doc
+    gc.collect()
+
+    editor.setText("hello")
+
+    assert fired == []
+    assert editor.getText(editor.textLength()).data() == b"hello"

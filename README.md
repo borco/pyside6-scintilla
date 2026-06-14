@@ -94,10 +94,10 @@ app.exec()
 `setText()`, `textLength()`, `gotoLine()`) on top of `ScintillaEditBase`'s
 raw `.send()`/`.sends()` message API — the same `SCI_*` messages as the C
 interface, not a QScintilla-style high-level API. See
-[examples/simple_scintilla_edit](https://borco.github.io/pyside6-scintilla/examples/simple_scintilla_edit/)
+[examples/simple_scintilla_edit/](https://github.com/borco/pyside6-scintilla/tree/master/examples/simple_scintilla_edit/)
 for a complete example (line-number margin, "Go to Line", block
 selection/editing), or
-[examples/simple_scintilla_base_edit](https://borco.github.io/pyside6-scintilla/examples/simple_scintilla_base_edit/)
+[examples/simple_scintilla_base_edit/](https://github.com/borco/pyside6-scintilla/tree/master/examples/simple_scintilla_base_edit/)
 for the lower-level `send`/`sends` API.
 
 ## Versioning

@@ -177,6 +177,110 @@ MODIFICATION_FLAGS_DOCS: Final = {
 }
 
 
+# Matches the `fun`/`get`/`set` feature lines in Scintilla.iface that
+# WidgetGen.py turns into ScintillaEdit methods, e.g.
+# "get pointer GetDocPointer=2357(,)" -> ("get", "GetDocPointer").
+WIDGET_FEATURE_RE: Final = re.compile(r"^(fun|get|set)\s+\S+\s+(\w+)=")
+
+
+# Hand-transcribed from ScintillaEdit.cpp's hand-written methods (not
+# generated from Scintilla.iface): TextReturner, find_text/findText,
+# get_text_range/textRange, get_doc/set_doc, format_range/formatRange.
+# Applied before the Scintilla.iface-derived docs below, so these take
+# precedence over the generic iface docs for FindText/FormatRange (which
+# normalise to the same findText/formatRange method names).
+SCINTILLA_EDIT_HELPER_DOCS: Final = {
+    "TextReturner": (
+        "Send `message` with `wParam`, passing a buffer as its `lParam`, and return the buffer.\n\n"
+        "        Used internally for messages whose result is a string, e.g. `getText`/`getLine`."
+    ),
+    "find_text": (
+        "Search for `text` between `cpMin` and `cpMax` using `flags` (`Scintilla.FindOption` values).\n\n"
+        "        Returns the `(start, end)` position of the match, or `(-1, cpMax)` if not found."
+    ),
+    "findText": "Alias for `find_text`.",
+    "get_text_range": "Return the document's text between `start` and `end`.",
+    "textRange": "Alias for `get_text_range`.",
+    "get_doc": (
+        "Return a new `ScintillaDocument` wrapping this editor's current document.\n\n"
+        "        Pass it to another `ScintillaEdit`'s `set_doc` to share the document between views."
+    ),
+    "set_doc": (
+        "Make this editor display `doc`.\n\n"
+        "        The document isn't copied -- multiple `ScintillaEdit` widgets can share it this way."
+    ),
+    "format_range": (
+        "Render the document between `range_start` and `range_end` for printing.\n\n"
+        "        Draws onto `target` (and lays out using `measure`) within `print_rect`/`page_rect`. "
+        "If `draw` is false, only measures. Returns the position after the last formatted character."
+    ),
+    "formatRange": "Alias for `format_range`.",
+}
+
+# Hand-transcribed from ScintillaDocument.h/.cpp -- ScintillaDocument's
+# methods aren't generated from Scintilla.iface, so genpyi emits only their
+# bare signatures.
+SCINTILLA_DOCUMENT_DOCS: Final = {
+    "__init__": (
+        "Wrap a Scintilla document buffer, creating a new empty one unless `pdoc_` is given.\n\n"
+        "        `pdoc_` is a native document pointer, as returned by `pointer()` -- pass it to "
+        "share an existing document, e.g. one obtained via `ScintillaEdit.get_doc()`."
+    ),
+    "pointer": "Return the underlying native document pointer, for sharing with another `ScintillaDocument`.",
+    "line_from_position": "Return the line containing position `pos`.",
+    "is_cr_lf": "Return whether the line ending at `pos` is CR+LF, as opposed to a lone CR or LF.",
+    "delete_chars": "Delete `len` characters starting at `pos`. Returns whether anything was deleted.",
+    "undo": "Undo one action from the undo history. Returns the position of the start of the change.",
+    "redo": "Redo one action from the undo history. Returns the position of the start of the change.",
+    "can_undo": "Return whether there is an action to undo.",
+    "can_redo": "Return whether there is an action to redo.",
+    "delete_undo_history": "Discard the undo history.",
+    "set_undo_collection": "Enable or disable collection of undo actions. Returns the previous setting.",
+    "is_collecting_undo": "Return whether undo actions are being collected.",
+    "begin_undo_action": (
+        "Start a sequence of actions that is undone/redone as a single unit.\n\n"
+        "        If `coalesceWithPrior`, merge it with the previous undo action when possible."
+    ),
+    "end_undo_action": "End a sequence of actions started by `begin_undo_action`.",
+    "set_save_point": "Mark the document's current state as unmodified (the save point).",
+    "is_save_point": "Return whether the document is at its save point (unmodified since `set_save_point`).",
+    "set_read_only": "Set whether the document refuses modification.",
+    "is_read_only": "Return whether the document refuses modification.",
+    "insert_string": "Insert `str` at `position`.",
+    "get_char_range": "Return `length` bytes of the document's text starting at `position`.",
+    "style_at": "Return the style byte at `position`.",
+    "line_start": "Return the position of the start of line `lineno`.",
+    "line_end": "Return the position of the end of line `lineno`, before any line ending characters.",
+    "line_end_position": "Return the position of the end of the line containing `pos`, before any line ending characters.",
+    "length": "Return the number of bytes in the document.",
+    "lines_total": "Return the number of lines in the document.",
+    "start_styling": "Set the styling position to `position`; subsequent `set_style_for` calls style from there.",
+    "set_style_for": (
+        "Set the next `length` bytes from the current styling position (see `start_styling`) to `style`.\n\n"
+        "        Returns whether successful."
+    ),
+    "get_end_styled": "Return the position up to which the document has been styled.",
+    "ensure_styled_to": "Ensure the document is styled up to at least `position`, emitting `style_needed` as needed.",
+    "set_current_indicator": "Set the indicator used by subsequent `decoration_fill_range` calls.",
+    "decoration_fill_range": (
+        "Set `fillLength` bytes starting at `position` to `value` for the current indicator "
+        "(see `set_current_indicator`)."
+    ),
+    "decorations_value_at": "Return the value of indicator `indic` at `position`.",
+    "decorations_start": "Return the start of the run of indicator `indic` that includes `position`.",
+    "decorations_end": "Return the end of the run of indicator `indic` that includes `position`.",
+    "get_code_page": "Return the code page used to interpret the document's bytes as characters.",
+    "set_code_page": "Set the code page used to interpret the document's bytes as characters.",
+    "get_eol_mode": "Return the line ending type (`Scintilla.EndOfLine` value) used for new lines.",
+    "set_eol_mode": "Set the line ending type (`Scintilla.EndOfLine` value) used for new lines.",
+    "move_position_outside_char": (
+        "Move `pos` outside of a multi-byte character towards `move_dir`.\n\n"
+        "        If `check_line_end`, also move it outside of a line ending."
+    ),
+    "get_character": "Return the character at `pos`.",
+}
+
+
 # Hand-written -- ScintillaEditBase.send/sends are this binding's two entry
 # points for the ~800 Scintilla.Message commands, but they're plain C++
 # methods (not Qt overrides), so genpyi emits only their bare signatures.
@@ -255,6 +359,32 @@ def parse_character_source_docs(iface_path: Path) -> dict[str, str]:
                     docs[to_pascal_case(val_match.group(1)[len(prefix) :])] = " ".join(pending)
             else:
                 prefix = None
+        pending.clear()
+    return docs
+
+
+def parse_widget_method_docs(iface_path: Path) -> dict[str, str]:
+    """Map ScintillaEdit Python method names to their `# ` doc comments in Scintilla.iface.
+
+    `WidgetGen.py` derives each method's name from its `fun`/`get`/`set` feature name via its
+    `normalisedName()` (qtStyle): lowercase the first letter, and for `get` features additionally
+    strip a leading `Get` (e.g. "GetDocPointer" -> "docPointer", "SetDocPointer" -> "setDocPointer",
+    "AddText" -> "addText"). Not every feature passes WidgetGen's `checkTypes()` and becomes an
+    actual method -- entries for features that weren't generated are simply unused.
+    """
+    docs: dict[str, str] = {}
+    pending: list[str] = []
+    for line in iface_path.read_text().splitlines():
+        if line.startswith("# "):
+            pending.append(line[2:].rstrip())
+            continue
+        if pending:
+            match = WIDGET_FEATURE_RE.match(line)
+            if match:
+                feat, name = match.groups()
+                if feat == "get":
+                    name = name.replace("Get", "")
+                docs[name[0].lower() + name[1:]] = " ".join(pending)
         pending.clear()
     return docs
 
@@ -361,6 +491,9 @@ def main() -> None:
     text = add_enum_docstrings(text, "Update", UPDATE_DOCS)
     text = add_enum_docstrings(text, "ModificationFlags", MODIFICATION_FLAGS_DOCS)
     text = add_method_docstrings(text, "ScintillaEditBase", SEND_DOCS)
+    text = add_method_docstrings(text, "ScintillaEdit", SCINTILLA_EDIT_HELPER_DOCS)
+    text = add_method_docstrings(text, "ScintillaEdit", parse_widget_method_docs(IFACE_PATH))
+    text = add_method_docstrings(text, "ScintillaDocument", SCINTILLA_DOCUMENT_DOCS)
     text = widen_sends_string_param(text)
     text = widen_const_char_ptr_params(text)
     text = resolve_sptr_uptr_forward_refs(text)

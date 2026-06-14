@@ -52,14 +52,13 @@
 
     <object-type name="ScintillaEditBase"/>
 
-    <object-type name="ScintillaDocument">
-        <!-- The only constructor takes a void* pdoc_ (default 0), used
-             internally by ScintillaEdit::get_doc() to wrap an existing
-             Scintilla::IDocumentEditable*; Python code has no such pointer
-             to pass. Removing it leaves ScintillaDocument uninstantiable
-             from Python - get_doc() is the only way to obtain one. -->
-        <modify-function signature="ScintillaDocument(QObject*,void*)" remove="all"/>
-    </object-type>
+    <!-- shiboken handles the ScintillaDocument(QObject *parent = 0,
+         void *pdoc_ = 0) constructor's void* fine as-is (surfaced as
+         shiboken6.Shiboken.VoidPtr), so ScintillaDocument() can be
+         constructed standalone in Python - e.g. to create a document up
+         front and attach it to multiple ScintillaEdit widgets via
+         set_doc() before any of them have text. -->
+    <object-type name="ScintillaDocument"/>
 
     <object-type name="ScintillaEdit">
         <!-- get_doc() returns a fresh heap ScintillaDocument with no Qt parent;

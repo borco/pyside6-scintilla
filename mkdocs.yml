@@ -95,9 +95,64 @@ nav:
           - scintilla/editing/information.md
           - scintilla/editing/overtype.md
           - scintilla/editing/cut-copy-and-paste.md
+          - scintilla/editing/undo-and-redo.md
+          - scintilla/editing/undo-save-and-restore.md
+          - scintilla/editing/change-history.md
       - Selection & Search:
           - scintilla/selection-search/selection.md
           - scintilla/selection-search/multiple-selection-and-virtual-space.md
           - scintilla/selection-search/searching.md
+      - Display:
+          - scintilla/display/scrolling-and-automatic-scrolling.md
+          - scintilla/display/white-space.md
+          - scintilla/display/cursor.md
+          - scintilla/display/mouse-capture.md
+          - scintilla/display/line-endings.md
+          - scintilla/display/margins.md
+          - scintilla/display/annotations.md
+          - scintilla/display/end-of-line-annotations.md
+          - scintilla/display/other-settings.md
+          - scintilla/display/brace-highlighting.md
+          - scintilla/display/tabs-and-indentation-guides.md
+          - scintilla/display/markers.md
+          - scintilla/display/indicators.md
+          - scintilla/display/folding.md
+          - scintilla/display/line-wrapping.md
+          - scintilla/display/zooming.md
+          - scintilla/display/long-lines.md
+          - scintilla/display/accessibility.md
+      - Styling & Lexing:
+          - scintilla/styling-lexing/words.md
+          - scintilla/styling-lexing/styling.md
+          - scintilla/styling-lexing/style-definition.md
+          - scintilla/styling-lexing/element-colours.md
+          - scintilla/styling-lexing/selection-caret-and-hotspot-styles.md
+          - scintilla/styling-lexing/character-representations.md
+          - scintilla/styling-lexing/lexer.md
+          - scintilla/styling-lexing/lexer-objects.md
+      - Interaction & Commands:
+          - scintilla/interaction-commands/autocompletion.md
+          - scintilla/interaction-commands/user-lists.md
+          - scintilla/interaction-commands/call-tips.md
+          - scintilla/interaction-commands/keyboard-commands.md
+          - scintilla/interaction-commands/key-bindings.md
+          - scintilla/interaction-commands/popup-edit-menu.md
+          - scintilla/interaction-commands/macro-recording.md
+      - Documents:
+          - scintilla/documents/printing.md
+          - scintilla/documents/direct-access.md
+          - scintilla/documents/multiple-views.md
+          - scintilla/documents/background-loading-and-saving.md
+          - scintilla/documents/document-interface.md
+      - Notifications:
+          - scintilla/notifications/notifications.md
+      - Appendix / Reference:
+          - scintilla/appendix-reference/images.md
+          - scintilla/appendix-reference/gtk.md
+          - scintilla/appendix-reference/provisional-messages.md
+          - scintilla/appendix-reference/deprecated-and-discouraged-messages-and-notifications.md
+          - scintilla/appendix-reference/edit-messages-never-supported-by-scintilla.md
+          - scintilla/appendix-reference/removed-features.md
+          - scintilla/appendix-reference/building-scintilla.md
   - Reference: reference.md
   - PyPI: https://pypi.org/project/pyside6-scintilla/

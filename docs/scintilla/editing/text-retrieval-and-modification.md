@@ -1,4 +1,4 @@
-# Text retrieval and modification [:material-link-variant:](https://www.scintilla.org/ScintillaDoc.html#TextRetrievalAndModification "Upstream documentation"){ .heading-link }
+# Text retrieval and modification [:material-link-variant:](../../scintilla-original/ScintillaDoc.html#TextRetrievalAndModification "Upstream documentation"){ .heading-link }
 
 !!! note
     This page is adapted from the upstream Scintilla **5.6.3** documentation
@@ -204,7 +204,7 @@ struct Sci_TextRangeFull {
 };
 ```
 
-## Specific to GTK, Cocoa and Windows only: Access to encoded text [:material-link-variant:](https://www.scintilla.org/ScintillaDoc.html#EncodedAccess "Upstream documentation"){ .heading-link }
+## Specific to GTK, Cocoa and Windows only: Access to encoded text [:material-link-variant:](../../scintilla-original/ScintillaDoc.html#EncodedAccess "Upstream documentation"){ .heading-link }
 
 ### `SCI_TARGETASUTF8(<unused>, char *s) → position` {: #SCI_TARGETASUTF8 }
 

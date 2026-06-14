@@ -1,4 +1,4 @@
-# Information [:material-link-variant:](https://www.scintilla.org/ScintillaDoc.html#Information "Upstream documentation"){ .heading-link }
+# Information [:material-link-variant:](../../scintilla-original/ScintillaDoc.html#Information "Upstream documentation"){ .heading-link }
 
 !!! note
     This page is adapted from the upstream Scintilla **5.6.3** documentation
@@ -104,7 +104,7 @@ This returns the height in pixels of a particular line. Currently all lines are 
 
 These messages return the x and y display pixel location of text at position `pos` in the document.
 
-## By character or UTF-16 code unit [:material-link-variant:](https://www.scintilla.org/ScintillaDoc.html#ByCharacterOrCodeUnit "Upstream documentation"){ .heading-link }
+## By character or UTF-16 code unit [:material-link-variant:](../../scintilla-original/ScintillaDoc.html#ByCharacterOrCodeUnit "Upstream documentation"){ .heading-link }
 
 Most Scintilla APIs use byte positions but some applications want to use positions based on counting (UTF-32) characters or (UTF-16) code units or need to communicate with other code written in terms of characters or code units. With only byte positions, this may require examining many bytes to count characters or code units in the document but this may be sped up in some cases by indexing the line starts by character or code unit.
 
@@ -148,7 +148,7 @@ Allocate or release one or more indexes using same enumeration as [`SCI_GETLINEC
 
 The document line of a particular character or code unit may be found by calling [`SCI_LINEFROMINDEXPOSITION`](#SCI_LINEFROMINDEXPOSITION) with one of `SC_LINECHARACTERINDEX_UTF32` (1) or `SC_LINECHARACTERINDEX_UTF16` (2). The inverse action, finds the starting position of a document line either in characters or code units from the document start by calling [`SCI_INDEXPOSITIONFROMLINE`](#SCI_INDEXPOSITIONFROMLINE) with the same `lineCharacterIndex` argument.
 
-## Error handling [:material-link-variant:](https://www.scintilla.org/ScintillaDoc.html#ErrorHandling "Upstream documentation"){ .heading-link }
+## Error handling [:material-link-variant:](../../scintilla-original/ScintillaDoc.html#ErrorHandling "Upstream documentation"){ .heading-link }
 
 - [`SCI_SETSTATUS(int status)`](#SCI_SETSTATUS)
 - [`SCI_GETSTATUS → int`](#SCI_GETSTATUS)

@@ -1,4 +1,4 @@
-# Overtype [:material-link-variant:](https://www.scintilla.org/ScintillaDoc.html#Overtype "Upstream documentation"){ .heading-link }
+# Overtype [:material-link-variant:](../../scintilla-original/ScintillaDoc.html#Overtype "Upstream documentation"){ .heading-link }
 
 !!! note
     This page is adapted from the upstream Scintilla **5.6.3** documentation

@@ -1,3 +1,7 @@
 # Keep vendored Scintilla source byte-identical to the upstream release
 # tarball so future version bumps diff cleanly.
 src/scintilla/** -text
+
+# Local copy of the upstream docs hosted on the docs site -- copied
+# byte-for-byte from src/scintilla/doc/, same reasoning as above.
+docs/scintilla-original/** -text

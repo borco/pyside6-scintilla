@@ -1,4 +1,4 @@
-# Selection [:material-link-variant:](https://www.scintilla.org/ScintillaDoc.html#Selection "Upstream documentation"){ .heading-link }
+# Selection [:material-link-variant:](../../scintilla-original/ScintillaDoc.html#Selection "Upstream documentation"){ .heading-link }
 
 !!! note
     This page is adapted from the upstream Scintilla **5.6.3** documentation

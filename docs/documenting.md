@@ -44,8 +44,21 @@ themed sub-sections of the "Scintilla API" nav entry (e.g. "Editing"), makes
 it navigable alongside the rest of the site.
 
 This is an ongoing, incremental effort -- new sections are converted one at a
-time as they're needed. Each page is produced with a pandoc-assisted
-conversion:
+time as they're needed. Sections not yet converted get a "Work in progress"
+stub page (a title, a heading-link to the corresponding anchor in the local
+`docs/scintilla-original/ScintillaDoc.html` copy, and a short note) so the
+full nav structure is browsable now. Current progress:
+
+| | Pages | % |
+| --- | --- | --- |
+| Total | 59 | 100% |
+| Converted | 10 | 17% |
+| Work in progress | 49 | 83% |
+
+*(Remove this table -- and the "ongoing/incremental" framing above -- once
+conversion reaches 100%.)*
+
+Each converted page is produced with a pandoc-assisted conversion:
 
 1. **Find the section's boundaries.** Each major topic is an `<h2 id="...">`
    (occasionally `<h3>`) in `ScintillaDoc.html`. Extract the relevant line
@@ -78,15 +91,33 @@ conversion:
    alerts do **not** render correctly here -- use the `admonition`
    extension's `!!! note` syntax.)
 5. **Add inline upstream-doc links**: each `h1`/`h2` heading gets a small
-   `[:material-link-variant:](https://www.scintilla.org/ScintillaDoc.html#ANCHOR_ID
-   "Upstream documentation"){ .heading-link }` appended to the heading text,
-   pointing at the corresponding anchor in the live upstream
-   `ScintillaDoc.html` -- the canonical source for that section's history.
-   The `.heading-link` CSS class lives in `docs/stylesheets/extra.css`.
+   `[:material-link-variant:](../../scintilla-original/ScintillaDoc.html#ANCHOR_ID
+   "Upstream documentation"){ .heading-link }` appended to the heading text
+   (the `../../` is relative to `docs/scintilla/<group>/<page>.md`), pointing
+   at the corresponding anchor in `docs/scintilla-original/ScintillaDoc.html`
+   -- a local copy of the vendored upstream manual, kept in sync with
+   `src/scintilla/doc/ScintillaDoc.html` (see "Local copy of the upstream
+   docs" below). The `.heading-link` CSS class lives in
+   `docs/stylesheets/extra.css`.
 6. **Add the page to `mkdocs.yml`'s nav** under the right themed group
-   ("Editing", "Selection & Search", etc.). `mkdocs build --strict` rejects
-   nav groups with no pages, so don't pre-create empty groups for sections
-   that don't have a page yet.
+   (`Editing`, `Selection & Search`, `Display`, `Styling & Lexing`,
+   `Interaction & Commands`, `Documents`, `Notifications`, `Appendix /
+   Reference`). If the section already has a "Work in progress" stub page
+   (see above), replace it in place rather than adding a new entry.
+   `mkdocs build --strict` rejects nav groups with no pages, so don't
+   pre-create empty groups for sections that don't have a page yet.
+
+## Local copy of the upstream docs
+
+`docs/scintilla-original/ScintillaDoc.html` (+ the handful of images it
+references) is a byte-for-byte copy of `src/scintilla/doc/ScintillaDoc.html`,
+served as a static page on the docs site. It exists so the per-page
+"Upstream documentation" heading-links (step 5 above) and the "Work in
+progress" stub pages don't depend on the live `scintilla.org` site -- the
+local copy only changes when this project's vendored Scintilla version
+changes (see `.gitattributes`, which keeps it byte-identical for clean diffs
+on upgrades). It is not added to `mkdocs.yml`'s `nav:` -- it's only reached
+via the heading-link icons.
 
 The conversion script itself is a throwaway (`/tmp/scidoc/convert.py` in past
 sessions) -- not part of the repo, since each section needs small

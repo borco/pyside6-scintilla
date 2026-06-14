@@ -24,6 +24,7 @@ set(GENERATED_SOURCES
     ${CMAKE_CURRENT_BINARY_DIR}/_pyside6_scintilla/scintilla_notificationdata_wrapper.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/_pyside6_scintilla/scintillaeditbase_wrapper.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/_pyside6_scintilla/scintillaedit_wrapper.cpp
+    ${CMAKE_CURRENT_BINARY_DIR}/_pyside6_scintilla/scintilladocument_wrapper.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/_pyside6_scintilla/_pyside6_scintilla_module_wrapper.cpp
 )
 

@@ -52,11 +52,23 @@
 
     <object-type name="ScintillaEditBase"/>
 
-    <!-- ScintillaDocument (returned/taken by get_doc/set_doc) isn't wrapped -
-         excluding it here is simpler than introducing a second wrapped type
-         for a document-sharing feature nothing in this binding uses yet. -->
+    <object-type name="ScintillaDocument">
+        <!-- The only constructor takes a void* pdoc_ (default 0), used
+             internally by ScintillaEdit::get_doc() to wrap an existing
+             Scintilla::IDocumentEditable*; Python code has no such pointer
+             to pass. Removing it leaves ScintillaDocument uninstantiable
+             from Python - get_doc() is the only way to obtain one. -->
+        <modify-function signature="ScintillaDocument(QObject*,void*)" remove="all"/>
+    </object-type>
+
     <object-type name="ScintillaEdit">
-        <modify-function signature="get_doc()" remove="all"/>
-        <modify-function signature="set_doc(ScintillaDocument*)" remove="all"/>
+        <!-- get_doc() returns a fresh heap ScintillaDocument with no Qt parent;
+             give Python ownership so it's freed when the wrapper is garbage
+             collected. -->
+        <modify-function signature="get_doc()">
+            <modify-argument index="return">
+                <define-ownership owner="target"/>
+            </modify-argument>
+        </modify-function>
     </object-type>
 </typesystem>

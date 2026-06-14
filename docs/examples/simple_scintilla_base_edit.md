@@ -9,8 +9,6 @@ demonstrating:
 - block (multi-line) editing — typing while a rectangular/multiple
   selection is active edits every selected line at once
 
-![Simple ScintillaEditBase edit](../assets/images/examples/simple_scintilla_base_edit.png)
-
 ## Running
 
 From the repo root, after `uv sync`:
@@ -22,3 +20,7 @@ uv run python examples/simple_scintilla_base_edit/main.py
 ## Source
 
 [`examples/simple_scintilla_base_edit/`](https://github.com/borco/pyside6-scintilla/tree/master/examples/simple_scintilla_base_edit)
+
+## Screenshots
+
+![Simple ScintillaEditBase edit](../assets/images/examples/simple_scintilla_base_edit.png)

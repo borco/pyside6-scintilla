@@ -112,6 +112,7 @@ itself releases a new version.
 
 | Doc | Contents |
 | --- | --- |
+| [docs/alternatives.md](https://github.com/borco/pyside6-scintilla/blob/master/docs/alternatives.md) | How this compares to Monaco-based Qt bindings and other line-numbers + block-edit widgets |
 | [docs/auditing.md](https://github.com/borco/pyside6-scintilla/blob/master/docs/auditing.md) | How to verify the vendored Scintilla source matches upstream |
 | [docs/bindings.md](https://github.com/borco/pyside6-scintilla/blob/master/docs/bindings.md) | How the shiboken6 bindings are built, generated files, and the Scintilla-update procedure |
 | [docs/build.md](https://github.com/borco/pyside6-scintilla/blob/master/docs/build.md) | Build prerequisites, local build/rebuild, wheels, and publishing |

@@ -7,6 +7,7 @@ per-message methods (e.g. `setText()`, `lineCount()`, `gotoLine()`) instead.
 Demonstrates:
 - a toolbar button that shows/hides the line-number margin
 - a "Go to Line" toolbar action
+- block (rectangular) selection and block (multi-line) editing
 
 Run with:
     uv run python examples/simple_scintilla_edit/main.py
@@ -27,6 +28,12 @@ pyside6-scintilla: simple ScintillaEdit example
 
 Use the "Line Numbers" toolbar button to show/hide this margin, and
 "Go to Line" to jump to a line by number.
+
+Block selection / block editing is enabled:
+  - Hold Alt and drag with the mouse, or use Alt+Shift+Arrow keys, to
+    make a rectangular (block) selection.
+  - Typing while a rectangular/multiple selection is active edits every
+    selected line at once.
 
 one
 two
@@ -69,6 +76,16 @@ class MainWindow(QMainWindow):
         # Line-number margin, shown by default.
         editor.setMarginTypeN(LINE_NUMBER_MARGIN, Scintilla.MarginType.Number)
         editor.setMarginWidthN(LINE_NUMBER_MARGIN, line_number_margin_width(editor))
+
+        # Block (rectangular) selection and block editing: Alt+drag or
+        # Alt+Shift+Arrow makes a rectangular selection, and typing applies
+        # to every line of a multiple/rectangular selection at once.
+        editor.setMouseSelectionRectangularSwitch(True)
+        editor.setMultipleSelection(True)
+        editor.setAdditionalSelectionTyping(True)
+        editor.setVirtualSpaceOptions(
+            Scintilla.VirtualSpace.RectangularSelection | Scintilla.VirtualSpace.UserAccessible
+        )
 
     def __setup_toolbar(self) -> None:
         toolbar = QToolBar("Main")

@@ -51,11 +51,14 @@ successor to [`DaelonSuzuka/monaco-qt`](https://github.com/DaelonSuzuka/monaco-q
 ### Memory footprint & install size
 
 Embedding `QtWebEngineWidgets` pulls in a full Chromium renderer. Reports
-from the Qt forums put the *added* cost at roughly +100-200MB RSS just for
-linking/using `QtWebEngine`, before Monaco itself loads any content, plus
-multiple helper `QtWebEngineProcess` processes per view. Wheel size is
-correspondingly large (Qt WebEngine wheels are commonly 100MB+), versus this
-project's wheels which only need to bundle Scintilla + the shiboken6 glue.
+from the Qt forums describe two tiers of cost: roughly +30MB RSS just from
+linking against `QtWebEngineWidgets`, before any `QWebEngineView` is
+created, and +100-200MB RSS once a view actually exists and Chromium's
+helper `QtWebEngineProcess` processes spawn (one report: 80MB -> 200MB after
+adding a single view) — before Monaco itself loads any content. Wheel size
+is correspondingly large (Qt WebEngine wheels are commonly 100MB+), versus
+this project's wheels which only need to bundle Scintilla + the shiboken6
+glue.
 
 ### Ease of use
 
@@ -96,12 +99,18 @@ some form of block/rectangular/column edit, for context:
 | [Ace Editor](https://ace.c9.io/) (via `QWebEngineView`) | JavaScript + Chromium | BSD | Yes — rectangular/block selection built in | Same Chromium-weight tradeoff as Monaco |
 | [CodeMirror 6](https://codemirror.net/) (via `QWebEngineView`) | JavaScript + Chromium | MIT | Via `@codemirror/rectangular-selection` extension | Same Chromium-weight tradeoff |
 | [KTextEditor](https://api.kde.org/frameworks/ktexteditor/html/index.html) (Kate's editor component) | C++/KDE Frameworks | LGPL | Yes — Kate has had block selection for years | Pulls in KDE Frameworks; LGPL is more permissive than QScintilla's GPL but still copyleft, and the dependency footprint is heavy for a non-KDE app |
-| [qutepart](https://github.com/andreikop/qutepart) / [qutepart-cpp](https://github.com/diegoiast/qutepart-cpp) | `QPlainTextEdit`-based, Python/C++ | MIT-ish | Block/rectangular selection is part of its feature set | Reuses Kate syntax/indent definitions without the KDE dependency; closest "permissive, native Qt" alternative to Scintilla, but far less mature/battle-tested |
+| [qutepart](https://github.com/andreikop/qutepart) (`QPlainTextEdit`-based, Python/PyQt) | Python | LGPL-2.1 | Yes — rectangular selection + copy/paste | The original project; PyQt-only (not PySide6) and stale since 2023 |
+| [qutepart-cpp](https://github.com/diegoiast/qutepart-cpp) (C++/Qt6 rewrite, `QPlainTextEdit`-based) | C++/Qt6, no 3rd-party deps | MIT | Not yet — has multiple-cursor editing, but rectangular/block selection from the Python original hasn't been ported | Actively maintained (pushed May 2026), cross-platform incl. Windows + ARM64, bundles 380+ Kate syntax highlighters/themes |
 
-Of these, **KTextEditor** and **qutepart(-cpp)** are the only other
-native-Qt (non-Chromium) options. Both are viable, but neither matches
-Scintilla's combination of permissive license, maturity, and lack of a
-heavyweight framework dependency (KDE Frameworks for KTextEditor).
+Of these, **KTextEditor** and **qutepart-cpp** are the only other native-Qt
+(non-Chromium) options. KTextEditor has block selection but pulls in KDE
+Frameworks (LGPL); `qutepart-cpp` is MIT, dependency-free, and under active
+development, but doesn't yet have block/rectangular selection — only
+multi-cursor editing. Neither currently matches Scintilla's combination of
+permissive license, maturity, block-edit support, and lack of a heavyweight
+framework dependency. `qutepart-cpp` is the one worth re-checking later: if
+it gains rectangular selection, it'd become the closest "permissive, native
+Qt, non-Scintilla" alternative.
 
 ## Doing it with plain Qt alone (no third-party widget)
 

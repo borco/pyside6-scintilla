@@ -30,14 +30,19 @@ After generation, this script also:
   `Scintilla.iface`, but do have per-member tables in
   `src/scintilla/doc/ScintillaDoc.html` -- see `VIRTUAL_SPACE_DOCS`,
   `UPDATE_DOCS`, and `MODIFICATION_FLAGS_DOCS` below.
-- Widens `ScintillaEditBase.sends`'s `s` parameter to also accept `str`.
-  shiboken's `const char *` converter accepts a Python `str` (UTF-8 encoded)
-  at runtime, but genpyi only types it as `bytes | bytearray | memoryview |
-  None`.
+- Widens `ScintillaEditBase.sends`'s `s` parameter, and `ScintillaEdit`'s
+  other `const char *` parameters (e.g. `setText`/`addText`/`insertText`),
+  to also accept `str`. shiboken's `const char *` converter accepts a Python
+  `str` (UTF-8 encoded) at runtime, but genpyi only types these as
+  `bytes | bytearray | memoryview` (optionally `| None`).
 - Adds hand-written docstrings to `ScintillaEditBase.send`/`sends` -- the two
   entry points users actually call, but genpyi only emits their bare
   signatures (no Qt docstrings exist for them since they're not Qt
   overrides). See `SEND_DOCS` below.
+- Resolves `ScintillaEdit`'s `'sptr_t'`/`'Scintilla.sptr_t'`/
+  `'Scintilla.uptr_t'` forward references to `int`. genpyi inconsistently
+  emits these as unresolvable quoted forward refs across its ~780 typed
+  methods (genpyi prints "UNRECOGNIZED: 'sptr_t'" warnings for these).
 
 Run after rebuilding the extension (`make install` or `uv sync
 --reinstall-package pyside6-scintilla`), and whenever `bindings.xml`/
@@ -93,6 +98,22 @@ VAL_RE: Final = re.compile(r"^val (\w+)=")
 # converter also accepts `str` (UTF-8 encoded) at runtime.
 SENDS_OLD: Final = "s: bytes | bytearray | memoryview | None = ..."
 SENDS_NEW: Final = "s: bytes | bytearray | memoryview | str | None = ..."
+
+# Same `const char *` widening as SENDS_OLD/SENDS_NEW above, but for
+# ScintillaEdit's ~50 non-optional `const char *` parameters (e.g.
+# setText/addText/insertText), which genpyi types as plain
+# `bytes | bytearray | memoryview` with no `| None`. The negative lookahead
+# avoids re-widening SENDS_NEW once it's already been applied.
+CONST_CHAR_PTR_RE: Final = re.compile(r"bytes \| bytearray \| memoryview(?! \| str)")
+CONST_CHAR_PTR_NEW: Final = "bytes | bytearray | memoryview | str"
+
+# genpyi inconsistently resolves ScintillaEdit's ~780 `sptr_t`/`uptr_t`
+# (Scintilla::sptr_t/uptr_t, "intptr_t"/"uintptr_t"-like typedefs) parameter
+# and return types -- sometimes as the aliased `Scintilla.sptr_t`/
+# `Scintilla.uptr_t` forms PRIMITIVE_ALIASES resolves, but often as bare
+# unresolvable forward-ref strings (genpyi prints "UNRECOGNIZED: 'sptr_t'"
+# warnings for these). These quoted forms always mean `int`.
+SPTR_UPTR_FORWARD_REF_RE: Final = re.compile(r"'(?:Scintilla\.)?[su]ptr_t'")
 
 PRIMITIVE_ALIASES: Final = (
     "\n"
@@ -306,6 +327,16 @@ def widen_sends_string_param(text: str) -> str:
     return text.replace(SENDS_OLD, SENDS_NEW, 1)
 
 
+def widen_const_char_ptr_params(text: str) -> str:
+    """Add `str` to `ScintillaEdit`'s other `const char *` parameter types. See CONST_CHAR_PTR_RE."""
+    return CONST_CHAR_PTR_RE.sub(CONST_CHAR_PTR_NEW, text)
+
+
+def resolve_sptr_uptr_forward_refs(text: str) -> str:
+    """Replace unresolved `'sptr_t'`/`'Scintilla.sptr_t'`/`'Scintilla.uptr_t'` forward refs with `int`. See SPTR_UPTR_FORWARD_REF_RE."""
+    return SPTR_UPTR_FORWARD_REF_RE.sub("int", text)
+
+
 def run_genpyi() -> None:
     """Run shiboken6-genpyi against the built extension, with the PySide6 workarounds applied."""
     import pyside6_scintilla._pyside6_scintilla as extension
@@ -331,6 +362,8 @@ def main() -> None:
     text = add_enum_docstrings(text, "ModificationFlags", MODIFICATION_FLAGS_DOCS)
     text = add_method_docstrings(text, "ScintillaEditBase", SEND_DOCS)
     text = widen_sends_string_param(text)
+    text = widen_const_char_ptr_params(text)
+    text = resolve_sptr_uptr_forward_refs(text)
     PYI_PATH.write_text(text)
 
 

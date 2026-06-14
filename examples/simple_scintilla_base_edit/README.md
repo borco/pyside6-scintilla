@@ -16,3 +16,7 @@ From the repo root, after `uv sync`:
 ```bash
 uv run python examples/simple_scintilla_base_edit/main.py
 ```
+
+## Screenshots
+
+![Simple ScintillaEditBase edit](../../docs/assets/images/examples/simple_scintilla_base_edit.png)

@@ -39,6 +39,14 @@ After generation, this script also:
   entry points users actually call, but genpyi only emits their bare
   signatures (no Qt docstrings exist for them since they're not Qt
   overrides). See `SEND_DOCS` below.
+- Adds a class docstring to `ScintillaEditBase`, and a docstring to each of
+  its ~37 notification signals (`modified`, `charAdded`, `updateUi`, ...) and
+  its `notifyParent`/`event_command`/`scrollHorizontal`/`scrollVertical`
+  slots and Qt virtual-method overrides -- hand-transcribed from
+  `ScintillaEditBase.cpp`/`.h` and the "Notifications" section of
+  `ScintillaDoc.html`, since none of these have `Scintilla.iface` doc
+  comments. See `SCINTILLA_EDIT_BASE_CLASS_DOC`, `SCINTILLA_EDIT_BASE_SIGNAL_DOCS`,
+  and `SCINTILLA_EDIT_BASE_OVERRIDE_DOCS` below.
 - Resolves `ScintillaEdit`'s `'sptr_t'`/`'Scintilla.sptr_t'`/
   `'Scintilla.uptr_t'` forward references to `int`. genpyi inconsistently
   emits these as unresolvable quoted forward refs across its ~780 typed
@@ -71,6 +79,10 @@ MEMBER_RE: Final = re.compile(r"^(\s+)(\w+)\s*= 0x[0-9a-fA-F]+\n?$")
 # Matches a genpyi-generated one-line method stub, e.g.
 # "    def send(self, iMessage: int, /, ...) -> int: ...".
 METHOD_RE: Final = re.compile(r"^(\s+)def (\w+)\(.*\) -> .+: \.\.\.\n?$")
+
+# Matches a genpyi-generated Qt signal attribute, e.g.
+# "    notify  : typing.ClassVar[Signal] = ... # notify(Scintilla::NotificationData*)".
+SIGNAL_RE: Final = re.compile(r"^(\s+)(\w+)\s*: typing\.ClassVar\[Signal\] = \.\.\.(?: #.*)?\n?$")
 
 # genpyi's resolution of `send`/`sends`' `sptr_t`/`uptr_t` return and `lParam`
 # types is inconsistent across regenerations -- sometimes `int` directly (the
@@ -304,6 +316,164 @@ SEND_DOCS: Final = {
 }
 
 
+# Hand-written class docstring for ScintillaEditBase -- genpyi has nothing to
+# stitch a class docstring from, since this is the binding's own widget, not
+# a Qt class.
+SCINTILLA_EDIT_BASE_CLASS_DOC: Final = (
+    "Qt widget exposing Scintilla's editor core via the raw `Scintilla.Message` API.\n\n"
+    "    `send`/`sends` send any message; `notify` and the typed signals below "
+    "(`modified`, `charAdded`, `updateUi`, ...) deliver Scintilla's notifications. "
+    "For a typed method per message, use the `ScintillaEdit` subclass instead."
+)
+
+
+# Hand-transcribed from the "Notifications" section of ScintillaDoc.html and
+# ScintillaEditBase.cpp's notifyParent()/emit call sites -- Scintilla.iface
+# has no doc comments for these `evt` lines, and they're Qt signals, not Qt
+# overrides, so genpyi gives them no docstring either.
+SCINTILLA_EDIT_BASE_SIGNAL_DOCS: Final = {
+    "aboutToCopy": (
+        "Emitted just before selected text is copied to the clipboard, with the `QMimeData` "
+        "about to be placed there.\n\n"
+        "        Connect to add extra formats (e.g. rich text) to `data` before it's copied."
+    ),
+    "autoCompleteCancelled": "The user cancelled an active autocompletion list (SCN_AUTOCCANCELLED).",
+    "autoCompleteSelection": (
+        "The user selected `text` from an autocompletion list, before it's inserted "
+        "(SCN_AUTOCSELECTION). `position` is the start of the word being completed.\n\n"
+        "        Call `Scintilla.Message.AutoCCancel` during this signal to stop the automatic insertion."
+    ),
+    "buttonPressed": "A mouse button was pressed over the editor.",
+    "buttonReleased": "A mouse button was released over the editor.",
+    "callTipClick": "The user clicked the visible call tip (SCN_CALLTIPCLICK).",
+    "charAdded": (
+        "The user typed an ordinary character that was inserted into the text (SCN_CHARADDED). "
+        "`ch` is its character code -- a Unicode code point in UTF-8 mode."
+    ),
+    "command": (
+        "Emitted for compatibility with other Scintilla front-ends' command notifications, e.g. "
+        "alongside `notifyChange` with `wParam`/`lParam` encoding `SCEN_CHANGE` and the control id."
+    ),
+    "doubleClick": "The mouse was double-clicked at `position` on `line` (SCN_DOUBLECLICK).",
+    "dwellEnd": (
+        "The mouse pointer, which had been dwelling, moved or other activity ended the dwell "
+        "(SCN_DWELLEND). `x`/`y` are where the dwell occurred."
+    ),
+    "dwellStart": (
+        "The mouse pointer has rested at `(x, y)` for the dwell period set with "
+        "`Scintilla.Message.SetMouseDwellTime` (SCN_DWELLSTART)."
+    ),
+    "focusChanged": "The editor gained (`True`) or lost (`False`) keyboard focus (SCN_FOCUSIN/SCN_FOCUSOUT).",
+    "horizontalRangeChanged": "The horizontal scrollbar's range changed to `max` with page size `page`.",
+    "horizontalScrolled": "The view scrolled horizontally; `value` is the new horizontal scroll position.",
+    "hotSpotClick": (
+        "The user clicked text styled with the hotspot attribute, at `position`, with `modifiers` "
+        "held down (SCN_HOTSPOTCLICK)."
+    ),
+    "hotSpotDoubleClick": "Like `hotSpotClick`, but for a double-click (SCN_HOTSPOTDOUBLECLICK).",
+    "key": (
+        "Reports a key press not consumed by Scintilla (SCN_KEY). Only emitted on GTK, and only "
+        "for Alt/Ctrl-modified keys below 256 -- prefer `keyPressed` for a portable signal."
+    ),
+    "keyPressed": "A key was pressed over the editor, after Scintilla has had a chance to handle it.",
+    "linesAdded": "The number of lines in the document changed by `linesAdded` (negative if lines were removed).",
+    "macroRecord": (
+        "A recordable action occurred while macro recording is enabled "
+        "(`Scintilla.Message.StartRecord`, SCN_MACRORECORD). `message`/`wParam`/`lParam` are the "
+        "message to replay."
+    ),
+    "marginClicked": (
+        "The mouse was clicked in a margin marked sensitive with "
+        "`Scintilla.Message.SetMarginSensitiveN` (SCN_MARGINCLICK). `position` is the start of the "
+        "clicked line and `margin` its index."
+    ),
+    "modified": (
+        "The document's text or styling changed, or is about to (SCN_MODIFIED). `type` is a "
+        "`Scintilla.ModificationFlags` bitmask describing what; `text` holds the inserted/deleted "
+        "bytes for `Scintilla.ModificationFlags.InsertText`/`DeleteText`."
+    ),
+    "modifyAttemptReadOnly": "The user tried to edit the document while it is read-only (SCN_MODIFYATTEMPTRO).",
+    "needShown": (
+        "A range of currently-hidden lines should be made visible, e.g. with "
+        "`Scintilla.Message.EnsureVisible` (SCN_NEEDSHOWN)."
+    ),
+    "notify": (
+        "Delivers every Scintilla notification, before the typed signals above are emitted for it.\n\n"
+        "        See the `NotificationData` lifetime caveat in docs/bindings.md -- prefer a typed "
+        "signal where one exists."
+    ),
+    "notifyChange": "The document was modified; emitted alongside `command` for compatibility.",
+    "painted": "Painting has just completed (SCN_PAINTED).",
+    "resized": "The widget was resized.",
+    "savePointChanged": (
+        "The document entered (`True`) or left (`False`) its save point (SCN_SAVEPOINTREACHED/SCN_SAVEPOINTLEFT)."
+    ),
+    "styleNeeded": (
+        "Container-lexer styling is needed up to `position` (SCN_STYLENEEDED). Only sent if "
+        "`Scintilla.Message.SetILexer` was passed `None`."
+    ),
+    "textAreaClicked": "The text area was clicked on `line`, with `modifiers` held down.",
+    "updateUi": (
+        "The text, styling, selection, or scroll position may have changed (SCN_UPDATEUI). "
+        "`updated` is a `Scintilla.Update` bitmask of what changed since the previous notification."
+    ),
+    "uriDropped": "The user dragged a URI such as a file path onto the editor (SCN_URIDROPPED, GTK only).",
+    "userListSelection": (
+        "The user selected an item from a user list shown with `Scintilla.Message.UserListShow` "
+        "(SCN_USERLISTSELECTION)."
+    ),
+    "verticalRangeChanged": "The vertical scrollbar's range changed to `max` with page size `page`.",
+    "verticalScrolled": "The view scrolled vertically; `value` is the new top visible line.",
+    "zoom": "The zoom level changed to `zoom`, e.g. via `Scintilla.Message.SetZoom` (SCN_ZOOM).",
+}
+
+
+# Hand-transcribed from ScintillaEditBase.cpp -- notifyParent/event_command
+# are plain slots (not Qt overrides), and the Qt virtual-method overrides
+# below have no Scintilla-specific docs anywhere, so genpyi emits only bare
+# signatures for all of them.
+SCINTILLA_EDIT_BASE_OVERRIDE_DOCS: Final = {
+    "notifyParent": (
+        "Internal slot: receives a raw Scintilla notification and emits `notify`, plus the "
+        "corresponding typed signal above (e.g. `modified`, `charAdded`, `updateUi`)."
+    ),
+    "event_command": "Internal slot: emits `command(wParam, lParam)` for compatibility with other Scintilla front-ends.",
+    "scrollHorizontal": "Scroll the view horizontally to `value`, e.g. from a connected `QScrollBar`.",
+    "scrollVertical": "Scroll the view vertically to `value` (the top visible line), e.g. from a connected `QScrollBar`.",
+    "contextMenuEvent": "Reimplemented from `QWidget`: shows Scintilla's built-in right-click context menu.",
+    "dragEnterEvent": "Reimplemented from `QWidget`: accepts drags carrying text or URLs, for drag-and-drop editing.",
+    "dragLeaveEvent": "Reimplemented from `QWidget`: cancels the drop-position indicator drawn by `dragMoveEvent`.",
+    "dragMoveEvent": "Reimplemented from `QWidget`: moves the drop-position indicator as a drag tracks over the editor.",
+    "dropEvent": "Reimplemented from `QWidget`: inserts the dropped text (or file URIs), completing a drag-and-drop edit.",
+    "event": (
+        "Reimplemented from `QObject`: routes `QEvent.Type.KeyPress` to `keyPressEvent` directly, "
+        "bypassing Qt's tab-focus handling so Scintilla sees Tab/Backtab as editing keys."
+    ),
+    "focusInEvent": "Reimplemented from `QWidget`: tells Scintilla it gained keyboard focus (SCN_FOCUSIN, `focusChanged(True)`).",
+    "focusOutEvent": "Reimplemented from `QWidget`: tells Scintilla it lost keyboard focus (SCN_FOCUSOUT, `focusChanged(False)`).",
+    "inputMethodEvent": "Reimplemented from `QWidget`: forwards input-method composition/commit events to Scintilla for IME text entry.",
+    "inputMethodQuery": "Reimplemented from `QWidget`: reports caret geometry, font, and surrounding text to the input method.",
+    "keyPressEvent": (
+        "Reimplemented from `QWidget`: translates the key event into a Scintilla command (caret "
+        "movement, deletion, character insertion, ...) and emits `keyPressed`."
+    ),
+    "leaveEvent": "Reimplemented from `QWidget`: tells Scintilla the mouse left the editor, clearing any hover state.",
+    "mouseDoubleClickEvent": "Reimplemented from `QWidget`: Scintilla does its own double-click detection from `mousePressEvent`.",
+    "mouseMoveEvent": "Reimplemented from `QWidget`: updates the selection while dragging, and hover/dwell state.",
+    "mousePressEvent": "Reimplemented from `QWidget`: positions the caret or starts a selection, and emits `buttonPressed`.",
+    "mouseReleaseEvent": (
+        "Reimplemented from `QWidget`: ends a selection drag and emits `textAreaClicked` and `buttonReleased`."
+    ),
+    "paintEvent": "Reimplemented from `QWidget`: repaints the visible document.",
+    "resizeEvent": "Reimplemented from `QWidget`: updates Scintilla's view size and scrollbars, and emits `resized`.",
+    "scrollContentsBy": (
+        "Reimplemented from `QAbstractScrollArea`: a no-op -- Scintilla repaints the viewport "
+        "itself rather than blitting it."
+    ),
+    "wheelEvent": "Reimplemented from `QWidget`: scrolls the view, or changes zoom when Ctrl is held.",
+}
+
+
 def parse_iface_docs(iface_path: Path) -> dict[str, str]:
     """Map Scintilla.iface `fun`/`get`/`set`/`evt` feature names to their `# ` doc comments.
 
@@ -422,6 +592,33 @@ def add_enum_docstrings(text: str, enum_class: str, docs: dict[str, str]) -> str
     return "".join(out)
 
 
+def add_class_docstring(text: str, class_name: str, doc: str) -> str:
+    """Insert `doc` as a docstring on the line after `class {class_name}(...):`."""
+    pattern = re.compile(rf"^(class {re.escape(class_name)}\(.*\):\n)", re.M)
+    return pattern.sub(lambda m: m.group(1) + f'    r"""{doc}"""\n', text, count=1)
+
+
+def add_signal_docstrings(text: str, class_name: str, docs: dict[str, str]) -> str:
+    """Insert each doc as a docstring after the `ClassVar[Signal]` attribute it documents, within `class_name`."""
+    out: list[str] = []
+    in_class = False
+    class_line = f"class {class_name}("
+    for line in text.splitlines(keepends=True):
+        if line.startswith(class_line):
+            in_class = True
+        elif in_class and line.startswith("class "):
+            in_class = False
+        out.append(line)
+        if in_class:
+            match = SIGNAL_RE.match(line)
+            if match:
+                indent, name = match.group(1), match.group(2)
+                doc = docs.get(name)
+                if doc:
+                    out.append(f'{indent}r"""{doc}"""\n')
+    return "".join(out)
+
+
 def normalize_send_signatures(text: str) -> str:
     """Force `ScintillaEditBase.send`/`sends` back to their `int`-based signatures.
 
@@ -493,7 +690,10 @@ def main() -> None:
     text = add_enum_docstrings(text, "VirtualSpace", VIRTUAL_SPACE_DOCS)
     text = add_enum_docstrings(text, "Update", UPDATE_DOCS)
     text = add_enum_docstrings(text, "ModificationFlags", MODIFICATION_FLAGS_DOCS)
+    text = add_class_docstring(text, "ScintillaEditBase", SCINTILLA_EDIT_BASE_CLASS_DOC)
+    text = add_signal_docstrings(text, "ScintillaEditBase", SCINTILLA_EDIT_BASE_SIGNAL_DOCS)
     text = add_method_docstrings(text, "ScintillaEditBase", SEND_DOCS)
+    text = add_method_docstrings(text, "ScintillaEditBase", SCINTILLA_EDIT_BASE_OVERRIDE_DOCS)
     text = add_method_docstrings(text, "ScintillaEdit", SCINTILLA_EDIT_HELPER_DOCS)
     text = add_method_docstrings(text, "ScintillaEdit", parse_widget_method_docs(IFACE_PATH))
     text = add_method_docstrings(text, "ScintillaDocument", SCINTILLA_DOCUMENT_DOCS)

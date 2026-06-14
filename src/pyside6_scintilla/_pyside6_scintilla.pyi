@@ -3560,70 +3560,139 @@ class ScintillaEdit(_pyside6_scintilla.ScintillaEditBase):
 
 
 class ScintillaEditBase(PySide6.QtWidgets.QAbstractScrollArea):
+    r"""Qt widget exposing Scintilla's editor core via the raw `Scintilla.Message` API.
+
+    `send`/`sends` send any message; `notify` and the typed signals below (`modified`, `charAdded`, `updateUi`, ...) deliver Scintilla's notifications. For a typed method per message, use the `ScintillaEdit` subclass instead."""
 
     aboutToCopy              : typing.ClassVar[Signal] = ... # aboutToCopy(QMimeData*)
+    r"""Emitted just before selected text is copied to the clipboard, with the `QMimeData` about to be placed there.
+
+        Connect to add extra formats (e.g. rich text) to `data` before it's copied."""
     autoCompleteCancelled    : typing.ClassVar[Signal] = ... # autoCompleteCancelled()
+    r"""The user cancelled an active autocompletion list (SCN_AUTOCCANCELLED)."""
     autoCompleteSelection    : typing.ClassVar[Signal] = ... # autoCompleteSelection(Scintilla::Position,QString)
+    r"""The user selected `text` from an autocompletion list, before it's inserted (SCN_AUTOCSELECTION). `position` is the start of the word being completed.
+
+        Call `Scintilla.Message.AutoCCancel` during this signal to stop the automatic insertion."""
     buttonPressed            : typing.ClassVar[Signal] = ... # buttonPressed(QMouseEvent*)
+    r"""A mouse button was pressed over the editor."""
     buttonReleased           : typing.ClassVar[Signal] = ... # buttonReleased(QMouseEvent*)
+    r"""A mouse button was released over the editor."""
     callTipClick             : typing.ClassVar[Signal] = ... # callTipClick()
+    r"""The user clicked the visible call tip (SCN_CALLTIPCLICK)."""
     charAdded                : typing.ClassVar[Signal] = ... # charAdded(int)
+    r"""The user typed an ordinary character that was inserted into the text (SCN_CHARADDED). `ch` is its character code -- a Unicode code point in UTF-8 mode."""
     command                  : typing.ClassVar[Signal] = ... # command(Scintilla::uptr_t,Scintilla::sptr_t)
+    r"""Emitted for compatibility with other Scintilla front-ends' command notifications, e.g. alongside `notifyChange` with `wParam`/`lParam` encoding `SCEN_CHANGE` and the control id."""
     doubleClick              : typing.ClassVar[Signal] = ... # doubleClick(Scintilla::Position,Scintilla::Position)
+    r"""The mouse was double-clicked at `position` on `line` (SCN_DOUBLECLICK)."""
     dwellEnd                 : typing.ClassVar[Signal] = ... # dwellEnd(int,int)
+    r"""The mouse pointer, which had been dwelling, moved or other activity ended the dwell (SCN_DWELLEND). `x`/`y` are where the dwell occurred."""
     dwellStart               : typing.ClassVar[Signal] = ... # dwellStart(int,int)
+    r"""The mouse pointer has rested at `(x, y)` for the dwell period set with `Scintilla.Message.SetMouseDwellTime` (SCN_DWELLSTART)."""
     focusChanged             : typing.ClassVar[Signal] = ... # focusChanged(bool)
+    r"""The editor gained (`True`) or lost (`False`) keyboard focus (SCN_FOCUSIN/SCN_FOCUSOUT)."""
     horizontalRangeChanged   : typing.ClassVar[Signal] = ... # horizontalRangeChanged(int,int)
+    r"""The horizontal scrollbar's range changed to `max` with page size `page`."""
     horizontalScrolled       : typing.ClassVar[Signal] = ... # horizontalScrolled(int)
+    r"""The view scrolled horizontally; `value` is the new horizontal scroll position."""
     hotSpotClick             : typing.ClassVar[Signal] = ... # hotSpotClick(Scintilla::Position,Scintilla::KeyMod)
+    r"""The user clicked text styled with the hotspot attribute, at `position`, with `modifiers` held down (SCN_HOTSPOTCLICK)."""
     hotSpotDoubleClick       : typing.ClassVar[Signal] = ... # hotSpotDoubleClick(Scintilla::Position,Scintilla::KeyMod)
+    r"""Like `hotSpotClick`, but for a double-click (SCN_HOTSPOTDOUBLECLICK)."""
     key                      : typing.ClassVar[Signal] = ... # key(int)
+    r"""Reports a key press not consumed by Scintilla (SCN_KEY). Only emitted on GTK, and only for Alt/Ctrl-modified keys below 256 -- prefer `keyPressed` for a portable signal."""
     keyPressed               : typing.ClassVar[Signal] = ... # keyPressed(QKeyEvent*)
+    r"""A key was pressed over the editor, after Scintilla has had a chance to handle it."""
     linesAdded               : typing.ClassVar[Signal] = ... # linesAdded(Scintilla::Position)
+    r"""The number of lines in the document changed by `linesAdded` (negative if lines were removed)."""
     macroRecord              : typing.ClassVar[Signal] = ... # macroRecord(Scintilla::Message,Scintilla::uptr_t,Scintilla::sptr_t)
+    r"""A recordable action occurred while macro recording is enabled (`Scintilla.Message.StartRecord`, SCN_MACRORECORD). `message`/`wParam`/`lParam` are the message to replay."""
     marginClicked            : typing.ClassVar[Signal] = ... # marginClicked(Scintilla::Position,Scintilla::KeyMod,int)
+    r"""The mouse was clicked in a margin marked sensitive with `Scintilla.Message.SetMarginSensitiveN` (SCN_MARGINCLICK). `position` is the start of the clicked line and `margin` its index."""
     modified                 : typing.ClassVar[Signal] = ... # modified(Scintilla::ModificationFlags,Scintilla::Position,Scintilla::Position,Scintilla::Position,QByteArray,Scintilla::Position,Scintilla::FoldLevel,Scintilla::FoldLevel)
+    r"""The document's text or styling changed, or is about to (SCN_MODIFIED). `type` is a `Scintilla.ModificationFlags` bitmask describing what; `text` holds the inserted/deleted bytes for `Scintilla.ModificationFlags.InsertText`/`DeleteText`."""
     modifyAttemptReadOnly    : typing.ClassVar[Signal] = ... # modifyAttemptReadOnly()
+    r"""The user tried to edit the document while it is read-only (SCN_MODIFYATTEMPTRO)."""
     needShown                : typing.ClassVar[Signal] = ... # needShown(Scintilla::Position,Scintilla::Position)
+    r"""A range of currently-hidden lines should be made visible, e.g. with `Scintilla.Message.EnsureVisible` (SCN_NEEDSHOWN)."""
     notify                   : typing.ClassVar[Signal] = ... # notify(Scintilla::NotificationData*)
+    r"""Delivers every Scintilla notification, before the typed signals above are emitted for it.
+
+        See the `NotificationData` lifetime caveat in docs/bindings.md -- prefer a typed signal where one exists."""
     notifyChange             : typing.ClassVar[Signal] = ... # notifyChange()
+    r"""The document was modified; emitted alongside `command` for compatibility."""
     painted                  : typing.ClassVar[Signal] = ... # painted()
+    r"""Painting has just completed (SCN_PAINTED)."""
     resized                  : typing.ClassVar[Signal] = ... # resized()
+    r"""The widget was resized."""
     savePointChanged         : typing.ClassVar[Signal] = ... # savePointChanged(bool)
+    r"""The document entered (`True`) or left (`False`) its save point (SCN_SAVEPOINTREACHED/SCN_SAVEPOINTLEFT)."""
     styleNeeded              : typing.ClassVar[Signal] = ... # styleNeeded(Scintilla::Position)
+    r"""Container-lexer styling is needed up to `position` (SCN_STYLENEEDED). Only sent if `Scintilla.Message.SetILexer` was passed `None`."""
     textAreaClicked          : typing.ClassVar[Signal] = ... # textAreaClicked(Scintilla::Position,int)
+    r"""The text area was clicked on `line`, with `modifiers` held down."""
     updateUi                 : typing.ClassVar[Signal] = ... # updateUi(Scintilla::Update)
+    r"""The text, styling, selection, or scroll position may have changed (SCN_UPDATEUI). `updated` is a `Scintilla.Update` bitmask of what changed since the previous notification."""
     uriDropped               : typing.ClassVar[Signal] = ... # uriDropped(QString)
+    r"""The user dragged a URI such as a file path onto the editor (SCN_URIDROPPED, GTK only)."""
     userListSelection        : typing.ClassVar[Signal] = ... # userListSelection()
+    r"""The user selected an item from a user list shown with `Scintilla.Message.UserListShow` (SCN_USERLISTSELECTION)."""
     verticalRangeChanged     : typing.ClassVar[Signal] = ... # verticalRangeChanged(int,int)
+    r"""The vertical scrollbar's range changed to `max` with page size `page`."""
     verticalScrolled         : typing.ClassVar[Signal] = ... # verticalScrolled(int)
+    r"""The view scrolled vertically; `value` is the new top visible line."""
     zoom                     : typing.ClassVar[Signal] = ... # zoom(int)
+    r"""The zoom level changed to `zoom`, e.g. via `Scintilla.Message.SetZoom` (SCN_ZOOM)."""
 
     def __init__(self, /, parent: PySide6.QtWidgets.QWidget | None = ...) -> None: ...
 
-    def contextMenuEvent(self, event: PySide6.QtGui.QContextMenuEvent, /) -> None: ...
-    def dragEnterEvent(self, event: PySide6.QtGui.QDragEnterEvent, /) -> None: ...
-    def dragLeaveEvent(self, event: PySide6.QtGui.QDragLeaveEvent, /) -> None: ...
-    def dragMoveEvent(self, event: PySide6.QtGui.QDragMoveEvent, /) -> None: ...
-    def dropEvent(self, event: PySide6.QtGui.QDropEvent, /) -> None: ...
-    def event(self, event: PySide6.QtCore.QEvent, /) -> bool: ...
-    def event_command(self, wParam: int, lParam: int, /) -> None: ...
-    def focusInEvent(self, event: PySide6.QtGui.QFocusEvent, /) -> None: ...
-    def focusOutEvent(self, event: PySide6.QtGui.QFocusEvent, /) -> None: ...
-    def inputMethodEvent(self, event: PySide6.QtGui.QInputMethodEvent, /) -> None: ...
-    def inputMethodQuery(self, query: PySide6.QtCore.Qt.InputMethodQuery, /) -> typing.Any: ...
-    def keyPressEvent(self, event: PySide6.QtGui.QKeyEvent, /) -> None: ...
-    def leaveEvent(self, event: PySide6.QtCore.QEvent, /) -> None: ...
-    def mouseDoubleClickEvent(self, event: PySide6.QtGui.QMouseEvent, /) -> None: ...
-    def mouseMoveEvent(self, event: PySide6.QtGui.QMouseEvent, /) -> None: ...
-    def mousePressEvent(self, event: PySide6.QtGui.QMouseEvent, /) -> None: ...
-    def mouseReleaseEvent(self, event: PySide6.QtGui.QMouseEvent, /) -> None: ...
-    def notifyParent(self, scn: _pyside6_scintilla.Scintilla.NotificationData, /) -> None: ...
-    def paintEvent(self, event: PySide6.QtGui.QPaintEvent, /) -> None: ...
-    def resizeEvent(self, event: PySide6.QtGui.QResizeEvent, /) -> None: ...
-    def scrollContentsBy(self, arg__1: int, arg__2: int, /) -> None: ...
-    def scrollHorizontal(self, value: int, /) -> None: ...
-    def scrollVertical(self, value: int, /) -> None: ...
+    def contextMenuEvent(self, event: PySide6.QtGui.QContextMenuEvent, /) -> None:
+        r"""Reimplemented from `QWidget`: shows Scintilla's built-in right-click context menu."""
+    def dragEnterEvent(self, event: PySide6.QtGui.QDragEnterEvent, /) -> None:
+        r"""Reimplemented from `QWidget`: accepts drags carrying text or URLs, for drag-and-drop editing."""
+    def dragLeaveEvent(self, event: PySide6.QtGui.QDragLeaveEvent, /) -> None:
+        r"""Reimplemented from `QWidget`: cancels the drop-position indicator drawn by `dragMoveEvent`."""
+    def dragMoveEvent(self, event: PySide6.QtGui.QDragMoveEvent, /) -> None:
+        r"""Reimplemented from `QWidget`: moves the drop-position indicator as a drag tracks over the editor."""
+    def dropEvent(self, event: PySide6.QtGui.QDropEvent, /) -> None:
+        r"""Reimplemented from `QWidget`: inserts the dropped text (or file URIs), completing a drag-and-drop edit."""
+    def event(self, event: PySide6.QtCore.QEvent, /) -> bool:
+        r"""Reimplemented from `QObject`: routes `QEvent.Type.KeyPress` to `keyPressEvent` directly, bypassing Qt's tab-focus handling so Scintilla sees Tab/Backtab as editing keys."""
+    def event_command(self, wParam: int, lParam: int, /) -> None:
+        r"""Internal slot: emits `command(wParam, lParam)` for compatibility with other Scintilla front-ends."""
+    def focusInEvent(self, event: PySide6.QtGui.QFocusEvent, /) -> None:
+        r"""Reimplemented from `QWidget`: tells Scintilla it gained keyboard focus (SCN_FOCUSIN, `focusChanged(True)`)."""
+    def focusOutEvent(self, event: PySide6.QtGui.QFocusEvent, /) -> None:
+        r"""Reimplemented from `QWidget`: tells Scintilla it lost keyboard focus (SCN_FOCUSOUT, `focusChanged(False)`)."""
+    def inputMethodEvent(self, event: PySide6.QtGui.QInputMethodEvent, /) -> None:
+        r"""Reimplemented from `QWidget`: forwards input-method composition/commit events to Scintilla for IME text entry."""
+    def inputMethodQuery(self, query: PySide6.QtCore.Qt.InputMethodQuery, /) -> typing.Any:
+        r"""Reimplemented from `QWidget`: reports caret geometry, font, and surrounding text to the input method."""
+    def keyPressEvent(self, event: PySide6.QtGui.QKeyEvent, /) -> None:
+        r"""Reimplemented from `QWidget`: translates the key event into a Scintilla command (caret movement, deletion, character insertion, ...) and emits `keyPressed`."""
+    def leaveEvent(self, event: PySide6.QtCore.QEvent, /) -> None:
+        r"""Reimplemented from `QWidget`: tells Scintilla the mouse left the editor, clearing any hover state."""
+    def mouseDoubleClickEvent(self, event: PySide6.QtGui.QMouseEvent, /) -> None:
+        r"""Reimplemented from `QWidget`: Scintilla does its own double-click detection from `mousePressEvent`."""
+    def mouseMoveEvent(self, event: PySide6.QtGui.QMouseEvent, /) -> None:
+        r"""Reimplemented from `QWidget`: updates the selection while dragging, and hover/dwell state."""
+    def mousePressEvent(self, event: PySide6.QtGui.QMouseEvent, /) -> None:
+        r"""Reimplemented from `QWidget`: positions the caret or starts a selection, and emits `buttonPressed`."""
+    def mouseReleaseEvent(self, event: PySide6.QtGui.QMouseEvent, /) -> None:
+        r"""Reimplemented from `QWidget`: ends a selection drag and emits `textAreaClicked` and `buttonReleased`."""
+    def notifyParent(self, scn: _pyside6_scintilla.Scintilla.NotificationData, /) -> None:
+        r"""Internal slot: receives a raw Scintilla notification and emits `notify`, plus the corresponding typed signal above (e.g. `modified`, `charAdded`, `updateUi`)."""
+    def paintEvent(self, event: PySide6.QtGui.QPaintEvent, /) -> None:
+        r"""Reimplemented from `QWidget`: repaints the visible document."""
+    def resizeEvent(self, event: PySide6.QtGui.QResizeEvent, /) -> None:
+        r"""Reimplemented from `QWidget`: updates Scintilla's view size and scrollbars, and emits `resized`."""
+    def scrollContentsBy(self, arg__1: int, arg__2: int, /) -> None:
+        r"""Reimplemented from `QAbstractScrollArea`: a no-op -- Scintilla repaints the viewport itself rather than blitting it."""
+    def scrollHorizontal(self, value: int, /) -> None:
+        r"""Scroll the view horizontally to `value`, e.g. from a connected `QScrollBar`."""
+    def scrollVertical(self, value: int, /) -> None:
+        r"""Scroll the view vertically to `value` (the top visible line), e.g. from a connected `QScrollBar`."""
     def send(self, iMessage: int, /, wParam: int | None = ..., lParam: int | None = ...) -> int:
         r"""Send a message to the underlying Scintilla editor and return its result.
 
@@ -3632,7 +3701,8 @@ class ScintillaEditBase(PySide6.QtWidgets.QAbstractScrollArea):
         r"""Like `send`, but pass `s` as the message's string `lParam`.
 
         Use this for messages whose `lParam` is a string, e.g. `Scintilla.Message.AddText` or `Scintilla.Message.SetText`. `s` accepts `bytes`, `bytearray`, `memoryview`, or `str` (encoded as UTF-8)."""
-    def wheelEvent(self, event: PySide6.QtGui.QWheelEvent, /) -> None: ...
+    def wheelEvent(self, event: PySide6.QtGui.QWheelEvent, /) -> None:
+        r"""Reimplemented from `QWidget`: scrolls the view, or changes zoom when Ctrl is held."""
 
 
 # eof

@@ -154,5 +154,10 @@ nav:
           - scintilla/appendix-reference/edit-messages-never-supported-by-scintilla.md
           - scintilla/appendix-reference/removed-features.md
           - scintilla/appendix-reference/building-scintilla.md
-  - Reference: reference.md
+  - Reference:
+      - reference/index.md
+      - ScintillaEditBase: reference/scintilla-edit-base.md
+      - ScintillaEdit: reference/scintilla-edit.md
+      - ScintillaDocument: reference/scintilla-document.md
+      - Scintilla.Message: reference/message.md
   - PyPI: https://pypi.org/project/pyside6-scintilla/

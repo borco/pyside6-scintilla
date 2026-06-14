@@ -94,6 +94,7 @@ nav:
           - scintilla/editing/text-retrieval-and-modification.md
           - scintilla/editing/information.md
           - scintilla/editing/overtype.md
+          - scintilla/editing/cut-copy-and-paste.md
       - Selection & Search:
           - scintilla/selection-search/selection.md
           - scintilla/selection-search/multiple-selection-and-virtual-space.md

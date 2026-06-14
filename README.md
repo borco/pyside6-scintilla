@@ -14,13 +14,13 @@
 
 ## Status
 
-The `ScintillaEditBase` binding is implemented and working — see
-[examples/simple_scintilla_base_edit/](https://github.com/borco/pyside6-scintilla/tree/master/examples/simple_scintilla_base_edit/)
-for a runnable demo. Pre-built wheels are published on
+The `ScintillaEditBase` and `ScintillaEdit` bindings are implemented and
+working — see the
+[examples gallery](https://borco.github.io/pyside6-scintilla/examples/)
+for runnable demos. Pre-built wheels are published on
 [PyPI](https://pypi.org/project/pyside6-scintilla/) for Linux
 (x86_64), Windows (x86_64), and macOS (arm64, x86_64), Python 3.11-3.14 —
-see [Installation](#installation). `ScintillaEdit` (Scintilla's full
-~700-method API) and Linux aarch64 wheels are planned —
+see [Installation](#installation). Linux aarch64 wheels are planned —
 see [docs/mission.md](https://github.com/borco/pyside6-scintilla/blob/master/docs/mission.md) for the roadmap.
 
 The [docs site](https://borco.github.io/pyside6-scintilla/) has a full
@@ -80,21 +80,25 @@ platform-specific setup.
 <!-- sync:usage-example -->
 ```python
 from PySide6.QtWidgets import QApplication
-from pyside6_scintilla import Scintilla, ScintillaEditBase
+from pyside6_scintilla import ScintillaEdit
 
 app = QApplication([])
-editor = ScintillaEditBase()
-editor.sends(int(Scintilla.Message.SetText), 0, "hello, world")
+editor = ScintillaEdit()
+editor.setText("hello, world")
 editor.show()
 app.exec()
 ```
 <!-- /sync:usage-example -->
 
-`ScintillaEditBase` exposes Scintilla's low-level message API via `.send()`/
-`.sends()` — the same `SCI_*` messages as the C interface, not a
-QScintilla-style high-level API. See
-[examples/simple_scintilla_base_edit/](https://github.com/borco/pyside6-scintilla/tree/master/examples/simple_scintilla_base_edit/)
-for a complete example (line-number margin, block selection/editing).
+`ScintillaEdit` exposes a typed method per Scintilla message (e.g.
+`setText()`, `textLength()`, `gotoLine()`) on top of `ScintillaEditBase`'s
+raw `.send()`/`.sends()` message API — the same `SCI_*` messages as the C
+interface, not a QScintilla-style high-level API. See
+[examples/simple_scintilla_edit](https://borco.github.io/pyside6-scintilla/examples/simple_scintilla_edit/)
+for a complete example (line-number margin, "Go to Line", block
+selection/editing), or
+[examples/simple_scintilla_base_edit](https://borco.github.io/pyside6-scintilla/examples/simple_scintilla_base_edit/)
+for the lower-level `send`/`sends` API.
 
 ## Versioning
 
@@ -111,7 +115,9 @@ itself releases a new version.
 | [docs/auditing.md](https://github.com/borco/pyside6-scintilla/blob/master/docs/auditing.md) | How to verify the vendored Scintilla source matches upstream |
 | [docs/bindings.md](https://github.com/borco/pyside6-scintilla/blob/master/docs/bindings.md) | How the shiboken6 bindings are built, generated files, and the Scintilla-update procedure |
 | [docs/build.md](https://github.com/borco/pyside6-scintilla/blob/master/docs/build.md) | Build prerequisites, local build/rebuild, wheels, and publishing |
+| [docs/documenting.md](https://github.com/borco/pyside6-scintilla/blob/master/docs/documenting.md) | How the docs site is built, and how to add or update a page |
 | [docs/mission.md](https://github.com/borco/pyside6-scintilla/blob/master/docs/mission.md) | Project background, goals, and design decisions |
+| [docs/testpypi.md](https://github.com/borco/pyside6-scintilla/blob/master/docs/testpypi.md) | Setting up TestPyPI trusted publishing |
 
 ## License
 

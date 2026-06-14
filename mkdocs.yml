@@ -81,6 +81,7 @@ nav:
   - Home: index.md
   - Development:
       - Project mission: mission.md
+      - Alternatives & landscape: alternatives.md
       - Bindings architecture: bindings.md
       - Build instructions: build.md
       - Verifying vendored Scintilla: auditing.md

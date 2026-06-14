@@ -203,7 +203,10 @@ SCINTILLA_EDIT_HELPER_DOCS: Final = {
     "textRange": "Alias for `get_text_range`.",
     "get_doc": (
         "Return a new `ScintillaDocument` wrapping this editor's current document.\n\n"
-        "        Pass it to another `ScintillaEdit`'s `set_doc` to share the document between views."
+        "        Pass it to another `ScintillaEdit`'s `set_doc` to share the document between views.\n\n"
+        "        The returned object has no Qt parent, so it's kept alive only by your Python "
+        "reference to it -- if you let it go, its `modified`/`save_point`/etc. signals stop firing "
+        "(the underlying document itself stays alive as long as an editor is using it)."
     ),
     "set_doc": (
         "Make this editor display `doc`.\n\n"

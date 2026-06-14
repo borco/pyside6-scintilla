@@ -2462,7 +2462,9 @@ class ScintillaEdit(_pyside6_scintilla.ScintillaEditBase):
     def get_doc(self, /) -> _pyside6_scintilla.ScintillaDocument:
         r"""Return a new `ScintillaDocument` wrapping this editor's current document.
 
-        Pass it to another `ScintillaEdit`'s `set_doc` to share the document between views."""
+        Pass it to another `ScintillaEdit`'s `set_doc` to share the document between views.
+
+        The returned object has no Qt parent, so it's kept alive only by your Python reference to it -- if you let it go, its `modified`/`save_point`/etc. signals stop firing (the underlying document itself stays alive as long as an editor is using it)."""
     def get_text_range(self, start: int, end: int, /) -> PySide6.QtCore.QByteArray:
         r"""Return the document's text between `start` and `end`."""
     def gotoLine(self, line: int, /) -> None:

@@ -51,4 +51,12 @@
     </namespace-type>
 
     <object-type name="ScintillaEditBase"/>
+
+    <!-- ScintillaDocument (returned/taken by get_doc/set_doc) isn't wrapped -
+         excluding it here is simpler than introducing a second wrapped type
+         for a document-sharing feature nothing in this binding uses yet. -->
+    <object-type name="ScintillaEdit">
+        <modify-function signature="get_doc()" remove="all"/>
+        <modify-function signature="set_doc(ScintillaDocument*)" remove="all"/>
+    </object-type>
 </typesystem>

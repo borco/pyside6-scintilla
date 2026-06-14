@@ -86,12 +86,19 @@ qt_add_library(${LIB_NAME} SHARED
     ${SCINTILLA_DIR}/qt/ScintillaEditBase/ScintillaEditBase.h
     ${SCINTILLA_DIR}/qt/ScintillaEditBase/ScintillaQt.cpp
     ${SCINTILLA_DIR}/qt/ScintillaEditBase/ScintillaQt.h
+
+    # Qt widget: ScintillaEdit (typed wrapper, one method per SCI_* message)
+    ${SCINTILLA_DIR}/qt/ScintillaEdit/ScintillaDocument.cpp
+    ${SCINTILLA_DIR}/qt/ScintillaEdit/ScintillaDocument.h
+    ${SCINTILLA_DIR}/qt/ScintillaEdit/ScintillaEdit.cpp
+    ${SCINTILLA_DIR}/qt/ScintillaEdit/ScintillaEdit.h
 )
 
 target_include_directories(${LIB_NAME}
     PUBLIC
     ${SCINTILLA_DIR}/include
     ${SCINTILLA_DIR}/qt/ScintillaEditBase
+    ${SCINTILLA_DIR}/qt/ScintillaEdit
     # ScintillaEditBase.h pulls in Debugging.h/Geometry.h/Platform.h from here
     ${SCINTILLA_DIR}/src
 )

@@ -25,6 +25,7 @@
 #undef Message
 
 #include <ScintillaEditBase.h>
+#include <ScintillaEdit.h>
 
 // <windows.h> (pulled in transitively via Qt/Python headers) defines FindText
 // as a macro to FindTextA/FindTextW, which mangles Scintilla::Message::FindText

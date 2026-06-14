@@ -16,7 +16,7 @@ readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]
 authors = [
-    { name = "Ioan Călin", email = "iborco@gmail.com" },
+    { name = "Ioan Calin", email = "iborco@gmail.com" },
 ]
 keywords = [
     "pyside6",

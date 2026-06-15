@@ -1,16 +1,21 @@
 # bscintillaedit
 
-A small, portable, single-file `BScintillaEdit` convenience subclass of
-`ScintillaEdit` — a spiritual successor to the old Windows-only
-`bscintillaedit` PyPI package (see [Project mission](../mission.md)), meant
-to be copied straight into your own project:
-
-- sets a fixed-width font, as is conventional for a code editor
-- shows a line-number margin by default, with `setLineNumbersVisible()` /
-  `lineNumbersVisible()` to toggle it
+A small, portable, single-file `BScintillaEdit(ScintillaEdit)` subclass
+that's a **drop-in replacement** for the old, now-archived `bscintillaedit`
+PyPI package's `BScintillaEdit(QScrollArea)` widget (see
+[Project mission](../mission.md)). Copy `bscintillaedit.py` straight into
+your own project — same properties, signals, and slots
+(`lineEndVisible`, `lineNumbersVisible`, `lineWrapped`, `readOnly`, `text`,
+their `*Changed` signals and setter slots, and `clear()`), same defaults (LF
+line endings, hidden symbol margin, styled line-number margin, "↩"
+end-of-line glyph) as the old widget — only the import line changes.
 
 The demo `main.py` shows `BScintillaEdit` used as a `QMainWindow`'s central
-widget, with a toolbar button to toggle the line-number margin.
+widget, with toolbar toggles for each boolean property and a menu for
+picking the end-of-line representation glyph. See
+[`examples/bscintillaedit/README.md`](https://github.com/borco/pyside6-scintilla/tree/master/examples/bscintillaedit)
+for the full API reference, porting steps, and efficient editor-sync
+patterns.
 
 ## Running
 

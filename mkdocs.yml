@@ -91,6 +91,7 @@ nav:
       - examples/index.md
       - examples/simple_scintilla_base_edit.md
       - examples/simple_scintilla_edit.md
+      - examples/bscintillaedit.md
   - Scintilla API:
       - Editing:
           - scintilla/editing/text-retrieval-and-modification.md

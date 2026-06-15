@@ -9,10 +9,11 @@ your own project — same base class, properties, signals, and slots
 their `*Changed` signals and setter slots, and `clear()`), same defaults (LF
 line endings, hidden symbol margin, styled line-number margin, "↩"
 end-of-line glyph) as the old widget — only the import line changes.
+`blockEditEnabled` is new, additive functionality not in the old widget.
 
 The demo `main.py` shows `BScintillaEdit` used as a `QMainWindow`'s central
-widget, with toolbar toggles for each boolean property and a menu for
-picking the end-of-line representation glyph. See
+widget, with toolbar toggles for each property and menus for picking the
+end-of-line representation glyph and colour. See
 [`examples/bscintillaedit/README.md`](https://github.com/borco/pyside6-scintilla/tree/master/examples/bscintillaedit)
 for the full API reference, porting steps, and efficient editor-sync
 patterns.

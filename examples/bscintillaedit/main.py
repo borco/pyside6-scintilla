@@ -74,31 +74,31 @@ class MainWindow(QMainWindow):
 
         toggle_line_numbers_action = QAction("Line Numbers", self)
         toggle_line_numbers_action.setCheckable(True)
-        toggle_line_numbers_action.setChecked(bool(self.__editor.lineNumbersVisible))
+        toggle_line_numbers_action.setChecked(self.__editor.lineNumbersVisible)
         toggle_line_numbers_action.toggled.connect(self.__editor.setLineNumbersVisible)
         toolbar.addAction(toggle_line_numbers_action)
 
         toggle_line_wrapped_action = QAction("Wrap Lines", self)
         toggle_line_wrapped_action.setCheckable(True)
-        toggle_line_wrapped_action.setChecked(bool(self.__editor.lineWrapped))
+        toggle_line_wrapped_action.setChecked(self.__editor.lineWrapped)
         toggle_line_wrapped_action.toggled.connect(self.__editor.setLineWrapped)
         toolbar.addAction(toggle_line_wrapped_action)
 
         toggle_line_end_visible_action = QAction("Show EOL", self)
         toggle_line_end_visible_action.setCheckable(True)
-        toggle_line_end_visible_action.setChecked(bool(self.__editor.lineEndVisible))
+        toggle_line_end_visible_action.setChecked(self.__editor.lineEndVisible)
         toggle_line_end_visible_action.toggled.connect(self.__editor.setLineEndVisible)
         toolbar.addAction(toggle_line_end_visible_action)
 
         toggle_read_only_action = QAction("Read Only", self)
         toggle_read_only_action.setCheckable(True)
-        toggle_read_only_action.setChecked(bool(self.__editor.readOnly))
+        toggle_read_only_action.setChecked(self.__editor.readOnly)
         toggle_read_only_action.toggled.connect(self.__editor.setReadOnly)
         toolbar.addAction(toggle_read_only_action)
 
         toggle_block_edit_action = QAction("Block Edit", self)
         toggle_block_edit_action.setCheckable(True)
-        toggle_block_edit_action.setChecked(bool(self.__editor.blockEditEnabled))
+        toggle_block_edit_action.setChecked(self.__editor.blockEditEnabled)
         toggle_block_edit_action.toggled.connect(self.__editor.setBlockEditEnabled)
         toolbar.addAction(toggle_block_edit_action)
 

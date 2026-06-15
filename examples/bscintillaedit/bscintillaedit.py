@@ -24,9 +24,11 @@ Run the demo with:
     uv run python examples/bscintillaedit/main.py
 """
 
-from typing import Final
+from collections.abc import Callable
+from typing import TYPE_CHECKING, Any, Final, Generic, TypeVar
 
-from PySide6.QtCore import Property, Signal, Slot
+from PySide6.QtCore import Property as _Property
+from PySide6.QtCore import Signal, Slot
 from PySide6.QtGui import QFontDatabase
 from PySide6.QtWidgets import QFrame, QScrollArea, QWidget
 
@@ -43,6 +45,36 @@ EOL_REPRESENTATION_COLOUR: Final = 0xFFC0C0FF
 
 EOL_REPRESENTATION_APPEARANCE: Final = 0x10  # SC_REPRESENTATION_COLOUR
 """Default appearance flags used for the "↩" end-of-line representation glyph."""
+
+_T = TypeVar("_T")
+
+
+class TypedProperty(_Property, Generic[_T]):
+    """`QtCore.Property` with a typed `__init__`/`__get__`/`__set__` for IDE hover/type-checking.
+
+    `QtCore.Property`'s stub doesn't declare `__get__`/`__set__`, so type
+    checkers show plain `Property` attributes instead of their declared type,
+    with no docstring. This subclass adds no real behavior — `__init__` just
+    forwards to `QtCore.Property`, and the `__get__`/`__set__` declarations
+    only exist for type checkers (`if TYPE_CHECKING`). `_T` is inferred from
+    the `type: type[_T]` argument, so `TypedProperty(bool, ...)` is enough —
+    no `TypedProperty[bool](...)` subscript needed.
+    """
+
+    def __init__(
+        self,
+        type: type[_T],  # noqa: A002 -- matches QtCore.Property's parameter name
+        fget: Callable[[Any], _T] | None = None,
+        fset: Callable[[Any, _T], None] | None = None,
+        notify: Signal | None = None,
+        doc: str = "",
+    ) -> None:
+        super().__init__(type, fget, fset, notify=notify, doc=doc)
+
+    if TYPE_CHECKING:
+
+        def __get__(self, instance: object, owner: type | None = None) -> _T: ...
+        def __set__(self, instance: object, value: _T) -> None: ...
 
 
 class BScintillaEdit(QScrollArea):
@@ -219,9 +251,11 @@ class BScintillaEdit(QScrollArea):
         if modificationType & insert_or_delete and self.receivers("2textChanged(QString)") > 0:
             self.textChanged.emit(self.text)
 
-    lineEndVisible = Property(bool, __lineEndVisible, setLineEndVisible, notify=lineEndVisibleChanged)
-    lineNumbersVisible = Property(bool, __lineNumbersVisible, setLineNumbersVisible, notify=lineNumbersVisibleChanged)
-    lineWrapped = Property(bool, __lineWrapped, setLineWrapped, notify=lineWrappedChanged)
-    readOnly = Property(bool, __readOnly, setReadOnly, notify=readOnlyChanged)
-    text = Property(str, __text, setText, notify=textChanged)
-    blockEditEnabled = Property(bool, __blockEditEnabled, setBlockEditEnabled, notify=blockEditEnabledChanged)
+    lineEndVisible = TypedProperty(bool, __lineEndVisible, setLineEndVisible, notify=lineEndVisibleChanged)
+    lineNumbersVisible = TypedProperty(
+        bool, __lineNumbersVisible, setLineNumbersVisible, notify=lineNumbersVisibleChanged
+    )
+    lineWrapped = TypedProperty(bool, __lineWrapped, setLineWrapped, notify=lineWrappedChanged)
+    readOnly = TypedProperty(bool, __readOnly, setReadOnly, notify=readOnlyChanged)
+    text = TypedProperty(str, __text, setText, notify=textChanged)
+    blockEditEnabled = TypedProperty(bool, __blockEditEnabled, setBlockEditEnabled, notify=blockEditEnabledChanged)

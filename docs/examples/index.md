@@ -29,4 +29,14 @@ uv run python examples/<example>/main.py
 
     [:octicons-arrow-right-24: More](simple_scintilla_edit.md)
 
+-   :material-form-textbox:{ .lg .middle } __bscintillaedit__
+
+    ---
+
+    A small, portable, single-file `BScintillaEdit` convenience subclass of
+    `ScintillaEdit` with sane defaults (fixed-width font, line-number
+    margin), meant to be copied into your own project.
+
+    [:octicons-arrow-right-24: More](bscintillaedit.md)
+
 </div>

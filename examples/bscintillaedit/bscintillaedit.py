@@ -27,8 +27,7 @@ Run the demo with:
 from collections.abc import Callable
 from typing import TYPE_CHECKING, Any, Final, Generic, TypeVar
 
-from PySide6.QtCore import Property as _Property
-from PySide6.QtCore import Signal, Slot
+from PySide6.QtCore import Property, Signal, Slot
 from PySide6.QtGui import QFontDatabase
 from PySide6.QtWidgets import QFrame, QScrollArea, QWidget
 
@@ -49,7 +48,7 @@ EOL_REPRESENTATION_APPEARANCE: Final = 0x10  # SC_REPRESENTATION_COLOUR
 _T = TypeVar("_T")
 
 
-class TypedProperty(_Property, Generic[_T]):
+class TypedProperty(Property, Generic[_T]):
     """`QtCore.Property` with a typed `__init__`/`__get__`/`__set__` for IDE hover/type-checking.
 
     `QtCore.Property`'s stub doesn't declare `__get__`/`__set__`, so type
@@ -59,6 +58,11 @@ class TypedProperty(_Property, Generic[_T]):
     only exist for type checkers (`if TYPE_CHECKING`). `_T` is inferred from
     the `type: type[_T]` argument, so `TypedProperty(bool, ...)` is enough —
     no `TypedProperty[bool](...)` subscript needed.
+
+    No runtime overhead vs. plain `Property`: `__init__` only adds one extra
+    forwarding call at class-definition time (once per property, not per
+    access), and `__get__`/`__set__` are `Property`'s own inherited
+    implementations — the `TYPE_CHECKING` block doesn't exist at runtime.
     """
 
     def __init__(

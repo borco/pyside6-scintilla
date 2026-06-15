@@ -142,15 +142,15 @@ class MainWindow(QMainWindow):
         `setRepresentation` resets the representation's colour/appearance to
         Scintilla's plain default, so re-apply the tracked colour afterwards.
         """
-        self.__editor.setRepresentation("\n", glyph)
-        self.__editor.setRepresentationColour("\n", self.__eol_colour)
-        self.__editor.setRepresentationAppearance("\n", EOL_REPRESENTATION_APPEARANCE)
+        self.__editor.editor.setRepresentation("\n", glyph)
+        self.__editor.editor.setRepresentationColour("\n", self.__eol_colour)
+        self.__editor.editor.setRepresentationAppearance("\n", EOL_REPRESENTATION_APPEARANCE)
 
     def __set_eol_colour(self, colour: int) -> None:
         """Change the end-of-line representation colour, keeping its current glyph."""
         self.__eol_colour = colour
-        self.__editor.setRepresentationColour("\n", colour)
-        self.__editor.setRepresentationAppearance("\n", EOL_REPRESENTATION_APPEARANCE)
+        self.__editor.editor.setRepresentationColour("\n", colour)
+        self.__editor.editor.setRepresentationAppearance("\n", EOL_REPRESENTATION_APPEARANCE)
 
 
 def main() -> None:

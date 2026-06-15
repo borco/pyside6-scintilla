@@ -1,8 +1,8 @@
 # bscintillaedit
 
-A small, portable, single-file `BScintillaEdit(ScintillaEdit)` subclass that's
-a **drop-in replacement** for the old, now-archived `bscintillaedit` PyPI
-package's `BScintillaEdit(QScrollArea)` widget (see
+A small, portable, single-file `BScintillaEdit(QScrollArea)` widget that's a
+**drop-in replacement** for the old, now-archived `bscintillaedit` PyPI
+package's widget of the same name (see
 [Project mission](../../docs/mission.md)). Copy
 [`bscintillaedit.py`](bscintillaedit.py) straight into your own project — it
 has no dependencies beyond `pyside6-scintilla` itself.
@@ -12,15 +12,15 @@ has no dependencies beyond `pyside6-scintilla` itself.
 1. Copy `bscintillaedit.py` into your project.
 2. Change `from bscintillaedit import BScintillaEdit` to
    `from .bscintillaedit import BScintillaEdit` (or wherever you placed it).
-3. That's it. Same properties, signals, slots, and spelling — and the same
-   out-of-the-box defaults (LF line endings, hidden symbol margin, styled
-   line-number margin, "↩" end-of-line glyph) as the old widget — so existing
-   code keeps working unchanged.
+3. That's it. Same base class, properties, signals, slots, and spelling —
+   and the same out-of-the-box defaults (LF line endings, hidden symbol
+   margin, styled line-number margin, "↩" end-of-line glyph) as the old
+   widget — so existing code keeps working unchanged.
 
-The one difference from the old widget: `BScintillaEdit` *is* a
-`ScintillaEdit` (not a `QScrollArea` wrapping one), so every typed
-`ScintillaEdit`/`ScintillaEditBase` method (~780 `SCI_*` messages) is also
-available directly — useful for anything not covered by the properties below.
+`BScintillaEdit` wraps a `ScintillaEdit` (exposed as `.editor`), so every
+typed `ScintillaEdit`/`ScintillaEditBase` method (~780 `SCI_*` messages) is
+available via `.editor` — useful for anything not covered by the properties
+below.
 
 ## API reference
 
@@ -39,15 +39,13 @@ present in the old widget.
 | `blockEditEnabled` | `bool` | `False` | `blockEditEnabledChanged(bool)` | `setBlockEditEnabled(bool)` |
 
 - `lineEndVisible` — show end-of-line characters as a visible glyph (the
-  default glyph is "↩"; pick a different one with the inherited
-  `setRepresentation("\n", glyph)`).
+  default glyph is "↩"; pick a different one with
+  `.editor.setRepresentation("\n", glyph)`).
 - `lineNumbersVisible` — show or hide the line-number margin. The margin
   width is recalculated to fit the current line count each time it's shown.
 - `lineWrapped` — wrap long lines at whitespace instead of scrolling
   horizontally.
-- `readOnly` — reject further edits. Shadows the inherited
-  `ScintillaEdit.readOnly()`/`setReadOnly()` with Qt-property semantics
-  (`readOnlyChanged` signal).
+- `readOnly` — reject further edits.
 - `text` — the editor's full contents, kept in sync with `textChanged` on
   every edit.
 - `clear()` — slot, equivalent to `setText("")`.
@@ -64,14 +62,14 @@ the old widget.
 The old widget's `text`/`textChanged` round-trip (decode the whole buffer to
 a `str` on every keystroke, re-`setText()` it into another widget) doesn't
 scale well for keeping editors in sync. Two patterns — using only methods
-already inherited from `ScintillaEdit`, no `BScintillaEdit` API additions:
+already available on `.editor`, no `BScintillaEdit` API additions:
 
 - **`BScintillaEdit` ↔ `BScintillaEdit` live mirroring**: share the
   underlying document instead of copying text —
-  `editor_b.setDocPointer(editor_a.docPointer())`. Both views then share one
-  document and undo history; edits in either appear in both instantly with
-  zero string marshalling, and each view keeps its own cursor/scroll
-  position.
+  `editor_b.editor.setDocPointer(editor_a.editor.docPointer())`. Both views
+  then share one document and undo history; edits in either appear in both
+  instantly with zero string marshalling, and each view keeps its own
+  cursor/scroll position.
 - **`BScintillaEdit` → non-Scintilla widget** (e.g. a `QTextBrowser` HTML
   preview that can't share a Scintilla document): connect to `textChanged`,
   but debounce the expensive re-render/re-parse on the receiving end with a

@@ -1,7 +1,7 @@
 """Portable, single-file `BScintillaEdit` drop-in replacement.
 
-A `ScintillaEdit` subclass that exposes the same Qt properties, signals, and
-slots as the old, now-archived `bscintillaedit` PyPI package's
+A `QScrollArea` wrapping a `ScintillaEdit`, exposing the same Qt properties,
+signals, and slots as the old, now-archived `bscintillaedit` PyPI package's
 `BScintillaEdit(QScrollArea)` widget — `lineEndVisible`, `lineNumbersVisible`,
 `lineWrapped`, `readOnly`, `text` (with their `*Changed` signals and setter
 slots) and `clear()` — with the same out-of-the-box defaults (LF line
@@ -15,8 +15,10 @@ Porting from the old `bscintillaedit` package
 1. Copy this file into your project.
 2. Change `from bscintillaedit import BScintillaEdit` to
    `from .bscintillaedit import BScintillaEdit` (or wherever you placed it).
-3. That's it — same properties/signals/slots/spelling and the same defaults
-   as the old widget, so existing code keeps working unchanged.
+3. That's it — same base class, properties, signals, slots, and spelling,
+   and the same defaults as the old widget, so existing code keeps working
+   unchanged. The wrapped `ScintillaEdit` is available as `.editor`, for
+   anything not covered by the properties below.
 
 Run the demo with:
     uv run python examples/bscintillaedit/main.py
@@ -26,7 +28,7 @@ from typing import Final
 
 from PySide6.QtCore import Property, Signal, Slot
 from PySide6.QtGui import QFontDatabase
-from PySide6.QtWidgets import QWidget
+from PySide6.QtWidgets import QFrame, QScrollArea, QWidget
 
 from pyside6_scintilla import Scintilla, ScintillaEdit
 
@@ -43,8 +45,8 @@ EOL_REPRESENTATION_APPEARANCE: Final = 0x10  # SC_REPRESENTATION_COLOUR
 """Default appearance flags used for the "↩" end-of-line representation glyph."""
 
 
-class BScintillaEdit(ScintillaEdit):
-    """A `ScintillaEdit` that's a drop-in replacement for the old `bscintillaedit` package's widget."""
+class BScintillaEdit(QScrollArea):
+    """A `QScrollArea` wrapping a `ScintillaEdit`, a drop-in replacement for the old `bscintillaedit` package's widget."""
 
     lineEndVisibleChanged = Signal(bool)
     lineNumbersVisibleChanged = Signal(bool)
@@ -56,51 +58,60 @@ class BScintillaEdit(ScintillaEdit):
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)
 
-        fixed_font = QFontDatabase.systemFont(QFontDatabase.SystemFont.FixedFont)
-        self.styleSetFont(Scintilla.StylesCommon.Default, fixed_font.family())
-        self.styleClearAll()
+        # The wrapped editor: the ~780 inherited `SCI_*` methods are available
+        # directly on `.editor` for anything not covered by the properties below.
+        self.editor: Final = ScintillaEdit(self)
 
-        self.setCodePage(65001)  # SC_CP_UTF8: interpret/encode text as UTF-8
+        self.setFrameShape(QFrame.Shape.NoFrame)
+        self.setWidget(self.editor)
+        self.setWidgetResizable(True)
+        self.setFocusProxy(self.editor)
+
+        fixed_font = QFontDatabase.systemFont(QFontDatabase.SystemFont.FixedFont)
+        self.editor.styleSetFont(Scintilla.StylesCommon.Default, fixed_font.family())
+        self.editor.styleClearAll()
+
+        self.editor.setCodePage(65001)  # SC_CP_UTF8: interpret/encode text as UTF-8
 
         # Normalize line endings to LF, matching the old widget's setup().
-        self.setEOLMode(2)  # SC_EOL_LF
-        self.convertEOLs(2)  # SC_EOL_LF
+        self.editor.setEOLMode(2)  # SC_EOL_LF
+        self.editor.convertEOLs(2)  # SC_EOL_LF
 
         # Hide the non-folding symbol margin.
-        self.setMarginWidthN(SYMBOL_MARGIN, 0)
+        self.editor.setMarginWidthN(SYMBOL_MARGIN, 0)
 
         # Pre-style the line-number margin; stays hidden until lineNumbersVisible is set.
-        self.setMarginTypeN(LINE_NUMBER_MARGIN, Scintilla.MarginType.Number)
-        self.styleSetBack(Scintilla.StylesCommon.LineNumber, 0xA0A0A0)
+        self.editor.setMarginTypeN(LINE_NUMBER_MARGIN, Scintilla.MarginType.Number)
+        self.editor.styleSetBack(Scintilla.StylesCommon.LineNumber, 0xA0A0A0)
 
         # Represent line endings as a visible "↩" glyph when lineEndVisible is on.
-        self.setRepresentation("\n", "↩")
-        self.setRepresentationColour("\n", EOL_REPRESENTATION_COLOUR)
-        self.setRepresentationAppearance("\n", EOL_REPRESENTATION_APPEARANCE)
+        self.editor.setRepresentation("\n", "↩")
+        self.editor.setRepresentationColour("\n", EOL_REPRESENTATION_COLOUR)
+        self.editor.setRepresentationAppearance("\n", EOL_REPRESENTATION_APPEARANCE)
 
         # ScintillaEditBase.modified's Scintilla::Position/FoldLevel-typed parameters
         # can't be marshalled to a Python slot; get_doc().modified carries the same
         # notification with plain-int parameters instead. Keep a reference: the
         # returned ScintillaDocument has no Qt parent and stops emitting once dropped.
         self.__suppress_modified = False
-        self.__doc = self.get_doc()
+        self.__doc = self.editor.get_doc()
         self.__doc.modified.connect(self.__on_modified)
 
     def __lineEndVisible(self) -> bool:
         """Whether end-of-line characters are shown as visible glyphs."""
-        return self.viewEOL()
+        return self.editor.viewEOL()
 
     @Slot(bool)
     def setLineEndVisible(self, visible: bool) -> None:
         """Show or hide end-of-line characters."""
-        if visible == self.viewEOL():
+        if visible == self.editor.viewEOL():
             return
-        self.setViewEOL(visible)
+        self.editor.setViewEOL(visible)
         self.lineEndVisibleChanged.emit(visible)
 
     def __lineNumbersVisible(self) -> bool:
         """Whether the line-number margin is currently shown."""
-        return self.marginWidthN(LINE_NUMBER_MARGIN) > 0
+        return self.editor.marginWidthN(LINE_NUMBER_MARGIN) > 0
 
     @Slot(bool)
     def setLineNumbersVisible(self, visible: bool) -> None:
@@ -110,39 +121,39 @@ class BScintillaEdit(ScintillaEdit):
 
         def margin_width() -> int:
             """Pixel width that fits the current number of lines, plus a little padding."""
-            digits = max(2, len(str(self.lineCount())))
-            return self.textWidth(Scintilla.StylesCommon.LineNumber, "9" * digits) + 4
+            digits = max(2, len(str(self.editor.lineCount())))
+            return self.editor.textWidth(Scintilla.StylesCommon.LineNumber, "9" * digits) + 4
 
-        self.setMarginWidthN(LINE_NUMBER_MARGIN, margin_width() if visible else 0)
+        self.editor.setMarginWidthN(LINE_NUMBER_MARGIN, margin_width() if visible else 0)
         self.lineNumbersVisibleChanged.emit(visible)
 
     def __lineWrapped(self) -> bool:
         """Whether long lines are wrapped instead of scrolling horizontally."""
-        return self.wrapMode() != 0  # SC_WRAP_NONE
+        return self.editor.wrapMode() != 0  # SC_WRAP_NONE
 
     @Slot(bool)
     def setLineWrapped(self, wrapped: bool) -> None:
         """Enable or disable line wrapping."""
         if wrapped == self.__lineWrapped():
             return
-        self.setWrapMode(3 if wrapped else 0)  # SC_WRAP_WHITESPACE / SC_WRAP_NONE
+        self.editor.setWrapMode(3 if wrapped else 0)  # SC_WRAP_WHITESPACE / SC_WRAP_NONE
         self.lineWrappedChanged.emit(wrapped)
 
     def __readOnly(self) -> bool:
         """Whether the editor rejects further edits."""
-        return super().readOnly()
+        return self.editor.readOnly()
 
     @Slot(bool)
     def setReadOnly(self, readOnly: bool) -> None:
         """Set whether the editor rejects further edits."""
-        if readOnly == super().readOnly():
+        if readOnly == self.editor.readOnly():
             return
-        super().setReadOnly(readOnly)
+        self.editor.setReadOnly(readOnly)
         self.readOnlyChanged.emit(readOnly)
 
     def __text(self) -> str:
         """The editor's full contents."""
-        return bytes(self.getText(self.textLength() + 1).data()).rstrip(b"\x00").decode("utf-8")
+        return bytes(self.editor.getText(self.editor.textLength() + 1).data()).rstrip(b"\x00").decode("utf-8")
 
     @Slot(str)
     def setText(self, text: str) -> None:
@@ -150,24 +161,24 @@ class BScintillaEdit(ScintillaEdit):
         if text == self.__text():
             return
 
-        was_read_only = super().readOnly()
+        was_read_only = self.editor.readOnly()
         if was_read_only:
-            super().setReadOnly(False)
+            self.editor.setReadOnly(False)
 
         # Replacing the contents fires both a delete and an insert modified
         # notification; suppress __on_modified's emission for those and emit
         # textChanged exactly once below, with the final text.
         self.__suppress_modified = True
         try:
-            super().setText(text)
+            self.editor.setText(text)
         finally:
             self.__suppress_modified = False
 
-        self.setSavePoint()
-        self.emptyUndoBuffer()
+        self.editor.setSavePoint()
+        self.editor.emptyUndoBuffer()
 
         if was_read_only:
-            super().setReadOnly(True)
+            self.editor.setReadOnly(True)
 
         self.textChanged.emit(text)
 
@@ -178,7 +189,7 @@ class BScintillaEdit(ScintillaEdit):
 
     def __blockEditEnabled(self) -> bool:
         """Whether block (rectangular) selection and block editing are enabled."""
-        return self.additionalSelectionTyping()
+        return self.editor.additionalSelectionTyping()
 
     @Slot(bool)
     def setBlockEditEnabled(self, enabled: bool) -> None:
@@ -190,10 +201,10 @@ class BScintillaEdit(ScintillaEdit):
         """
         if enabled == self.__blockEditEnabled():
             return
-        self.setMouseSelectionRectangularSwitch(enabled)
-        self.setMultipleSelection(enabled)
-        self.setAdditionalSelectionTyping(enabled)
-        self.setVirtualSpaceOptions(
+        self.editor.setMouseSelectionRectangularSwitch(enabled)
+        self.editor.setMultipleSelection(enabled)
+        self.editor.setAdditionalSelectionTyping(enabled)
+        self.editor.setVirtualSpaceOptions(
             Scintilla.VirtualSpace.RectangularSelection | Scintilla.VirtualSpace.UserAccessible
             if enabled
             else Scintilla.VirtualSpace.None_
@@ -211,6 +222,6 @@ class BScintillaEdit(ScintillaEdit):
     lineEndVisible = Property(bool, __lineEndVisible, setLineEndVisible, notify=lineEndVisibleChanged)
     lineNumbersVisible = Property(bool, __lineNumbersVisible, setLineNumbersVisible, notify=lineNumbersVisibleChanged)
     lineWrapped = Property(bool, __lineWrapped, setLineWrapped, notify=lineWrappedChanged)
-    readOnly = Property(bool, __readOnly, setReadOnly, notify=readOnlyChanged)  # type: ignore[assignment]
+    readOnly = Property(bool, __readOnly, setReadOnly, notify=readOnlyChanged)
     text = Property(str, __text, setText, notify=textChanged)
     blockEditEnabled = Property(bool, __blockEditEnabled, setBlockEditEnabled, notify=blockEditEnabledChanged)

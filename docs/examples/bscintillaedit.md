@@ -1,10 +1,10 @@
 # bscintillaedit
 
-A small, portable, single-file `BScintillaEdit(ScintillaEdit)` subclass
-that's a **drop-in replacement** for the old, now-archived `bscintillaedit`
-PyPI package's `BScintillaEdit(QScrollArea)` widget (see
+A small, portable, single-file `BScintillaEdit(QScrollArea)` widget that's a
+**drop-in replacement** for the old, now-archived `bscintillaedit` PyPI
+package's widget of the same name (see
 [Project mission](../mission.md)). Copy `bscintillaedit.py` straight into
-your own project — same properties, signals, and slots
+your own project — same base class, properties, signals, and slots
 (`lineEndVisible`, `lineNumbersVisible`, `lineWrapped`, `readOnly`, `text`,
 their `*Changed` signals and setter slots, and `clear()`), same defaults (LF
 line endings, hidden symbol margin, styled line-number margin, "↩"

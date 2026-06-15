@@ -1,4 +1,4 @@
-# bscintillaedit
+# BScintillaEdit drop-in replacement
 
 A small, portable, single-file `BScintillaEdit(QScrollArea)` widget that's a
 **drop-in replacement** for the old, now-archived `bscintillaedit` PyPI

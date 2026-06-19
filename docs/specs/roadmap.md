@@ -16,6 +16,16 @@ local environment loss.
    `pyside6-scintilla` version independently.
 3. **Linux aarch64 wheels** — deferred. Only take this on when someone
    actually asks for it; not speculative work.
+4. **Claude skill for upgrading to a new Scintilla release** — deferred.
+   Automate [docs/bindings.md](../bindings.md)'s "Updating to a new Scintilla
+   release" procedure (vendoring the new tarball, diffing
+   `ScintillaEditBase.pro`/`CMakeLists.txt`, adding new `bindings.xml`
+   type entries, re-checking the duplicate-`Message`-enum workaround,
+   version bump, rebuild/test) plus the docs side (regenerating
+   `_pyside6_scintilla.pyi` via `tools/generate_pyi.py`, refreshing the
+   Scintilla API docs conversion table below for new/changed messages).
+   Only worth building once a second real Scintilla update happens --
+   premature to generalize from a single (the original Phase 1) migration.
 
 ## Scintilla API docs conversion progress
 

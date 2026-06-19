@@ -122,6 +122,17 @@ itself releases a new version.
 | [docs/specs/roadmap.md](https://github.com/borco/pyside6-scintilla/blob/master/docs/specs/roadmap.md) | Ordered list of upcoming work |
 | [docs/testpypi.md](https://github.com/borco/pyside6-scintilla/blob/master/docs/testpypi.md) | Setting up TestPyPI trusted publishing |
 
+## Development tools
+
+[tools/](https://github.com/borco/pyside6-scintilla/tree/master/tools) holds
+development scripts, run with `uv run python tools/<script>.py`:
+
+| Script | Purpose |
+| --- | --- |
+| [generate_pyi.py](https://github.com/borco/pyside6-scintilla/blob/master/tools/generate_pyi.py) | Regenerates the `.pyi` type stub for `_pyside6_scintilla` |
+| [check_docs_sync.py](https://github.com/borco/pyside6-scintilla/blob/master/tools/check_docs_sync.py) | Verifies shared content blocks stay in sync between `README.md` and `docs/index.md` |
+| [clean_window_corners.py](https://github.com/borco/pyside6-scintilla/blob/master/tools/clean_window_corners.py) | One-off cleanup for Windows window screenshots used in docs |
+
 ## License
 
 - `src/scintilla/` — [HPND License](https://www.scintilla.org/License.txt)

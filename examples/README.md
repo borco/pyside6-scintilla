@@ -22,3 +22,11 @@ editing enabled.
 per-message API (e.g. `setText()`, `lineCount()`, `gotoLine()`) instead of
 `ScintillaEditBase`'s raw `send`/`sends` messages. Has a toolbar button to
 show/hide the line-number margin and a "Go to Line" action.
+
+## [`pygments_highlighting`](pygments_highlighting/)
+
+`QMainWindow` with a `ScintillaEdit` central widget showing Python syntax
+highlighting driven by a [Pygments](https://pygments.org/) lexer, with
+styling applied manually via raw `SCI_STYLE*` messages (no lexer binding
+required). The reusable highlighter lives in `pygments_highlighter.py`,
+copyable into your own project.

@@ -40,4 +40,14 @@ uv run python examples/<example>/main.py
 
     [:octicons-arrow-right-24: More](bscintillaedit.md)
 
+-   :material-language-python:{ .lg .middle } __Pygments syntax highlighting__
+
+    ---
+
+    Python syntax highlighting in a `ScintillaEdit`, driven by a
+    [Pygments](https://pygments.org/) lexer and applied manually via raw
+    `SCI_STYLE*` messages — no lexer binding required.
+
+    [:octicons-arrow-right-24: More](pygments_highlighting.md)
+
 </div>

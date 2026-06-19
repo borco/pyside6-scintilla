@@ -9,12 +9,30 @@ how the bindings are built and maintained.
 # the binding will not load if we don't explicitly import PySide6.QtWidgets
 import PySide6.QtWidgets  # noqa: F401
 
-from ._pyside6_scintilla import (
-    Scintilla,
-    ScintillaDocument,
-    ScintillaEdit,
-    ScintillaEditBase,
-)
+from ._pyside6_scintilla import Scintilla, ScintillaDocument
+from ._pyside6_scintilla import ScintillaEditBaseFixed as _ScintillaEditBaseFixed
+from ._pyside6_scintilla import ScintillaEditFixed as _ScintillaEditFixed
+
+
+class ScintillaEditBase(_ScintillaEditBaseFixed):
+    """The Scintilla editing widget, without ScintillaEdit's convenience API.
+
+    A real subclass rather than an import alias, so type checkers (and
+    "go to definition") report this class's own name instead of the
+    underlying ``ScintillaEditBaseFixed`` binding class -- see
+    docs/bindings.md for why that class exists.
+    """
+
+
+class ScintillaEdit(_ScintillaEditFixed):
+    """The Scintilla editing widget.
+
+    A real subclass rather than an import alias, so type checkers (and
+    "go to definition") report this class's own name instead of the
+    underlying ``ScintillaEditFixed`` binding class -- see docs/bindings.md
+    for why that class exists.
+    """
+
 
 __version__ = "5.6.3.2"
 

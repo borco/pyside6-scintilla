@@ -23,7 +23,9 @@ set(GENERATED_SOURCES
     ${CMAKE_CURRENT_BINARY_DIR}/_pyside6_scintilla/scintilla_wrapper.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/_pyside6_scintilla/scintilla_notificationdata_wrapper.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/_pyside6_scintilla/scintillaeditbase_wrapper.cpp
+    ${CMAKE_CURRENT_BINARY_DIR}/_pyside6_scintilla/scintillaeditbasefixed_wrapper.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/_pyside6_scintilla/scintillaedit_wrapper.cpp
+    ${CMAKE_CURRENT_BINARY_DIR}/_pyside6_scintilla/scintillaeditfixed_wrapper.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/_pyside6_scintilla/scintilladocument_wrapper.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/_pyside6_scintilla/_pyside6_scintilla_module_wrapper.cpp
 )
@@ -49,6 +51,12 @@ if(WIN32)
     # generated wrapper sources.
     target_compile_definitions(_pyside6_scintilla PRIVATE WIN32_LEAN_AND_MEAN)
 endif()
+
+# ScintillaEditBaseFixed/ScintillaEditFixed (see scintilla_signal_fixes.h)
+# declare Q_OBJECT signals, so AUTOMOC needs this header in the target's own
+# sources to moc it -- bindings.h is only read by shiboken's ApiExtractor,
+# never compiled, so listing it there wouldn't be enough.
+target_sources(_pyside6_scintilla PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/scintilla_signal_fixes.h)
 
 # _pyside6_scintilla.{pyd,so} links against scintilla_qt; install it into the
 # same package directory and point the loader at that directory.

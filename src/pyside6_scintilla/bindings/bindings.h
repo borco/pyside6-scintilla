@@ -28,6 +28,8 @@
 #include <ScintillaEdit.h>
 #include <ScintillaDocument.h>
 
+#include "scintilla_signal_fixes.h"
+
 // <windows.h> (pulled in transitively via Qt/Python headers) defines FindText
 // as a macro to FindTextA/FindTextW, which mangles Scintilla::Message::FindText
 // in shiboken-generated code. Undo it for the rest of this translation unit.

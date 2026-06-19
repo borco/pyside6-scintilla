@@ -5,10 +5,12 @@ Scintilla.iface, one per SCI_* message) work end to end on top of the same
 compiled extension/vendored Scintilla core as ScintillaEditBase.
 """
 
+from pytestqt.qtbot import QtBot
+
 from pyside6_scintilla import ScintillaEdit
 
 
-def test_set_and_get_text(qtbot):
+def test_set_and_get_text(qtbot: QtBot) -> None:
     """setText() followed by textLength()/getText() round trips the text."""
     editor = ScintillaEdit()
     qtbot.addWidget(editor)
@@ -19,7 +21,7 @@ def test_set_and_get_text(qtbot):
     assert editor.getText(editor.textLength()).data() == b"hello"
 
 
-def test_line_from_position_and_select_all(qtbot):
+def test_line_from_position_and_select_all(qtbot: QtBot) -> None:
     """lineFromPosition() and selectAll() behave as expected on multi-line text."""
     editor = ScintillaEdit()
     qtbot.addWidget(editor)

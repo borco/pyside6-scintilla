@@ -114,6 +114,92 @@ will need `delvewheel`/`auditwheel`/`delocate` in CI, or an
 `_pyside6_scintilla`'s `INSTALL_RPATH` is already set to `$ORIGIN`
 (Linux)/`@loader_path` (macOS) in anticipation of this.
 
+### 4. `ScintillaEditBase`/`ScintillaEdit` signals carrying `Scintilla::Position`/enum-typed parameters never reach a Python slot
+
+shiboken marshals `Scintilla::Position`/`ModificationFlags`/`FoldLevel`/etc.
+fine for *ordinary* method arguments (they're registered as
+`<primitive-type>`/`<enum-type>` in `bindings.xml`), but Qt's generic
+meta-call path -- used to invoke a Python slot from a C++ signal emission --
+can't convert them. Connecting a Python slot to e.g.
+`ScintillaEditBase.modified` looked like it worked (`connect()` raised
+nothing), but the slot was never actually called: Qt's event loop swallows
+the resulting `TypeError`. Registering these as Qt meta-types was considered
+and rejected in favor of re-emission (below), to avoid baking
+Scintilla-specific `Q_DECLARE_METATYPE` registration into a generic binding
+layer.
+
+**Fix**: `bindings/scintilla_signal_fixes.h` (a hand-written, non-vendored
+header, included from `bindings.h`) declares two subclasses,
+`ScintillaEditBaseFixed`/`ScintillaEditFixed`, that connect each affected
+signal in C++ to a lambda re-emitting the same data as a plain-typed
+(`int`/`QByteArray`/`QString`) signal of the *same name* -- the same pattern
+already used by `ScintillaDocument::modified` (see
+`src/scintilla/qt/ScintillaEdit/ScintillaDocument.h`). PySide creates a
+`Signal` descriptor for each signal it finds in a class's own `QMetaObject`,
+so the subclass's redeclaration simply shadows the inherited
+broken-signature one through normal Python attribute/MRO lookup -- the same
+mechanism that lets a Python subclass override a method by just redefining
+it, no typesystem changes involved. `src/pyside6_scintilla/__init__.py`
+imports the `Fixed` classes aliased to the public
+`ScintillaEditBase`/`ScintillaEdit` names, so this is invisible from the
+public API.
+
+A few non-obvious wrinkles along the way:
+
+- **`generate="no"` breaks header include order.** The first attempt set
+  `generate="no"` on `ScintillaEditBase`/`ScintillaEdit` (since
+  `ScintillaEditBaseFixed`/`ScintillaEditFixed` are the only Python-visible
+  classes) but that drops the header from shiboken's "Bound library
+  includes" list in the generated module header, which is sorted
+  alphabetically -- losing `ScintillaEditBase.h` (which internally includes
+  `ScintillaTypes.h` before `ScintillaStructures.h`) left `ScintillaStructures.h`
+  included before `ScintillaTypes.h` with nothing to satisfy its need for
+  `Position` first. **Fix**: keep `ScintillaEditBase`/`ScintillaEdit` fully
+  bound (default `generate="yes"`) -- a `<modify-function remove="all"/>` on
+  the broken signal overloads was tried too, on the assumption it'd avoid an
+  ambiguous Python overload, but turned out to be a no-op (see the next
+  point) and was dropped as dead weight.
+- **`<modify-function>` doesn't apply to Qt signals.** Unlike ordinary
+  methods, Qt signals are exposed to Python via PySide's own metaobject
+  introspection at class-creation time, not via shiboken's
+  typesystem-driven method generation -- so a `<modify-function
+  signature="..." remove="all"/>` targeting a signal silently has no effect
+  (confirmed: removing the dozen `remove="all"` rules entirely, the build
+  and full test suite behaved identically). The fix above never needed
+  them -- the shadowing happens purely through normal Python class
+  attribute/MRO lookup, the same mechanism a Python subclass uses to
+  override any other inherited attribute by just redefining it.
+- **moc can't parse the vendored headers.** `ScintillaEditBaseFixed`/
+  `ScintillaEditFixed` need `Q_OBJECT`, so CMake's `AUTOMOC` runs moc over
+  `scintilla_signal_fixes.h` -- but moc's lightweight parser chokes on
+  `ScintillaStructures.h`'s more intricate C++ once it's transitively
+  included. moc only actually needs the base class names for the generated
+  metaobject, not their full definitions. **Fix**: guard the real includes
+  with `#ifdef Q_MOC_RUN` / `#else`, giving moc bare forward declarations of
+  `ScintillaEditBase`/`ScintillaEdit` instead.
+- **`EXPORT_IMPORT_API` only makes sense across a DLL boundary.** Vendored
+  `ScintillaEditBase`/`ScintillaEdit` use this macro because they live in
+  `scintilla_qt.dll` and are imported by `_pyside6_scintilla`. Applying the
+  same macro to `ScintillaEditBaseFixed`/`ScintillaEditFixed` -- which are
+  defined and compiled entirely *within* `_pyside6_scintilla`, no DLL
+  boundary crossed -- resolved to `__declspec(dllimport)` on Windows and
+  collided with moc's own definition of `staticMetaObject`
+  (`error C2491: definition of dllimport static data member not allowed`).
+  **Fix**: don't apply `EXPORT_IMPORT_API` to classes fully contained within
+  one compiled module.
+- **`<modify-function>` only applies to the declaring class.** shiboken
+  ignores a `<modify-function>` rule registered against a subclass that
+  merely *inherits* the method rather than redeclaring it. `get_doc()`'s
+  `<define-ownership owner="target"/>` rule (giving Python ownership of the
+  returned `ScintillaDocument`) has to stay on `<object-type
+  name="ScintillaEdit">`, where `get_doc()` is actually declared --
+  registering it on `ScintillaEditFixed` (a subclass that just inherits it)
+  silently no-ops, and the document's signals kept firing even after its
+  Python wrapper was dropped.
+
+See `tests/test_scintilla_edit_base.py::test_modified_signal_reaches_python_slot`
+for the regression test.
+
 ## Type stubs (`_pyside6_scintilla.pyi`)
 
 `src/pyside6_scintilla/_pyside6_scintilla.pyi` (plus the PEP 561

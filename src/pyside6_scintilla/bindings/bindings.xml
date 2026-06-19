@@ -50,7 +50,32 @@
         </value-type>
     </namespace-type>
 
+    <!-- Several of ScintillaEditBase's signals carry
+         Scintilla::Position/ModificationFlags/FoldLevel/etc. parameters
+         that Qt's generic meta-call path can't convert when invoking a
+         Python slot (the connection silently fails, see
+         scintilla_signal_fixes.h). ScintillaEditBaseFixed below redeclares
+         each affected signal with a plain-int signature; since Qt signals
+         are exposed to Python via PySide's own metaobject introspection
+         (not via this typesystem's <modify-function>, which only affects
+         ordinary methods), the subclass's redeclaration simply shadows the
+         inherited broken one through normal Python attribute/MRO lookup,
+         so nothing needs to be (or can usefully be) removed here.
+
+         Still bound here (not generate="no") despite ScintillaEditBaseFixed
+         being the only Python-visible class (see __init__.py): shiboken
+         derives each generated file's required #include order from which
+         bound types use it, and ScintillaEditBase.h is what keeps
+         ScintillaTypes.h (Position et al.) included before
+         ScintillaStructures.h (NotificationData et al., which needs
+         Position) in the generated module header. Losing that via
+         generate="no" left Position undefined when compiling
+         ScintillaStructures.h. -->
     <object-type name="ScintillaEditBase"/>
+
+    <!-- Python-visible as ScintillaEditBase (see __init__.py); see the
+         ScintillaEditBase entry above for why this exists. -->
+    <object-type name="ScintillaEditBaseFixed"/>
 
     <!-- shiboken handles the ScintillaDocument(QObject *parent = 0,
          void *pdoc_ = 0) constructor's void* fine as-is (surfaced as
@@ -60,14 +85,26 @@
          set_doc() before any of them have text. -->
     <object-type name="ScintillaDocument"/>
 
+    <!-- Not Python-visible directly (see __init__.py), for the same reason
+         as ScintillaEditBase above: it inherits the same broken-signature
+         signals directly from the vendored ScintillaEditBase, not from
+         ScintillaEditBaseFixed. ScintillaEditFixed below redeclares them. -->
     <object-type name="ScintillaEdit">
         <!-- get_doc() returns a fresh heap ScintillaDocument with no Qt parent;
              give Python ownership so it's freed when the wrapper is garbage
-             collected. -->
+             collected. Declared here rather than on ScintillaEditFixed below
+             (the class actually exposed to Python, see __init__.py): the
+             typesystem only honors modify-function for the class that
+             declares the method, not a subclass that merely inherits it,
+             so putting it on ScintillaEditFixed silently no-ops.
+             ScintillaEditFixed inherits this ownership rule from here. -->
         <modify-function signature="get_doc()">
             <modify-argument index="return">
                 <define-ownership owner="target"/>
             </modify-argument>
         </modify-function>
     </object-type>
+
+    <!-- Python-visible as ScintillaEdit (see __init__.py). -->
+    <object-type name="ScintillaEditFixed"/>
 </typesystem>

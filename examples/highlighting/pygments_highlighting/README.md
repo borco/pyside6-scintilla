@@ -7,7 +7,7 @@ on. Instead, [`pygments_highlighter.py`](pygments_highlighter.py) tokenizes
 the editor's text with Pygments' lexer/token API and applies the resulting
 styles manually via `ScintillaEdit`'s raw `SCI_STYLE*` messages
 (`styleSetFore()`, `startStyling()`, `setStyling()`, ...), re-running on
-every edit via the editor's document's `modified` signal.
+every edit via the editor's `modified` signal.
 
 `pygments_highlighter.py` has no dependencies beyond `pyside6-scintilla` and
 `pygments` — copy it straight into your own project, same as
@@ -21,12 +21,6 @@ edit. That's fine at example/small-file scale, but won't scale to large
 files — a production version would restyle only the changed region (using
 the `modified` signal's position/length) and reuse the lexer's stateful
 tokenizing where the lexer supports it.
-
-`ScintillaEdit.modified`'s `Scintilla::Position`/`Scintilla::FoldLevel`-typed
-parameters can't be marshalled to a Python slot — `PygmentsHighlighter`
-connects to `editor.get_doc().modified` instead, which carries the same
-notification with plain-int parameters (same workaround as
-[`bscintillaedit.py`](../../bscintillaedit/)).
 
 ## Running
 

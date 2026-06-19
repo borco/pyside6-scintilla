@@ -9,17 +9,19 @@ later notifications overwrite the underlying struct, its fields no longer
 reflect the notification it was received for.
 """
 
+from pytestqt.qtbot import QtBot
+
 from pyside6_scintilla import Scintilla, ScintillaEdit
 
 
-def test_text_field_is_a_safe_copy_at_access_time(qtbot):
+def test_text_field_is_a_safe_copy_at_access_time(qtbot: QtBot) -> None:
     """NotificationData.text, read during the handler, is an independent str."""
     editor = ScintillaEdit()
     qtbot.addWidget(editor)
 
-    captured_text = None
+    captured_text: str | None = None
 
-    def on_notify(nd):
+    def on_notify(nd: Scintilla.NotificationData) -> None:
         nonlocal captured_text
         if nd.modificationType & int(Scintilla.ModificationFlags.InsertText) and nd.text:
             captured_text = nd.text
@@ -30,15 +32,15 @@ def test_text_field_is_a_safe_copy_at_access_time(qtbot):
     assert captured_text == "hello"
 
 
-def test_notification_data_must_not_be_retained_past_the_handler(qtbot):
+def test_notification_data_must_not_be_retained_past_the_handler(qtbot: QtBot) -> None:
     """A NotificationData kept after notify() returns reflects later state, not
     a snapshot of the notification it was delivered with."""
     editor = ScintillaEdit()
     qtbot.addWidget(editor)
 
-    retained = []
+    retained: list[Scintilla.NotificationData] = []
 
-    def on_notify(nd):
+    def on_notify(nd: Scintilla.NotificationData) -> None:
         if nd.modificationType & int(Scintilla.ModificationFlags.InsertText) and nd.text:
             retained.append(nd)
 

@@ -163,12 +163,6 @@ class TreeSitterHighlighter(QObject):
         self.__parser: Final = Parser(language)
         self.__query: Final = Query(language, highlights_query)
         self.__connected = False
-        # ScintillaEdit.modified's Scintilla::Position/FoldLevel-typed parameters
-        # can't be marshalled to a Python slot; get_doc().modified carries the
-        # same notification with plain-int parameters instead. Keep a reference:
-        # the returned ScintillaDocument has no Qt parent and stops emitting
-        # once dropped.
-        self.__doc: Final = editor.get_doc()
 
         for style, (red, green, blue) in STYLE_COLORS.items():
             if font is not None:
@@ -231,9 +225,9 @@ class TreeSitterHighlighter(QObject):
         if connected == self.__connected:
             return
         if connected:
-            self.__doc.modified.connect(self.__on_modified)
+            self.__editor.modified.connect(self.__on_modified)
         else:
-            self.__doc.modified.disconnect(self.__on_modified)
+            self.__editor.modified.disconnect(self.__on_modified)
         self.__connected = connected
 
     def __on_modified(self, *_args: object) -> None:

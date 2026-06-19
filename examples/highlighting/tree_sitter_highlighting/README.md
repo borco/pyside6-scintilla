@@ -16,8 +16,7 @@ parses the editor's text with a tree-sitter `Language` (here,
   `setFoldLevel()` — the same message a real lexer would drive folding
   with, wired to a standard "boxes" fold margin.
 
-Both re-run on every edit via the editor's document's `modified` signal
-(see Limitations below for why the document's, not the editor's, signal).
+Both re-run on every edit via the editor's `modified` signal.
 
 `tree_sitter_highlighter.py` has no dependencies beyond `pyside6-scintilla`,
 `tree-sitter` and a tree-sitter language package — copy it straight into
@@ -44,12 +43,6 @@ Folding is keyed off the Python grammar's `block` node alone (any indented
 compound-statement body) — good enough for `if`/`for`/`while`/`def`/`class`/
 etc., but a grammar with other foldable constructs (e.g. multi-line
 collections, import groups) would need more node types in `fold_levels()`.
-
-`ScintillaEdit.modified`'s `Scintilla::Position`/`Scintilla::FoldLevel`-typed
-parameters can't be marshalled to a Python slot — `TreeSitterHighlighter`
-connects to `editor.get_doc().modified` instead, which carries the same
-notification with plain-int parameters (same workaround as
-[`bscintillaedit.py`](../../bscintillaedit/)).
 
 ## Running
 

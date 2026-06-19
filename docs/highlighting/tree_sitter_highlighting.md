@@ -16,7 +16,7 @@ every edit and:
   `setFoldLevel()` — the same message a real lexer would drive folding
   with, wired to a standard "boxes" fold margin.
 
-Both re-run on every edit via the editor's document's `modified` signal.
+Both re-run on every edit via the editor's `modified` signal.
 
 `tree_sitter_highlighter.py` has no dependencies beyond `pyside6-scintilla`,
 `tree-sitter` and a tree-sitter language package — copy it straight into
@@ -67,13 +67,6 @@ only the changed range instead.
 > ```python
 > TreeSitterHighlighter(editor, language, HIGHLIGHTS_QUERY, parent=window)
 > ```
-
-> [!NOTE]
-> `ScintillaEdit.modified`'s `Scintilla::Position`/`Scintilla::FoldLevel`-typed
-> parameters can't be marshalled to a Python slot — `TreeSitterHighlighter`
-> connects to `editor.get_doc().modified` instead, which carries the same
-> notification with plain-int parameters (see
-> [`bscintillaedit.py`](../examples/bscintillaedit.md) for the same workaround).
 
 ## Running
 

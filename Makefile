@@ -54,3 +54,5 @@ publish: format test lint
 # pyside6-scintilla` whenever bindings.xml/bindings.h change the public API.
 stubs:
 	uv run python tools/generate_pyi.py
+
+qa: format test lint

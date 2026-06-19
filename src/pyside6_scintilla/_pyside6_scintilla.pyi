@@ -8,7 +8,7 @@ _pyside6_scintilla, except for defaults which are replaced by "...".
 # mypy: disable-error-code="override, overload-overlap"
 # Module `_pyside6_scintilla`
 
-import _pyside6_scintilla
+import pyside6_scintilla._pyside6_scintilla as _pyside6_scintilla
 import PySide6.QtCore
 import PySide6.QtGui
 import PySide6.QtWidgets
@@ -30,6 +30,29 @@ class Scintilla(Shiboken.Object):
     Position = int
     sptr_t = int
     uptr_t = int
+
+    # ScintillaTypes.h's free-standing constexpr constants -- not enum
+    # members, but real Scintilla.<Name> attributes at runtime.
+    InvalidPosition: typing.Final = -1
+    r"""Sentinel returned by position-returning `Scintilla.Message` values when there is no match or no valid position."""
+    CpUtf8: typing.Final = 65001
+    r"""Code page value enabling UTF-8 mode, e.g. via `Scintilla.Message.SetCodePage`. Same value as Windows' `CP_UTF8`."""
+    MarkerMax: typing.Final = 31
+    r"""Highest valid marker number -- up to 32 markers (0-31) can be set per line."""
+    MaskHistory: typing.Final = 31457280
+    r"""Bitmask (0x01E00000) isolating the change-history bits of a line's marker/margin mask."""
+    MaskFolders: typing.Final = -33554432
+    r"""Bitmask (0xFE000000) isolating the fold-level bits of a line's marker/margin mask. Too large for a 32-bit signed int, so its runtime value wraps to negative."""
+    MaxMargin: typing.Final = 4
+    r"""Highest valid margin index -- up to 5 margins (0-4) can be shown."""
+    FontSizeMultiplier: typing.Final = 100
+    r"""Scintilla stores font sizes as hundredths of a point internally; divide a fractional size (e.g. from `Scintilla.Message.StyleGetSizeFractional`) by this to get points."""
+    TimeForever: typing.Final = 10000000
+    r"""Sentinel meaning "no timeout", e.g. for `Scintilla.Message.SetMouseDwellTime`."""
+    KeywordsetMax: typing.Final = 8
+    r"""Highest valid `keywordSet` index accepted by `Scintilla.Message.SetKeyWords`."""
+    IndicatorMax: typing.Final = 43
+    r"""Highest valid indicator number."""
 
     class CharacterSource(enum.IntEnum):
 
@@ -1881,6 +1904,9 @@ class Scintilla(Shiboken.Object):
 
 
 class ScintillaDocument(PySide6.QtCore.QObject):
+    r"""Wraps a Scintilla document buffer independently of any `ScintillaEdit` view.
+
+    Obtain one from an existing editor via `ScintillaEdit.get_doc()` (and share it with another editor via `set_doc()`), or construct one standalone to hold text off-screen. Exposes a subset of `ScintillaEdit`'s editing/undo API directly on the buffer, plus `modified`/`save_point`/etc. signals."""
 
     error_occurred           : typing.ClassVar[Signal] = ... # error_occurred(int)
     modified                 : typing.ClassVar[Signal] = ... # modified(int,int,QByteArray,int,int,int,int,int)
@@ -3703,6 +3729,74 @@ class ScintillaEditBase(PySide6.QtWidgets.QAbstractScrollArea):
         Use this for messages whose `lParam` is a string, e.g. `Scintilla.Message.AddText` or `Scintilla.Message.SetText`. `s` accepts `bytes`, `bytearray`, `memoryview`, or `str` (encoded as UTF-8)."""
     def wheelEvent(self, event: PySide6.QtGui.QWheelEvent, /) -> None:
         r"""Reimplemented from `QWidget`: scrolls the view, or changes zoom when Ctrl is held."""
+
+
+class ScintillaEditBaseFixed(_pyside6_scintilla.ScintillaEditBase):
+
+    autoCompleteSelection    : typing.ClassVar[Signal] = ... # autoCompleteSelection(int,QString)
+    r"""The user selected `text` from an autocompletion list, before it's inserted (SCN_AUTOCSELECTION). `position` is the start of the word being completed.
+
+        Call `Scintilla.Message.AutoCCancel` during this signal to stop the automatic insertion."""
+    command                  : typing.ClassVar[Signal] = ... # command(quintptr,qintptr)
+    r"""Emitted for compatibility with other Scintilla front-ends' command notifications, e.g. alongside `notifyChange` with `wParam`/`lParam` encoding `SCEN_CHANGE` and the control id."""
+    doubleClick              : typing.ClassVar[Signal] = ... # doubleClick(int,int)
+    r"""The mouse was double-clicked at `position` on `line` (SCN_DOUBLECLICK)."""
+    hotSpotClick             : typing.ClassVar[Signal] = ... # hotSpotClick(int,int)
+    r"""The user clicked text styled with the hotspot attribute, at `position`, with `modifiers` held down (SCN_HOTSPOTCLICK)."""
+    hotSpotDoubleClick       : typing.ClassVar[Signal] = ... # hotSpotDoubleClick(int,int)
+    r"""Like `hotSpotClick`, but for a double-click (SCN_HOTSPOTDOUBLECLICK)."""
+    linesAdded               : typing.ClassVar[Signal] = ... # linesAdded(int)
+    r"""The number of lines in the document changed by `linesAdded` (negative if lines were removed)."""
+    macroRecord              : typing.ClassVar[Signal] = ... # macroRecord(int,quintptr,qintptr)
+    r"""A recordable action occurred while macro recording is enabled (`Scintilla.Message.StartRecord`, SCN_MACRORECORD). `message`/`wParam`/`lParam` are the message to replay."""
+    marginClicked            : typing.ClassVar[Signal] = ... # marginClicked(int,int,int)
+    r"""The mouse was clicked in a margin marked sensitive with `Scintilla.Message.SetMarginSensitiveN` (SCN_MARGINCLICK). `position` is the start of the clicked line and `margin` its index."""
+    modified                 : typing.ClassVar[Signal] = ... # modified(int,int,int,int,QByteArray,int,int,int)
+    r"""The document's text or styling changed, or is about to (SCN_MODIFIED). `type` is a `Scintilla.ModificationFlags` bitmask describing what; `text` holds the inserted/deleted bytes for `Scintilla.ModificationFlags.InsertText`/`DeleteText`."""
+    needShown                : typing.ClassVar[Signal] = ... # needShown(int,int)
+    r"""A range of currently-hidden lines should be made visible, e.g. with `Scintilla.Message.EnsureVisible` (SCN_NEEDSHOWN)."""
+    styleNeeded              : typing.ClassVar[Signal] = ... # styleNeeded(int)
+    r"""Container-lexer styling is needed up to `position` (SCN_STYLENEEDED). Only sent if `Scintilla.Message.SetILexer` was passed `None`."""
+    textAreaClicked          : typing.ClassVar[Signal] = ... # textAreaClicked(int,int)
+    r"""The text area was clicked on `line`, with `modifiers` held down."""
+    updateUi                 : typing.ClassVar[Signal] = ... # updateUi(int)
+    r"""The text, styling, selection, or scroll position may have changed (SCN_UPDATEUI). `updated` is a `Scintilla.Update` bitmask of what changed since the previous notification."""
+
+    def __init__(self, /, parent: PySide6.QtWidgets.QWidget | None = ...) -> None: ...
+
+
+class ScintillaEditFixed(_pyside6_scintilla.ScintillaEdit):
+
+    autoCompleteSelection    : typing.ClassVar[Signal] = ... # autoCompleteSelection(int,QString)
+    r"""The user selected `text` from an autocompletion list, before it's inserted (SCN_AUTOCSELECTION). `position` is the start of the word being completed.
+
+        Call `Scintilla.Message.AutoCCancel` during this signal to stop the automatic insertion."""
+    command                  : typing.ClassVar[Signal] = ... # command(quintptr,qintptr)
+    r"""Emitted for compatibility with other Scintilla front-ends' command notifications, e.g. alongside `notifyChange` with `wParam`/`lParam` encoding `SCEN_CHANGE` and the control id."""
+    doubleClick              : typing.ClassVar[Signal] = ... # doubleClick(int,int)
+    r"""The mouse was double-clicked at `position` on `line` (SCN_DOUBLECLICK)."""
+    hotSpotClick             : typing.ClassVar[Signal] = ... # hotSpotClick(int,int)
+    r"""The user clicked text styled with the hotspot attribute, at `position`, with `modifiers` held down (SCN_HOTSPOTCLICK)."""
+    hotSpotDoubleClick       : typing.ClassVar[Signal] = ... # hotSpotDoubleClick(int,int)
+    r"""Like `hotSpotClick`, but for a double-click (SCN_HOTSPOTDOUBLECLICK)."""
+    linesAdded               : typing.ClassVar[Signal] = ... # linesAdded(int)
+    r"""The number of lines in the document changed by `linesAdded` (negative if lines were removed)."""
+    macroRecord              : typing.ClassVar[Signal] = ... # macroRecord(int,quintptr,qintptr)
+    r"""A recordable action occurred while macro recording is enabled (`Scintilla.Message.StartRecord`, SCN_MACRORECORD). `message`/`wParam`/`lParam` are the message to replay."""
+    marginClicked            : typing.ClassVar[Signal] = ... # marginClicked(int,int,int)
+    r"""The mouse was clicked in a margin marked sensitive with `Scintilla.Message.SetMarginSensitiveN` (SCN_MARGINCLICK). `position` is the start of the clicked line and `margin` its index."""
+    modified                 : typing.ClassVar[Signal] = ... # modified(int,int,int,int,QByteArray,int,int,int)
+    r"""The document's text or styling changed, or is about to (SCN_MODIFIED). `type` is a `Scintilla.ModificationFlags` bitmask describing what; `text` holds the inserted/deleted bytes for `Scintilla.ModificationFlags.InsertText`/`DeleteText`."""
+    needShown                : typing.ClassVar[Signal] = ... # needShown(int,int)
+    r"""A range of currently-hidden lines should be made visible, e.g. with `Scintilla.Message.EnsureVisible` (SCN_NEEDSHOWN)."""
+    styleNeeded              : typing.ClassVar[Signal] = ... # styleNeeded(int)
+    r"""Container-lexer styling is needed up to `position` (SCN_STYLENEEDED). Only sent if `Scintilla.Message.SetILexer` was passed `None`."""
+    textAreaClicked          : typing.ClassVar[Signal] = ... # textAreaClicked(int,int)
+    r"""The text area was clicked on `line`, with `modifiers` held down."""
+    updateUi                 : typing.ClassVar[Signal] = ... # updateUi(int)
+    r"""The text, styling, selection, or scroll position may have changed (SCN_UPDATEUI). `updated` is a `Scintilla.Update` bitmask of what changed since the previous notification."""
+
+    def __init__(self, /, parent: PySide6.QtWidgets.QWidget | None = ...) -> None: ...
 
 
 # eof

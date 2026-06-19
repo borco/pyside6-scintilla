@@ -21,6 +21,13 @@ After generation, this script also:
   primitive typedefs, not nested types, but genpyi emits them as
   `Scintilla.Position`-style forward references that wouldn't otherwise
   resolve.
+- Adds typed, documented attributes for `Scintilla.InvalidPosition`,
+  `CpUtf8`, `MarkerMax`, `MaskHistory`, `MaskFolders`, `MaxMargin`,
+  `FontSizeMultiplier`, `TimeForever`, `KeywordsetMax`, and `IndicatorMax` --
+  `ScintillaTypes.h`'s free-standing `constexpr` constants, runtime-accessible
+  but otherwise entirely absent from the stub, since genpyi only stitches
+  enum members from a wrapped namespace. See
+  `SCINTILLA_NAMESPACE_CONSTANTS_DOCS` below.
 - Stitches the `# ...` doc comments from
   `src/scintilla/include/Scintilla.iface` into `Scintilla.Message` and
   `Scintilla.CharacterSource` enum members as docstrings, so they show up as
@@ -137,6 +144,46 @@ PRIMITIVE_ALIASES: Final = (
     "    uptr_t = int\n"
 )
 
+# ScintillaTypes.h's free-standing `constexpr` constants (Position/int-typed,
+# not enum members) -- shiboken still exposes these as plain `Scintilla.<Name>`
+# int attributes (see scintilla_wrapper.cpp's PyDict_SetItemString calls), but
+# genpyi's stub generation only stitches enum members from a wrapped
+# namespace, so these are otherwise entirely missing from the stub. Values
+# are the actual runtime ints, not always the source's hex literal -- e.g.
+# MaskFolders's `0xFE000000` doesn't fit in a 32-bit signed int, so it wraps
+# to a negative value at runtime. Docs are from the `#` comment (if any)
+# above the matching `val SC_.../INDIC_...` line in Scintilla.iface, or
+# hand-written where there is none.
+SCINTILLA_NAMESPACE_CONSTANTS_DOCS: Final[dict[str, tuple[int, str]]] = {
+    "InvalidPosition": (
+        -1,
+        "Sentinel returned by position-returning `Scintilla.Message` values when there is no match or no valid position.",
+    ),
+    "CpUtf8": (
+        65001,
+        "Code page value enabling UTF-8 mode, e.g. via `Scintilla.Message.SetCodePage`. Same value as Windows' `CP_UTF8`.",
+    ),
+    "MarkerMax": (31, "Highest valid marker number -- up to 32 markers (0-31) can be set per line."),
+    "MaskHistory": (
+        0x01E00000,
+        "Bitmask (0x01E00000) isolating the change-history bits of a line's marker/margin mask.",
+    ),
+    "MaskFolders": (
+        -33554432,
+        "Bitmask (0xFE000000) isolating the fold-level bits of a line's marker/margin mask. Too large for a "
+        "32-bit signed int, so its runtime value wraps to negative.",
+    ),
+    "MaxMargin": (4, "Highest valid margin index -- up to 5 margins (0-4) can be shown."),
+    "FontSizeMultiplier": (
+        100,
+        "Scintilla stores font sizes as hundredths of a point internally; divide a fractional size (e.g. from "
+        "`Scintilla.Message.StyleGetSizeFractional`) by this to get points.",
+    ),
+    "TimeForever": (10000000, 'Sentinel meaning "no timeout", e.g. for `Scintilla.Message.SetMouseDwellTime`.'),
+    "KeywordsetMax": (8, "Highest valid `keywordSet` index accepted by `Scintilla.Message.SetKeyWords`."),
+    "IndicatorMax": (43, "Highest valid indicator number."),
+}
+
 # Hand-transcribed from the "Virtual space options" table in
 # src/scintilla/doc/ScintillaDoc.html (SCVS_* constants). Scintilla.iface has
 # no per-member `# ` comments for this enum.
@@ -231,6 +278,18 @@ SCINTILLA_EDIT_HELPER_DOCS: Final = {
     ),
     "formatRange": "Alias for `format_range`.",
 }
+
+# Hand-written class docstring for ScintillaDocument -- genpyi has nothing to
+# stitch a class docstring from, since this is the binding's own class, not a
+# Qt class.
+SCINTILLA_DOCUMENT_CLASS_DOC: Final = (
+    "Wraps a Scintilla document buffer independently of any `ScintillaEdit` view.\n\n"
+    "    Obtain one from an existing editor via `ScintillaEdit.get_doc()` (and share it "
+    "with another editor via `set_doc()`), or construct one standalone to hold text "
+    "off-screen. Exposes a subset of `ScintillaEdit`'s editing/undo API directly on the "
+    "buffer, plus `modified`/`save_point`/etc. signals."
+)
+
 
 # Hand-transcribed from ScintillaDocument.h/.cpp -- ScintillaDocument's
 # methods aren't generated from Scintilla.iface, so genpyi emits only their
@@ -571,6 +630,24 @@ def add_primitive_aliases(text: str) -> str:
     )
 
 
+def add_namespace_constants(text: str) -> str:
+    """Insert typed, documented `Scintilla.<Name>` attributes for SCINTILLA_NAMESPACE_CONSTANTS_DOCS.
+
+    Inserted right after the primitive aliases (must run after
+    `add_primitive_aliases`), since genpyi never emits these at all -- see
+    SCINTILLA_NAMESPACE_CONSTANTS_DOCS above for why.
+    """
+    lines = [
+        "\n"
+        "    # ScintillaTypes.h's free-standing constexpr constants -- not enum\n"
+        "    # members, but real Scintilla.<Name> attributes at runtime.\n"
+    ]
+    for name, (value, doc) in SCINTILLA_NAMESPACE_CONSTANTS_DOCS.items():
+        lines.append(f"    {name}: typing.Final = {value!r}\n")
+        lines.append(f'    r"""{doc}"""\n')
+    return text.replace(PRIMITIVE_ALIASES, PRIMITIVE_ALIASES + "".join(lines), 1)
+
+
 def add_enum_docstrings(text: str, enum_class: str, docs: dict[str, str]) -> str:
     """Insert each doc comment as a docstring after the member of `Scintilla.<enum_class>` it documents."""
     out: list[str] = []
@@ -617,6 +694,28 @@ def add_signal_docstrings(text: str, class_name: str, docs: dict[str, str]) -> s
                 if doc:
                     out.append(f'{indent}r"""{doc}"""\n')
     return "".join(out)
+
+
+def fix_self_import(text: str) -> str:
+    """Rewrite genpyi's bare `import _pyside6_scintilla` to the real dotted module path.
+
+    genpyi derives the self-import from the extension's runtime `__name__`
+    (bare `_pyside6_scintilla`, since shiboken doesn't qualify compiled
+    extension module names with their parent package), not from where the
+    stub is actually installed (`pyside6_scintilla/_pyside6_scintilla.pyi`,
+    i.e. submodule `pyside6_scintilla._pyside6_scintilla`). Pyright can't
+    resolve a bare top-level `_pyside6_scintilla` import, so every
+    `_pyside6_scintilla.<Name>` reference -- return types like
+    `ScintillaEdit.get_doc()`, and base classes like
+    `ScintillaEditFixed(_pyside6_scintilla.ScintillaEdit)` -- silently
+    resolves to `Unknown`, along with every member a subclass inherits
+    through one of those unresolved bases.
+    """
+    return text.replace(
+        "import _pyside6_scintilla\n",
+        "import pyside6_scintilla._pyside6_scintilla as _pyside6_scintilla\n",
+        1,
+    )
 
 
 def normalize_send_signatures(text: str) -> str:
@@ -683,15 +782,25 @@ def main() -> None:
     """Generate `_pyside6_scintilla.pyi`, then post-process it in place."""
     run_genpyi()
     text = PYI_PATH.read_text()
+    text = fix_self_import(text)
     text = normalize_send_signatures(text)
     text = add_primitive_aliases(text)
+    text = add_namespace_constants(text)
     text = add_enum_docstrings(text, "Message", parse_iface_docs(IFACE_PATH))
     text = add_enum_docstrings(text, "CharacterSource", parse_character_source_docs(IFACE_PATH))
     text = add_enum_docstrings(text, "VirtualSpace", VIRTUAL_SPACE_DOCS)
     text = add_enum_docstrings(text, "Update", UPDATE_DOCS)
     text = add_enum_docstrings(text, "ModificationFlags", MODIFICATION_FLAGS_DOCS)
     text = add_class_docstring(text, "ScintillaEditBase", SCINTILLA_EDIT_BASE_CLASS_DOC)
+    text = add_class_docstring(text, "ScintillaDocument", SCINTILLA_DOCUMENT_CLASS_DOC)
     text = add_signal_docstrings(text, "ScintillaEditBase", SCINTILLA_EDIT_BASE_SIGNAL_DOCS)
+    # ScintillaEditBaseFixed/ScintillaEditFixed only redeclare the signals
+    # scintilla_signal_fixes.h re-emits with plain-int signatures (see
+    # docs/bindings.md) -- add_signal_docstrings only matches `ClassVar[Signal]`
+    # lines that exist in the target class body, so reusing the same dict here
+    # documents just those masked/visible ones, not all ~37.
+    text = add_signal_docstrings(text, "ScintillaEditBaseFixed", SCINTILLA_EDIT_BASE_SIGNAL_DOCS)
+    text = add_signal_docstrings(text, "ScintillaEditFixed", SCINTILLA_EDIT_BASE_SIGNAL_DOCS)
     text = add_method_docstrings(text, "ScintillaEditBase", SEND_DOCS)
     text = add_method_docstrings(text, "ScintillaEditBase", SCINTILLA_EDIT_BASE_OVERRIDE_DOCS)
     text = add_method_docstrings(text, "ScintillaEdit", SCINTILLA_EDIT_HELPER_DOCS)

@@ -81,6 +81,7 @@ nav:
   - Home: index.md
   - Development:
       - Project mission: specs/mission.md
+      - Roadmap: specs/roadmap.md
       - Alternatives & landscape: alternatives.md
       - Bindings architecture: bindings.md
       - Build instructions: build.md

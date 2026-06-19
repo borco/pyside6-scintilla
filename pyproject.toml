@@ -126,8 +126,13 @@ venv = ".venv"
 
 [tool.cibuildwheel]
 build = "cp31{1,2,3,4}-win_amd64 cp31{1,2,3,4}-manylinux_x86_64 cp31{1,2,3,4}-macosx_arm64 cp31{1,2,3,4}-macosx_x86_64"
-test-requires = ["pytest>=8.0", "pytest-qt>=4.4"]
-test-command = "pytest {project}/tests"
+test-requires = ["pytest>=8.0", "pytest-mock>=3.14", "pytest-qt>=4.4"]
+
+# test_typing_stubs.py shells out to pyright over the source tree -- a
+# static-analysis check of the repo, not a runtime test of the built wheel,
+# and pyright isn't in test-requires. uv run pytest / CI's lint job already
+# cover it; skip it here so it doesn't run once per wheel.
+test-command = "pytest {project}/tests --ignore={project}/tests/test_typing_stubs.py"
 
 [tool.cibuildwheel.windows]
 test-environment = { QT_QPA_PLATFORM = "offscreen" }

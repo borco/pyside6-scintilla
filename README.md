@@ -14,8 +14,8 @@
 
 ## Status
 
-The `ScintillaEditBase` and `ScintillaEdit` bindings are implemented and
-working — see
+The `ScintillaEditBase`, `ScintillaEdit`, and `ScintillaDocument` bindings
+are implemented and working — see
 [examples/](https://github.com/borco/pyside6-scintilla/tree/master/examples)
 for runnable demos. Pre-built wheels are published on
 [PyPI](https://pypi.org/project/pyside6-scintilla/) for Linux

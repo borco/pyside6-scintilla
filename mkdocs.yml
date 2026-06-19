@@ -63,6 +63,7 @@ theme:
 
 markdown_extensions:
   - admonition
+  - github-callouts
   - attr_list
   - md_in_html
   - footnotes

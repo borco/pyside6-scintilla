@@ -1,10 +1,10 @@
 # Cut, copy and paste [:material-link-variant:](../../scintilla-original/ScintillaDoc.html#CutCopyAndPaste "Upstream documentation"){ .heading-link }
 
-!!! note
-    This page is adapted from the upstream Scintilla **5.6.3** documentation
-    (`ScintillaDoc.html`), converted to Markdown for this site. It documents
-    the underlying `ScintillaEditBase.send`/`sends` message API -- see the
-    [API reference](../../reference/index.md) for the Python bindings themselves.
+> [!NOTE]
+> This page is adapted from the upstream Scintilla **5.6.3** documentation
+> (`ScintillaDoc.html`), converted to Markdown for this site. It documents
+> the underlying `ScintillaEditBase.send`/`sends` message API -- see the
+> [API reference](../../reference/index.md) for the Python bindings themselves.
 
 - [`SCI_CUT`](#SCI_CUT)
 - [`SCI_COPY`](#SCI_COPY)

@@ -35,18 +35,18 @@ export CMAKE_PREFIX_PATH=/path/to/Qt/6.11.1/gcc_64   # or macos/clang_64, etc.
 uv sync
 ```
 
-!!! tip
-    **Windows**: to avoid setting `CMAKE_PREFIX_PATH` every session, persist it
-    to the user environment instead:
-
-    ```powershell
-    $existing = [System.Environment]::GetEnvironmentVariable("CMAKE_PREFIX_PATH", "User")
-    $new = if ($existing) { "$existing;C:\Qt\6.11.1\msvc2022_64" } else { "C:\Qt\6.11.1\msvc2022_64" }
-    [System.Environment]::SetEnvironmentVariable("CMAKE_PREFIX_PATH", $new, "User")
-    ```
-
-    Restart your terminal (or VS Code) afterward -- the new value only applies
-    to terminals opened after it's set.
+> [!TIP]
+> **Windows**: to avoid setting `CMAKE_PREFIX_PATH` every session, persist it
+> to the user environment instead:
+>
+> ```powershell
+> $existing = [System.Environment]::GetEnvironmentVariable("CMAKE_PREFIX_PATH", "User")
+> $new = if ($existing) { "$existing;C:\Qt\6.11.1\msvc2022_64" } else { "C:\Qt\6.11.1\msvc2022_64" }
+> [System.Environment]::SetEnvironmentVariable("CMAKE_PREFIX_PATH", $new, "User")
+> ```
+>
+> Restart your terminal (or VS Code) afterward -- the new value only applies
+> to terminals opened after it's set.
 
 ### Forcing a rebuild
 

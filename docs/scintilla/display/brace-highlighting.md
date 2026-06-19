@@ -1,7 +1,7 @@
 # Brace highlighting [:material-link-variant:](../../scintilla-original/ScintillaDoc.html#BraceHighlighting "Upstream documentation"){ .heading-link }
 
-!!! note "Work in progress"
-    This section (`ScintillaDoc.html#BraceHighlighting`) hasn't been converted to
-    Markdown for this site yet. In the meantime, see the
-    [local copy of the upstream Scintilla **5.6.3** documentation](../../scintilla-original/ScintillaDoc.html#BraceHighlighting)
-    for "Brace highlighting".
+> [!NOTE]
+> **Work in progress.** This section (`ScintillaDoc.html#BraceHighlighting`) hasn't been converted to
+> Markdown for this site yet. In the meantime, see the
+> [local copy of the upstream Scintilla **5.6.3** documentation](../../scintilla-original/ScintillaDoc.html#BraceHighlighting)
+> for "Brace highlighting".

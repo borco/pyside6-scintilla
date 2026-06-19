@@ -1,10 +1,10 @@
 # Searching [:material-link-variant:](../../scintilla-original/ScintillaDoc.html#Searching "Upstream documentation"){ .heading-link }
 
-!!! note
-    This page is adapted from the upstream Scintilla **5.6.3** documentation
-    (`ScintillaDoc.html`), converted to Markdown for this site. It documents
-    the underlying `ScintillaEditBase.send`/`sends` message API -- see the
-    [API reference](../../reference/index.md) for the Python bindings themselves.
+> [!NOTE]
+> This page is adapted from the upstream Scintilla **5.6.3** documentation
+> (`ScintillaDoc.html`), converted to Markdown for this site. It documents
+> the underlying `ScintillaEditBase.send`/`sends` message API -- see the
+> [API reference](../../reference/index.md) for the Python bindings themselves.
 
 There are methods to search for text and for regular expressions. Most applications should use [`SCI_SEARCHINTARGET`](#SCI_SEARCHINTARGET) as the basis for their search implementations. Other calls augment this or were implemented before `SCI_SEARCHINTARGET`.
 

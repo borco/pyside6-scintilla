@@ -1,7 +1,7 @@
 # Provisional messages [:material-link-variant:](../../scintilla-original/ScintillaDoc.html#ProvisionalMessages "Upstream documentation"){ .heading-link }
 
-!!! note "Work in progress"
-    This section (`ScintillaDoc.html#ProvisionalMessages`) hasn't been converted to
-    Markdown for this site yet. In the meantime, see the
-    [local copy of the upstream Scintilla **5.6.3** documentation](../../scintilla-original/ScintillaDoc.html#ProvisionalMessages)
-    for "Provisional messages".
+> [!NOTE]
+> **Work in progress.** This section (`ScintillaDoc.html#ProvisionalMessages`) hasn't been converted to
+> Markdown for this site yet. In the meantime, see the
+> [local copy of the upstream Scintilla **5.6.3** documentation](../../scintilla-original/ScintillaDoc.html#ProvisionalMessages)
+> for "Provisional messages".

@@ -1,7 +1,7 @@
 # Macro recording [:material-link-variant:](../../scintilla-original/ScintillaDoc.html#MacroRecording "Upstream documentation"){ .heading-link }
 
-!!! note "Work in progress"
-    This section (`ScintillaDoc.html#MacroRecording`) hasn't been converted to
-    Markdown for this site yet. In the meantime, see the
-    [local copy of the upstream Scintilla **5.6.3** documentation](../../scintilla-original/ScintillaDoc.html#MacroRecording)
-    for "Macro recording".
+> [!NOTE]
+> **Work in progress.** This section (`ScintillaDoc.html#MacroRecording`) hasn't been converted to
+> Markdown for this site yet. In the meantime, see the
+> [local copy of the upstream Scintilla **5.6.3** documentation](../../scintilla-original/ScintillaDoc.html#MacroRecording)
+> for "Macro recording".

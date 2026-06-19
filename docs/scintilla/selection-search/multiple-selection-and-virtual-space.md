@@ -1,10 +1,10 @@
 # Multiple Selection and Virtual Space [:material-link-variant:](../../scintilla-original/ScintillaDoc.html#MultipleSelectionAndVirtualSpace "Upstream documentation"){ .heading-link }
 
-!!! note
-    This page is adapted from the upstream Scintilla **5.6.3** documentation
-    (`ScintillaDoc.html`), converted to Markdown for this site. It documents
-    the underlying `ScintillaEditBase.send`/`sends` message API -- see the
-    [API reference](../../reference/index.md) for the Python bindings themselves.
+> [!NOTE]
+> This page is adapted from the upstream Scintilla **5.6.3** documentation
+> (`ScintillaDoc.html`), converted to Markdown for this site. It documents
+> the underlying `ScintillaEditBase.send`/`sends` message API -- see the
+> [API reference](../../reference/index.md) for the Python bindings themselves.
 
 - [`SCI_SETMULTIPLESELECTION(bool multipleSelection)`](#SCI_SETMULTIPLESELECTION)
 - [`SCI_GETMULTIPLESELECTION → bool`](#SCI_GETMULTIPLESELECTION)

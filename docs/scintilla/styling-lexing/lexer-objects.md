@@ -1,7 +1,7 @@
 # Lexer Objects [:material-link-variant:](../../scintilla-original/ScintillaDoc.html#LexerObjects "Upstream documentation"){ .heading-link }
 
-!!! note "Work in progress"
-    This section (`ScintillaDoc.html#LexerObjects`) hasn't been converted to
-    Markdown for this site yet. In the meantime, see the
-    [local copy of the upstream Scintilla **5.6.3** documentation](../../scintilla-original/ScintillaDoc.html#LexerObjects)
-    for "Lexer Objects".
+> [!NOTE]
+> **Work in progress.** This section (`ScintillaDoc.html#LexerObjects`) hasn't been converted to
+> Markdown for this site yet. In the meantime, see the
+> [local copy of the upstream Scintilla **5.6.3** documentation](../../scintilla-original/ScintillaDoc.html#LexerObjects)
+> for "Lexer Objects".

@@ -1909,10 +1909,15 @@ class ScintillaDocument(PySide6.QtCore.QObject):
     Obtain one from an existing editor via `ScintillaEdit.get_doc()` (and share it with another editor via `set_doc()`), or construct one standalone to hold text off-screen. Exposes a subset of `ScintillaEdit`'s editing/undo API directly on the buffer, plus `modified`/`save_point`/etc. signals."""
 
     error_occurred           : typing.ClassVar[Signal] = ... # error_occurred(int)
+    r"""An internal error occurred while editing the document. `status` is one of Scintilla's internal `Status` codes (e.g. out-of-memory or a malformed regular expression) -- not currently exposed as an enum by this binding."""
     modified                 : typing.ClassVar[Signal] = ... # modified(int,int,QByteArray,int,int,int,int,int)
+    r"""The document's text or styling changed, or is about to (SCN_MODIFIED). `modification_type` is a `Scintilla.ModificationFlags` bitmask describing what; `text` holds the inserted/deleted bytes for `Scintilla.ModificationFlags.InsertText`/`DeleteText`."""
     modify_attempt           : typing.ClassVar[Signal] = ... # modify_attempt()
+    r"""An edit was attempted while the document is read-only (SCN_MODIFYATTEMPTRO)."""
     save_point               : typing.ClassVar[Signal] = ... # save_point(bool)
+    r"""The document entered (`True`) or left (`False`) its save point (SCN_SAVEPOINTREACHED/SCN_SAVEPOINTLEFT)."""
     style_needed             : typing.ClassVar[Signal] = ... # style_needed(int)
+    r"""Container-lexer styling is needed up to `pos` (SCN_STYLENEEDED). Only sent if `Scintilla.Message.SetILexer` was passed `None`."""
 
     def __init__(self, /, parent: PySide6.QtCore.QObject | None = ..., pdoc_: int | None = ...) -> None:
         r"""Wrap a Scintilla document buffer, creating a new empty one unless `pdoc_` is given.

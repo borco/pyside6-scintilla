@@ -291,6 +291,31 @@ SCINTILLA_DOCUMENT_CLASS_DOC: Final = (
 )
 
 
+# Hand-transcribed from WatcherHelper's Notify*() overrides in
+# ScintillaDocument.cpp and Document::CheckReadOnly()/SetErrorStatus() in
+# Document.cxx -- these mirror a subset of ScintillaEditBase's notifications
+# (see SCINTILLA_EDIT_BASE_SIGNAL_DOCS) but aren't Qt overrides and have no
+# Scintilla.iface `evt` doc comments, so genpyi gives them no docstring.
+SCINTILLA_DOCUMENT_SIGNAL_DOCS: Final = {
+    "modify_attempt": "An edit was attempted while the document is read-only (SCN_MODIFYATTEMPTRO).",
+    "save_point": "The document entered (`True`) or left (`False`) its save point (SCN_SAVEPOINTREACHED/SCN_SAVEPOINTLEFT).",
+    "modified": (
+        "The document's text or styling changed, or is about to (SCN_MODIFIED). `modification_type` "
+        "is a `Scintilla.ModificationFlags` bitmask describing what; `text` holds the inserted/deleted "
+        "bytes for `Scintilla.ModificationFlags.InsertText`/`DeleteText`."
+    ),
+    "style_needed": (
+        "Container-lexer styling is needed up to `pos` (SCN_STYLENEEDED). Only sent if "
+        "`Scintilla.Message.SetILexer` was passed `None`."
+    ),
+    "error_occurred": (
+        "An internal error occurred while editing the document. `status` is one of Scintilla's "
+        "internal `Status` codes (e.g. out-of-memory or a malformed regular expression) -- not "
+        "currently exposed as an enum by this binding."
+    ),
+}
+
+
 # Hand-transcribed from ScintillaDocument.h/.cpp -- ScintillaDocument's
 # methods aren't generated from Scintilla.iface, so genpyi emits only their
 # bare signatures.
@@ -793,6 +818,7 @@ def main() -> None:
     text = add_enum_docstrings(text, "ModificationFlags", MODIFICATION_FLAGS_DOCS)
     text = add_class_docstring(text, "ScintillaEditBase", SCINTILLA_EDIT_BASE_CLASS_DOC)
     text = add_class_docstring(text, "ScintillaDocument", SCINTILLA_DOCUMENT_CLASS_DOC)
+    text = add_signal_docstrings(text, "ScintillaDocument", SCINTILLA_DOCUMENT_SIGNAL_DOCS)
     text = add_signal_docstrings(text, "ScintillaEditBase", SCINTILLA_EDIT_BASE_SIGNAL_DOCS)
     # ScintillaEditBaseFixed/ScintillaEditFixed only redeclare the signals
     # scintilla_signal_fixes.h re-emits with plain-int signatures (see

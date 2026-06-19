@@ -9,7 +9,7 @@
 
 *Permissively-licensed PySide6 bindings for the [Scintilla](https://www.scintilla.org/) code editor component.*
 
-[View on PyPI](https://pypi.org/project/pyside6-scintilla/)
+[View on PyPI](https://pypi.org/project/pyside6-scintilla/) · [View on GitHub](https://github.com/borco/pyside6-scintilla)
 <!-- /sync:header -->
 
 ## Status

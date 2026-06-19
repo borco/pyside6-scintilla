@@ -7,11 +7,11 @@ syntax highlighting driven by [Pygments](https://pygments.org/).
 editor's text with Pygments' lexer/token API and applies the resulting
 styles manually via `ScintillaEdit`'s raw `SCI_STYLE*` messages
 (`styleSetFore()`, `startStyling()`, `setStyling()`, ...), re-running on
-every edit via the `modified` signal.
+every edit via the editor's document's `modified` signal.
 
 `pygments_highlighter.py` has no dependencies beyond `pyside6-scintilla` and
 `pygments` — copy it straight into your own project, same as
-[`bscintillaedit.py`](bscintillaedit.md). `main.py` itself stays a thin
+[`bscintillaedit.py`](../examples/bscintillaedit.md). `main.py` itself stays a thin
 PySide6 app shell.
 
 `PygmentsHighlighter.rehighlight()` re-tokenizes the whole buffer on every
@@ -19,10 +19,9 @@ edit, which is fine at example/small-file scale but won't scale to large
 files — a production version would restyle only the changed region instead.
 
 > [!NOTE]
-> A `PygmentsHighlighter` instance is bound 1:1 to one `ScintillaEdit` (and
-> its `modified` signal) at construction — it can't highlight multiple
-> widgets by itself. To highlight several editors, create one instance per
-> widget:
+> A `PygmentsHighlighter` instance is bound 1:1 to one `ScintillaEdit` at
+> construction — it can't highlight multiple widgets by itself. To
+> highlight several editors, create one instance per widget:
 >
 > ```python
 > highlighter_a = PygmentsHighlighter(editor_a, PythonLexer())
@@ -42,12 +41,19 @@ files — a production version would restyle only the changed region instead.
 > PygmentsHighlighter(editor, PythonLexer(), parent=window)
 > ```
 
+> [!NOTE]
+> `ScintillaEdit.modified`'s `Scintilla::Position`/`Scintilla::FoldLevel`-typed
+> parameters can't be marshalled to a Python slot — `PygmentsHighlighter`
+> connects to `editor.get_doc().modified` instead, which carries the same
+> notification with plain-int parameters (see
+> [`bscintillaedit.py`](../examples/bscintillaedit.md) for the same workaround).
+
 ## Running
 
 From the repo root, after `uv sync`:
 
 ```bash
-uv run python examples/pygments_highlighting/main.py
+uv run python examples/highlighting/pygments_highlighting/main.py
 ```
 
 Pygments is a dev-only dependency of this repo, used solely for this example
@@ -55,7 +61,7 @@ Pygments is a dev-only dependency of this repo, used solely for this example
 
 ## Source
 
-[`examples/pygments_highlighting/`](https://github.com/borco/pyside6-scintilla/tree/master/examples/pygments_highlighting)
+[`examples/highlighting/pygments_highlighting/`](https://github.com/borco/pyside6-scintilla/tree/master/examples/highlighting/pygments_highlighting)
 
 ## Screenshots
 

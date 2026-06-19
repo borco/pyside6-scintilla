@@ -4,7 +4,7 @@ The actual styling logic lives in pygments_highlighter.py (PygmentsHighlighter),
 which can be copied into your own project on its own.
 
 Run with:
-    uv run python examples/pygments_highlighting/main.py
+    uv run python examples/highlighting/pygments_highlighting/main.py
 """
 
 import sys

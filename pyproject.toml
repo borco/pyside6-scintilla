@@ -73,6 +73,8 @@ dev = [
     "ruff>=0.8",
     "scikit-build-core>=0.10",
     "shiboken6-generator",
+    "tree-sitter>=0.25",
+    "tree-sitter-python>=0.25",
 ]
 docs = [
     "markdown-callouts>=0.4",

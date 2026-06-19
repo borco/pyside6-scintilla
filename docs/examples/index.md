@@ -8,6 +8,8 @@ in the repository and can be run directly after `uv sync`:
 uv run python examples/<example>/main.py
 ```
 
+## Basic
+
 <div class="grid cards" markdown>
 
 -   :material-form-textbox:{ .lg .middle } __Simple ScintillaEditBase edit__
@@ -40,14 +42,31 @@ uv run python examples/<example>/main.py
 
     [:octicons-arrow-right-24: More](bscintillaedit.md)
 
--   :material-language-python:{ .lg .middle } __Pygments syntax highlighting__
+</div>
+
+## Highlighting/Folding
+
+<div class="grid cards" markdown>
+
+-   :material-marker:{ .lg .middle } __Pygments highlighting__
 
     ---
 
     Python syntax highlighting in a `ScintillaEdit`, driven by a
     [Pygments](https://pygments.org/) lexer and applied manually via raw
-    `SCI_STYLE*` messages — no lexer binding required.
+    `SCI_STYLE*` messages.
 
-    [:octicons-arrow-right-24: More](pygments_highlighting.md)
+    [:octicons-arrow-right-24: More](../highlighting/pygments_highlighting.md)
+
+-   :material-marker:{ .lg .middle } __tree-sitter highlighting and folding__
+
+    ---
+
+    Python syntax highlighting *and* code folding in a `ScintillaEdit`,
+    driven by a [tree-sitter](https://tree-sitter.github.io/tree-sitter/)
+    grammar — styling applied via raw `SCI_STYLE*` messages, folding via
+    `setFoldLevel()`.
+
+    [:octicons-arrow-right-24: More](../highlighting/tree_sitter_highlighting.md)
 
 </div>

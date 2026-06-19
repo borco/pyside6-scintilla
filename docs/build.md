@@ -85,6 +85,7 @@ locates MSVC itself.
 uv run python -c "from pyside6_scintilla import Scintilla, ScintillaEditBase; print(Scintilla.Message.SetText)"
 uv run pytest
 uv run ruff check .
+uv run pyright
 ```
 
 or, via the `Makefile`:
@@ -111,7 +112,8 @@ make lint
    runtime (see [bindings.md](bindings.md) issue 3).
 3. Runs `uv sync`, `uv run pytest` (with `QT_QPA_PLATFORM=offscreen` for a
    headless `pytest-qt`), and `uv run ruff check .` / `ruff format --check .`
-   -- the same commands as [Verifying the build](#verifying-the-build) above.
+   / `uv run pyright` -- the same commands as
+   [Verifying the build](#verifying-the-build) above.
 
 CI doesn't run the example app, and only builds the dev install (not wheels)
 -- see [Building wheels](#building-wheels) below for the wheel-building

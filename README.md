@@ -25,13 +25,9 @@ see [docs/specs/roadmap.md](https://github.com/borco/pyside6-scintilla/blob/mast
 
 The [docs site](https://borco.github.io/pyside6-scintilla/) has a full
 "Scintilla API" navigation tree, but most pages are still placeholders
-pending conversion from the upstream `ScintillaDoc.html`:
-
-| | Pages | % |
-| --- | --- | --- |
-| Total | 59 | 100% |
-| Converted | 10 | 17% |
-| Work in progress | 49 | 83% |
+pending conversion from the upstream `ScintillaDoc.html` — see
+[docs/specs/roadmap.md](https://github.com/borco/pyside6-scintilla/blob/master/docs/specs/roadmap.md)
+for conversion progress.
 
 ## Why this exists
 

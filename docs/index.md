@@ -18,7 +18,8 @@ The `ScintillaEditBase` and `ScintillaEdit` bindings are implemented and
 working — see the [examples gallery](examples/index.md) for runnable demos.
 Pre-built wheels are published on
 [PyPI](https://pypi.org/project/pyside6-scintilla/) for Linux (x86_64),
-Windows (x86_64), and macOS (arm64, x86_64), Python 3.11-3.14.
+Windows (x86_64), and macOS (arm64, x86_64), Python 3.11-3.14. Linux aarch64
+wheels are planned — see [Roadmap](specs/roadmap.md) for what's next.
 
 ## Installation
 

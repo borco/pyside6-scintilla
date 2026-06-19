@@ -8,8 +8,8 @@ local environment loss.
    Python syntax-highlighting libraries (besides Pygments) and add examples
    for the ones that are both popular and not too complex to wire up.
 2. **Finish the Scintilla API docs** — convert the remaining placeholder
-   pages under `docs/scintilla/` from the upstream `ScintillaDoc.html` (10/59
-   converted as of this writing — see the table in [README.md](https://github.com/borco/pyside6-scintilla/blob/master/README.md)).
+   pages under `docs/scintilla/` from the upstream `ScintillaDoc.html` (see
+   the conversion progress table below).
 3. **Lexilla binding** — wraps Lexilla in a separate project,
    [borco/lexilla-py](https://github.com/borco/lexilla-py), published to PyPI
    as [`lexilla`](https://pypi.org/project/lexilla/) (name reserved). This
@@ -19,3 +19,11 @@ local environment loss.
    `pyside6-scintilla` version independently.
 4. **Linux aarch64 wheels** — deferred. Only take this on when someone
    actually asks for it; not speculative work.
+
+## Scintilla API docs conversion progress
+
+| | Pages | % |
+| --- | --- | --- |
+| Total | 59 | 100% |
+| Converted | 10 | 17% |
+| Work in progress | 49 | 83% |

@@ -67,6 +67,7 @@ input = "src/pyside6_scintilla/__init__.py"
 dev = [
     "cmake>=3.25",
     "ninja",
+    "pygments>=2.18",
     "pytest>=8.0",
     "pytest-qt>=4.4",
     "ruff>=0.8",
@@ -74,6 +75,7 @@ dev = [
     "shiboken6-generator",
 ]
 docs = [
+    "markdown-callouts>=0.4",
     "mkdocs>=1.6",
     "mkdocs-material>=9.5",
     "mkdocstrings[python]>=0.27",

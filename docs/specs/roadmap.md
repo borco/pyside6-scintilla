@@ -4,9 +4,18 @@ Ordered list of what's next. Update this file as items complete or priorities
 change — it's git-tracked specifically so it survives `git clean -dfx` and
 local environment loss.
 
-1. **Survey other popular Python lexers** — check for other widely-used
-   Python syntax-highlighting libraries (besides Pygments) and add examples
-   for the ones that are both popular and not too complex to wire up.
+1. **Fix the `modified`-style signal marshalling** — `ScintillaEditBase`
+   signals like `modified` carry `Scintilla::Position`/`Scintilla::FoldLevel`
+   etc.-typed parameters that shiboken can't marshal to a Python slot
+   (silently swallowed `TypeError`, signal never reaches Python). Needs
+   either Qt meta-type registration for these types or a hand-written
+   wrapper re-emitting the affected signals with plain-int signatures.
+   Drive this with TDD — write failing `pytest-qt`/`pytest-mock` tests
+   (e.g. asserting a connected slot actually receives the `modified`
+   emission) before changing the binding. Once fixed, update
+   `pygments_highlighter.py` and `tree_sitter_highlighter.py` (and their
+   examples/docs) to connect to `editor.modified` directly instead of the
+   `editor.get_doc().modified` workaround.
 2. **Finish the Scintilla API docs** — convert the remaining placeholder
    pages under `docs/scintilla/` from the upstream `ScintillaDoc.html` (see
    the conversion progress table below).

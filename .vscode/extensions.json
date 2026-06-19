@@ -1,5 +1,8 @@
 {
     "recommendations": [
         "charliermarsh.ruff"
+    ],
+    "unwantedRecommendations": [
+        "ms-python.mypy-type-checker"
     ]
 }

@@ -28,7 +28,7 @@ base path applies locally too).
 4. Before committing, run `uv run --group docs mkdocs build --strict` --
    this fails on broken internal links/anchors and missing nav entries,
    which is most of what goes wrong.
-5. If the page touches content shared with [`README.md`](../README.md) (currently the
+5. If the page touches content shared with [`README.md`](https://github.com/borco/pyside6-scintilla/blob/master/README.md) (currently the
    header badges, install snippet, and usage example on [`docs/index.md`](index.md)),
    keep the `<!-- sync:NAME -->`/`<!-- /sync:NAME -->` blocks in both files
    identical -- `tools/check_docs_sync.py` (run via `make lint` and CI)
@@ -161,6 +161,6 @@ after changing it, regenerate with `make stubs` and re-check `docs/reference/`.
 ## Keeping docs and code in sync
 
 - `tools/check_docs_sync.py` (via `make lint`) checks the `<!-- sync:NAME -->`
-  blocks shared between [`README.md`](../README.md) and [`docs/index.md`](index.md).
+  blocks shared between [`README.md`](https://github.com/borco/pyside6-scintilla/blob/master/README.md) and [`docs/index.md`](index.md).
 - `mkdocs build --strict` (via `docs.yml`) fails on broken links/anchors and
   missing nav entries -- run it locally before pushing any docs change.

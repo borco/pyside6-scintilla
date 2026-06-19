@@ -3,7 +3,7 @@
 A small, portable, single-file `BScintillaEdit(QScrollArea)` widget that's a
 **drop-in replacement** for the old, now-archived `bscintillaedit` PyPI
 package's widget of the same name (see
-[Project mission](../mission.md)). Copy `bscintillaedit.py` straight into
+[Project mission](../specs/mission.md)). Copy `bscintillaedit.py` straight into
 your own project — same base class, properties, signals, and slots
 (`lineEndVisible`, `lineNumbersVisible`, `lineWrapped`, `readOnly`, `text`,
 their `*Changed` signals and setter slots, and `clear()`), same defaults (LF

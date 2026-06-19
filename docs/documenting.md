@@ -28,8 +28,8 @@ base path applies locally too).
 4. Before committing, run `uv run --group docs mkdocs build --strict` --
    this fails on broken internal links/anchors and missing nav entries,
    which is most of what goes wrong.
-5. If the page touches content shared with `README.md` (currently the
-   header badges, install snippet, and usage example on `docs/index.md`),
+5. If the page touches content shared with [`README.md`](../README.md) (currently the
+   header badges, install snippet, and usage example on [`docs/index.md`](index.md)),
    keep the `<!-- sync:NAME -->`/`<!-- /sync:NAME -->` blocks in both files
    identical -- `tools/check_docs_sync.py` (run via `make lint` and CI)
    fails if they diverge.
@@ -136,18 +136,18 @@ build time (`docs.yml` runs with `--no-install-project`).
 
 It's one page per class/enum (one `::: pyside6_scintilla.<name>` block each,
 with `show_root_heading: true` and `heading_level: 1`), listed in
-`mkdocs.yml`'s `nav:` under "Reference", with `docs/reference/index.md` as a
+`mkdocs.yml`'s `nav:` under "Reference", with [`docs/reference/index.md`](reference/index.md) as a
 landing page linking to each:
 
-- `reference/scintilla-edit-base.md` -- `ScintillaEditBase` (the raw
+- [`reference/scintilla-edit-base.md`](reference/scintilla-edit-base.md) -- `ScintillaEditBase` (the raw
   `send`/`sends` message API plus Scintilla's notification signals), with
   hand-written docstrings for `send`/`sends`.
-- `reference/scintilla-edit.md` -- `ScintillaEdit`'s ~780 typed methods, with
+- [`reference/scintilla-edit.md`](reference/scintilla-edit.md) -- `ScintillaEdit`'s ~780 typed methods, with
   docstrings stitched from `Scintilla.iface` (see `tools/generate_pyi.py`'s
   `parse_widget_method_docs()`).
-- `reference/scintilla-document.md` -- `ScintillaDocument`'s ~40 methods,
+- [`reference/scintilla-document.md`](reference/scintilla-document.md) -- `ScintillaDocument`'s ~40 methods,
   hand-transcribed docstrings (`SCINTILLA_DOCUMENT_DOCS`).
-- `reference/message.md` -- `Scintilla.Message` as a glossary -- 815+ of 819
+- [`reference/message.md`](reference/message.md) -- `Scintilla.Message` as a glossary -- 815+ of 819
   members have a one-line docstring stitched in from
   `Scintilla.iface`/`ScintillaDoc.html`.
 
@@ -155,12 +155,12 @@ To add another enum or class, add a new `docs/reference/<name>.md` page with
 a `::: pyside6_scintilla.<name>` block and list it in `mkdocs.yml`'s `nav:`.
 If it needs per-member docstrings that don't exist yet, see
 `tools/generate_pyi.py` (`add_enum_docstrings()`/`add_method_docstrings()` and
-the various `*_DOCS` dicts) and `docs/bindings.md`'s "Type stubs" section --
+the various `*_DOCS` dicts) and [`docs/bindings.md`](bindings.md)'s "Type stubs" section --
 after changing it, regenerate with `make stubs` and re-check `docs/reference/`.
 
 ## Keeping docs and code in sync
 
 - `tools/check_docs_sync.py` (via `make lint`) checks the `<!-- sync:NAME -->`
-  blocks shared between `README.md` and `docs/index.md`.
+  blocks shared between [`README.md`](../README.md) and [`docs/index.md`](index.md).
 - `mkdocs build --strict` (via `docs.yml`) fails on broken links/anchors and
   missing nav entries -- run it locally before pushing any docs change.

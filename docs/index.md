@@ -62,7 +62,7 @@ a PyQt6 binding with no PySide6 equivalent, and it's GPLv3 or commercially
 licensed. Scintilla itself is licensed under the permissive
 [HPND license](https://www.scintilla.org/License.txt). This project exposes
 that permissive core directly to PySide6 users — see
-[Project mission](mission.md) for the full background.
+[Project mission](specs/mission.md) for the full background.
 
 ## Development
 

@@ -196,7 +196,7 @@ it (see `tests/test_scintilla_document.py`).
 
 ## Updating to a new Scintilla release
 
-Per `mission.md`, Scintilla updates are deliberate and tested, not automatic.
+Per [`docs/specs/mission.md`](specs/mission.md), Scintilla updates are deliberate and tested, not automatic.
 When vendoring a new release tarball:
 
 1. Replace `src/scintilla/` with the new release's contents (remove the old
@@ -225,4 +225,4 @@ When vendoring a new release tarball:
    against the same Scintilla release increment `N`).
 6. Rebuild with `uv sync --reinstall-package pyside6-scintilla` (`uv sync`
    alone doesn't always pick up CMake/typesystem changes), then
-   `uv run pytest` and `uv run ruff check .`. See `docs/build.md`.
+   `uv run pytest` and `uv run ruff check .`. See [`docs/build.md`](build.md).

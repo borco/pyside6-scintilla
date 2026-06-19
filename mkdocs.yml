@@ -80,7 +80,7 @@ markdown_extensions:
 nav:
   - Home: index.md
   - Development:
-      - Project mission: mission.md
+      - Project mission: specs/mission.md
       - Alternatives & landscape: alternatives.md
       - Bindings architecture: bindings.md
       - Build instructions: build.md

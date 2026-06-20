@@ -15,3 +15,6 @@ __pycache__/
 /src/lexilla/*.pyd
 /src/lexilla/*.so
 /src/lexilla/*.dylib
+
+# ignore continue prompts
+**/continue-prompt*

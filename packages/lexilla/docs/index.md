@@ -13,9 +13,11 @@
 
 ## Status
 
-Early scaffolding — the build toolchain (nanobind + CMake + scikit-build-core)
-is wired up end to end, but the real `CreateLexer`/`ILexer5` bindings don't
-exist yet. See [Roadmap](specs/roadmap.md) for what's next.
+Real `CreateLexer`/`ILexer5` bindings exist: `create_lexer`, `get_lexer_count`,
+`get_lexer_name`, and a `Lexer` class (name/identifier, property get/set,
+`word_list_set`, and the raw pointer for `SCI_SETILEXER`). `Lex`/`Fold` and
+the cross-binding/wheel-publishing work are not done yet. See
+[Roadmap](specs/roadmap.md) for what's next.
 
 ## Why this exists
 

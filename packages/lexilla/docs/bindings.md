@@ -1,36 +1,49 @@
 # The nanobind bindings
 
-How `_lexilla` is built today, and how it's expected to grow once real
-Lexilla bindings replace the current placeholder.
+How `_lexilla` is built and what it exposes.
 
-## How it fits together (current, placeholder state)
+## How it fits together
 
 - `src/lexilla_vendor/` -- vendored Lexilla release source (see
   [docs/auditing.md](auditing.md) for how it's verified against upstream).
-- `src/lexilla/bindings/_binding.cpp` -- nanobind module source. Currently a
-  single placeholder function (`smoke_test`), proving the toolchain (CMake +
-  scikit-build-core + nanobind) builds, installs, and loads end to end.
+- `src/scintilla_interface/` -- the handful of Scintilla headers
+  (`ILexer.h`, `Sci_Position.h`, `Scintilla.h`) that `ILexer5`'s declaration
+  and the lexer implementations need but that Lexilla's own tarball doesn't
+  ship -- see [docs/auditing.md](auditing.md) and
+  [docs/specs/mission.md](specs/mission.md) for why.
+- `src/lexilla_core/CMakeLists.txt` -- builds the vendored Lexilla sources
+  (`Lexilla.cxx`, `lexlib/*.cxx`, `lexers/Lex*.cxx`) as a static library,
+  analogous to pyside6-scintilla's `src/scintilla_qt/`.
+- `src/lexilla/bindings/_binding.cpp` -- nanobind module source. Exposes
+  `create_lexer`, `get_lexer_count`, `get_lexer_name`, and a `Lexer` class
+  wrapping `ILexer5` (name/identifier, property get/set/introspection,
+  `word_list_set`, and the raw pointer for `SCI_SETILEXER`).
 - `src/lexilla/bindings/CMakeLists.txt` -- compiles `_binding.cpp` into
-  `_lexilla.{pyd,so,dylib}` via `nanobind_add_module`, `add_subdirectory`'d
-  from the top-level `CMakeLists.txt`.
+  `_lexilla.{pyd,so,dylib}` via `nanobind_add_module`, linked against
+  `lexilla_core`, `add_subdirectory`'d from the top-level `CMakeLists.txt`.
 - `src/lexilla/__init__.py` -- re-exports the compiled extension's public
   API as the `lexilla` package.
 
-## Planned, once real bindings are built
+## `Lexer` lifetime and ownership
 
-See [docs/specs/mission.md](specs/mission.md) for the reasoning behind
-these:
+`create_lexer(name)` returns a `Lexer` wrapping a fresh `ILexer5*`, or `None`
+if no lexer has that name. The wrapper owns the pointer (calling `Release()`
+when garbage collected, or immediately via `.release()`) until
+`.detach()` is called, which hands ownership to the caller -- e.g. a
+Scintilla editor that the pointer is about to be handed to via
+`SCI_SETILEXER`, which will manage and eventually release it itself. Calling
+any other method after `.detach()`/`.release()` raises `RuntimeError`.
 
-- A CMake target (e.g. `lexilla_core`) building the vendored Lexilla C++
-  sources (`Lexilla.cxx`, the individual lexer `.cxx` files) as a static or
-  shared library, analogous to pyside6-scintilla's `src/scintilla_qt/`.
-  `src/lexilla/bindings/CMakeLists.txt` would link `_lexilla` against it.
-- `_lexilla` bindings for `CreateLexer`, `GetLexerCount`, `GetLexerName`,
-  and the core `ILexer5` methods (`Lex`, `Fold`, property get/set,
-  `WordListSet`) -- the minimal scope decided for the first usable version.
-- The created lexer's raw pointer exposed as a plain Python `int`, so it can
-  be handed to any Scintilla binding's `SCI_SETILEXER` -- and an optional
-  `lexilla[pyside6-scintilla]` extra with convenience glue on top of that.
+## Deferred: `Lex`/`Fold`
+
+`ILexer5::Lex`/`Fold` each take an `IDocument*`. In normal use Scintilla
+calls them itself once a lexer is wired up via `SCI_SETILEXER` -- the
+binding never needs to call them. Binding them as Python-callable would
+mean also binding `IDocument` as a trampoline class Python code can
+implement, a much bigger surface. See
+[docs/specs/roadmap.md](specs/roadmap.md) for the follow-up to investigate
+whether something like Pygments or tree-sitter could usefully back an
+`IDocument`, or whether exposing it is worth doing at all.
 
 ## Type stubs (`_lexilla.pyi`)
 

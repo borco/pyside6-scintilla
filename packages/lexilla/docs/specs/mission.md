@@ -54,12 +54,19 @@ allowed to depend on each other.
 
 ### Scope: minimal first, full API later
 
-The first usable version covers `CreateLexer(name)`, the core `ILexer5`
-methods needed to actually lex and fold (`Lex`, `Fold`, property
-get/set, `WordListSet`), and lexer discovery (`GetLexerCount`,
-`GetLexerName`). The deprecated `CreateLexerLibrary` path and the full
-property/word-list introspection API are deferred — see
-[roadmap.md](roadmap.md).
+The first usable version covers `CreateLexer(name)`, lexer discovery
+(`GetLexerCount`, `GetLexerName`), and the core `ILexer4`/`ILexer5` property
+and word-list methods (`PropertyGet`/`PropertySet`, `WordListSet`, and the
+introspection methods used to back them). `Lex` and `Fold` are deferred:
+both take an `IDocument*`, which only a Scintilla editor instance provides in
+normal use (Scintilla calls them itself once a lexer is wired up via
+`SCI_SETILEXER`) — binding them as Python-callable would mean also binding
+`IDocument` as a trampoline class Python code can implement, a much bigger
+surface for unclear benefit. A follow-up should investigate whether
+something like Pygments or tree-sitter could back an `IDocument`
+implementation usefully, or whether exposing `IDocument` at all is worth it
+— see [roadmap.md](roadmap.md). The deprecated `CreateLexerLibrary` path and
+the full property/word-list introspection API are also deferred.
 
 ### `ILexer5`'s declaration: vendor Scintilla's interface headers, not all of Scintilla
 

@@ -1,13 +1,20 @@
 """Python bindings for Lexilla, the lexer library used by Scintilla.
 
 Re-exports the public API of the compiled ``_lexilla`` extension module,
-built with nanobind. See ``docs/specs/roadmap.md`` for the plan to replace
-the current placeholder extension with real ``CreateLexer``/``ILexer5``
-bindings.
+built with nanobind: ``create_lexer``, ``get_lexer_count``,
+``get_lexer_name``, and the ``Lexer`` class wrapping ``ILexer5``. Hand a
+created lexer's ``.pointer`` (or the value from ``.detach()``) to any
+Scintilla binding's ``SCI_SETILEXER`` -- see ``docs/specs/mission.md``.
 """
 
-__version__ = "0.0.0.0"
+from ._lexilla import Lexer, create_lexer, get_lexer_count, get_lexer_name
+
+__version__ = "5.5.0.0"
 
 __all__ = [
+    "Lexer",
     "__version__",
+    "create_lexer",
+    "get_lexer_count",
+    "get_lexer_name",
 ]

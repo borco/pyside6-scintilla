@@ -24,9 +24,10 @@ execute_process(
 list(APPEND CMAKE_PREFIX_PATH "${NB_DIR}")
 find_package(nanobind CONFIG REQUIRED)
 
-# _lexilla: nanobind-generated Python bindings for Lexilla (currently a
-# placeholder -- see src/lexilla/bindings/_binding.cpp and
-# docs/specs/roadmap.md). Once src/lexilla_vendor/ is vendored, a
-# lexilla_core-style subdirectory will build it and this target will link
-# against it, mirroring pyside6-scintilla's src/scintilla_qt/.
+# lexilla_core: vendored Lexilla sources (src/lexilla_vendor/) built as a
+# static library, mirroring pyside6-scintilla's src/scintilla_qt/.
+add_subdirectory(src/lexilla_core)
+
+# _lexilla: nanobind-generated Python bindings for Lexilla's CreateLexer/
+# ILexer5, linked against lexilla_core.
 add_subdirectory(src/lexilla/bindings)

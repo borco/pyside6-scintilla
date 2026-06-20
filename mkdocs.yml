@@ -13,6 +13,12 @@ extra_css:
 
 plugins:
   - search
+  # docs/specs/README.md only orients contributors browsing the repo's
+  # docs/specs/ directory directly -- mission.md/roadmap.md are already in
+  # the nav, so it has no separate page on the built site.
+  - exclude:
+      glob:
+        - specs/README.md
   - mkdocstrings:
       handlers:
         python:

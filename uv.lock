@@ -363,6 +363,15 @@ wheels = [
 ]
 
 [[package]]
+name = "mkdocs-exclude"
+version = "1.0.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "mkdocs" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/54/b5/3a8e289282c9e8d7003f8a2f53d673d4fdaa81d493dc6966092d9985b6fc/mkdocs-exclude-1.0.2.tar.gz", hash = "sha256:ba6fab3c80ddbe3fd31d3e579861fd3124513708271180a5f81846da8c7e2a51", size = 6751, upload-time = "2019-02-20T23:34:12.81Z" }
+
+[[package]]
 name = "mkdocs-get-deps"
 version = "0.2.2"
 source = { registry = "https://pypi.org/simple" }
@@ -631,6 +640,7 @@ dev = [
 docs = [
     { name = "markdown-callouts" },
     { name = "mkdocs" },
+    { name = "mkdocs-exclude" },
     { name = "mkdocs-material" },
     { name = "mkdocstrings", extra = ["python"] },
 ]
@@ -656,6 +666,7 @@ dev = [
 docs = [
     { name = "markdown-callouts", specifier = ">=0.4" },
     { name = "mkdocs", specifier = ">=1.6" },
+    { name = "mkdocs-exclude", specifier = ">=1.0" },
     { name = "mkdocs-material", specifier = ">=9.5" },
     { name = "mkdocstrings", extras = ["python"], specifier = ">=0.27" },
 ]

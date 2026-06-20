@@ -1,0 +1,3 @@
+
+
+def smoke_test() -> str: ...

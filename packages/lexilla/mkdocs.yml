@@ -1,0 +1,84 @@
+site_name: lexilla
+site_description: Permissively-licensed Python bindings for Lexilla, the lexer library for Scintilla
+site_url: https://borco.github.io/lexilla-py/
+repo_url: https://github.com/borco/lexilla-py
+repo_name: borco/lexilla-py
+edit_uri: edit/master/docs/
+
+extra:
+  generator: false
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [src]
+          options:
+            show_if_no_docstring: true
+            show_source: false
+
+theme:
+  name: material
+  icon:
+    logo: material/code-braces
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: teal
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: black
+      accent: teal
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.indexes
+    - navigation.top
+    - navigation.tracking
+    - navigation.footer
+    - toc.follow
+    - search.suggest
+    - search.highlight
+    - search.share
+    - content.code.copy
+    - content.code.annotate
+    - content.tabs.link
+
+markdown_extensions:
+  - admonition
+  - github-callouts
+  - attr_list
+  - md_in_html
+  - footnotes
+  - tables
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.highlight
+  - pymdownx.inlinehilite
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+
+nav:
+  - Home: index.md
+  - Development:
+      - Project mission: specs/mission.md
+      - Roadmap: specs/roadmap.md
+      - Bindings architecture: bindings.md
+      - Build instructions: build.md
+      - Verifying vendored Lexilla: auditing.md
+      - Documenting: documenting.md
+      - TestPyPI: testpypi.md
+  - Examples:
+      - examples/index.md
+  - PyPI: https://pypi.org/project/lexilla/

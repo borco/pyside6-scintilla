@@ -1,0 +1,17 @@
+.claude/settings.local.json
+CMakeUserPresets.json
+CMakeLists.txt.user
+build/
+dist/
+wheelhouse/
+/site/
+.*_cache/
+__pycache__/
+.venv
+*.pyc
+/.build_install/
+
+# Compiled extension dropped into src/lexilla/ by `make install` (see Makefile)
+/src/lexilla/*.pyd
+/src/lexilla/*.so
+/src/lexilla/*.dylib

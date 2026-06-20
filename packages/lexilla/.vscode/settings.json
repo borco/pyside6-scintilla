@@ -1,0 +1,15 @@
+{
+    "pylint.enabled": false,
+    "flake8.enabled": false,
+
+    "ruff.importStrategy": "fromEnvironment",
+
+    "[python]": {
+        "editor.defaultFormatter": "charliermarsh.ruff",
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+            "source.fixAll.ruff": "explicit",
+            "source.organizeImports.ruff": "explicit"
+        }
+    }
+}

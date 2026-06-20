@@ -1,0 +1,84 @@
+name: Publish
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  build-sdist:
+    name: Build sdist
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: astral-sh/setup-uv@v7
+
+      # `[tool.uv] no-build-isolation-package` (pyproject.toml) makes `uv
+      # build` use the project's own environment instead of an isolated build
+      # env for this package, expecting [build-system].requires to already be
+      # installed there. `--no-install-project` populates .venv with those
+      # deps without building/installing lexilla itself.
+      - name: Install build dependencies
+        run: uv sync --no-install-project
+
+      - name: Build sdist
+        run: uv build --sdist
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: sdist
+          path: dist/*.tar.gz
+
+  build-wheels:
+    name: Build wheels
+    uses: ./.github/workflows/wheels.yml
+
+  # TestPyPI tracer: publish every run here first to verify the trusted
+  # publishing (OIDC) wiring before anything reaches real PyPI. Requires a
+  # pending trusted publisher configured on test.pypi.org for this repo +
+  # workflow + the "testpypi" environment.
+  publish-testpypi:
+    name: Publish to TestPyPI
+    needs: [build-sdist, build-wheels]
+    runs-on: ubuntu-latest
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/p/lexilla
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          path: dist
+          merge-multiple: true
+
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+          # A real-PyPI release re-publishes the same version to TestPyPI
+          # too (the tracer already uploaded it earlier) - don't fail on
+          # TestPyPI's "file already exists" for identical files.
+          skip-existing: true
+
+  # Real PyPI publish only happens for an actual GitHub Release - the
+  # workflow_dispatch tracer trigger stops at TestPyPI above. Requires a
+  # trusted publisher configured on pypi.org for this repo + workflow + the
+  # "pypi" environment.
+  publish-pypi:
+    name: Publish to PyPI
+    needs: publish-testpypi
+    if: github.event_name == 'release'
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/lexilla
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          path: dist
+          merge-multiple: true
+
+      - uses: pypa/gh-action-pypi-publish@release/v1

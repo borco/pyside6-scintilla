@@ -70,7 +70,7 @@ and resets to `0` when Lexilla itself releases a new version.
 | [docs/specs/roadmap.md](docs/specs/roadmap.md) | Ordered list of upcoming work |
 | [docs/bindings.md](docs/bindings.md) | How the nanobind bindings are built, and how they're expected to grow |
 | [docs/build.md](docs/build.md) | Build prerequisites, local build/rebuild, wheels, and publishing |
-| [docs/auditing.md](docs/auditing.md) | How to verify the vendored Lexilla source matches upstream (pending) |
+| [docs/auditing.md](docs/auditing.md) | How to verify the vendored Lexilla source matches upstream |
 | [docs/documenting.md](docs/documenting.md) | How the docs site is built (stub) |
 | [docs/testpypi.md](docs/testpypi.md) | Setting up TestPyPI trusted publishing |
 | [examples/](examples/) | Standalone example apps (planned) |
@@ -78,5 +78,5 @@ and resets to `0` when Lexilla itself releases a new version.
 ## License
 
 - `src/lexilla_vendor/` — [HPND License](https://www.scintilla.org/License.txt)
-  (Lexilla, copyright Neil Hodgson), once vendored
+  (Lexilla, copyright Neil Hodgson)
 - Everything else — [MIT License](https://github.com/borco/lexilla-py/blob/master/LICENSE)

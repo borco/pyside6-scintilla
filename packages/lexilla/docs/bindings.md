@@ -5,8 +5,8 @@ Lexilla bindings replace the current placeholder.
 
 ## How it fits together (current, placeholder state)
 
-- `src/lexilla_vendor/` -- vendored Lexilla release source (not yet
-  vendored -- see [docs/specs/roadmap.md](specs/roadmap.md)).
+- `src/lexilla_vendor/` -- vendored Lexilla release source (see
+  [docs/auditing.md](auditing.md) for how it's verified against upstream).
 - `src/lexilla/bindings/_binding.cpp` -- nanobind module source. Currently a
   single placeholder function (`smoke_test`), proving the toolchain (CMake +
   scikit-build-core + nanobind) builds, installs, and loads end to end.
@@ -16,7 +16,7 @@ Lexilla bindings replace the current placeholder.
 - `src/lexilla/__init__.py` -- re-exports the compiled extension's public
   API as the `lexilla` package.
 
-## Planned, once Lexilla is vendored
+## Planned, once real bindings are built
 
 See [docs/specs/mission.md](specs/mission.md) for the reasoning behind
 these:

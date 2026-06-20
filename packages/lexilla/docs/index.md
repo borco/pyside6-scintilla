@@ -29,7 +29,7 @@ without re-implementing lexer creation itself — see
 
 ## Development
 
-See the **Development** section for the project's mission, roadmap, and (as
-they fill in) the bindings architecture, build instructions, and how the
-vendored Lexilla source will be verified against upstream. See the
-**Examples** section for what's planned there.
+See the **Development** section for the project's mission, roadmap, how the
+vendored Lexilla source is verified against upstream, and (as they fill in)
+the bindings architecture and build instructions. See the **Examples**
+section for what's planned there.

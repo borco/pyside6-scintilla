@@ -1,3 +1,6 @@
+# Requires GitHub Pages enabled on the repo with Source: GitHub Actions
+# (Settings -> Pages, or `gh api -X POST repos/<owner>/<repo>/pages -f
+# build_type=workflow`) -- the workflow alone doesn't create the Pages site.
 name: Docs
 
 on:

@@ -61,6 +61,22 @@ get/set, `WordListSet`), and lexer discovery (`GetLexerCount`,
 property/word-list introspection API are deferred — see
 [roadmap.md](roadmap.md).
 
+### `ILexer5`'s declaration: vendor Scintilla's interface headers, not all of Scintilla
+
+`ILexer5` (along with `ILexer4`, `IDocument`, and the `Sci_Position`/
+`Sci_PositionU` types) is declared in Scintilla's `ILexer.h`/`Sci_Position.h`,
+not in Lexilla's own tarball — `Lexilla.h` assumes the caller has already
+included `ILexer.h`. The individual lexer implementations also need a
+handful of fold-level flag constants from Scintilla's `Scintilla.h` to
+compile (the per-language `SCE_*` style constants already live in Lexilla's
+own vendored `include/SciLexer.h`, no extra vendoring needed for those).
+Vendoring all of Scintilla just for these interface/constant headers would reintroduce
+the dependency this project deliberately avoids (see "What this is NOT").
+Instead, only those headers are vendored, unmodified, under
+`src/scintilla_interface/include/` — see [auditing.md](../auditing.md) for
+the version/checksum table and the process
+for keeping them in sync with the vendored Lexilla version when it updates.
+
 ### Naming: `lexilla-py` repo, `lexilla` package, `src/lexilla_vendor/` for vendored source
 
 The GitHub repo is `lexilla-py` rather than `lexilla` so that vendoring

@@ -34,4 +34,5 @@ jobs:
         run: |
           uv run ruff check .
           uv run ruff format --check .
+          uv run python tools/check_docs_sync.py
           uv run pyright

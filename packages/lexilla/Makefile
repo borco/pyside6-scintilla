@@ -5,6 +5,7 @@ setup:
 
 lint:
 	uv run ruff check .
+	uv run python tools/check_docs_sync.py
 	uv run pyright
 
 # Serve the docs site locally with live-reload (http://127.0.0.1:8000/lexilla-py/).

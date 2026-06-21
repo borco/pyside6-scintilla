@@ -1,4 +1,4 @@
-.PHONY: setup lint format test clean clean-setup configure build install publish stubs docs-serve qa
+.PHONY: setup lint format test clean clean-setup configure build install publish stubs docs-serve qa generate-language-enums
 
 setup:
 	uv sync
@@ -51,3 +51,9 @@ stubs:
 	uv run python -m nanobind.stubgen -m lexilla._lexilla -O src/lexilla
 
 qa: format test lint
+
+# Regenerate the LanguageIdentifier/Language enums from src/lexilla_vendor/.
+# One-off, NOT part of qa/build/setup -- re-run manually after re-vendoring
+# (see docs/auditing.md's re-vendoring checklist).
+generate-language-enums:
+	uv run python tools/generate_language_enums.py

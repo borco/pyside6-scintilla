@@ -37,6 +37,25 @@ def test_lexer_property_get_set():
     assert lexer.property_get("lexer.cpp.track.preprocessor") == "0"
 
 
+def test_lexer_identifier_is_enum():
+    """Lexer.identifier returns a LanguageIdentifier, not a bare int."""
+    lexer = lexilla.create_lexer("cpp")
+    assert lexer is not None
+    assert lexer.identifier == lexilla.LanguageIdentifier.CPP
+
+
+def test_language_enum_create_lexer_roundtrip():
+    """Language enum members are str subclasses usable directly with create_lexer()."""
+    lexer = lexilla.create_lexer(lexilla.Language.CPP)
+    assert lexer is not None
+    assert lexer.name == "cpp"
+
+
+def test_language_identifier_automatic_sentinel():
+    """LanguageIdentifier.AUTOMATIC mirrors SciLexer.h's SCLEX_AUTOMATIC (1000)."""
+    assert lexilla.LanguageIdentifier.AUTOMATIC == 1000
+
+
 def test_lexer_detach_then_use_raises():
     """detach() hands back the pointer and stops the wrapper from touching the lexer further."""
     lexer = lexilla.create_lexer("cpp")

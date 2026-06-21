@@ -106,6 +106,17 @@ re-vendored for a new Lexilla release (see the table above):
    mismatch between the vendored interface and what `_binding.cpp` assumes
    will surface as a compile error, not a silent runtime bug, since
    `ILexer5` is an abstract C++ interface.
+5. Separately, whenever `src/lexilla_vendor/` itself is re-vendored (a new
+   Lexilla release, not just a Scintilla interface-header refresh), re-run
+   `make generate-language-enums` (see
+   [docs/bindings.md](bindings.md#typed-enums-instead-of-bare-intsstrings-propertytype-languageidentifier-language))
+   and review/commit the diff to `LanguageIdentifier` (in `_binding.cpp`)
+   and `src/lexilla/_languages.py` -- new Lexilla releases can add lexers
+   (new `Language`/`LanguageIdentifier` members) or, in principle, new
+   `SCLEX_*` values. Unlike step 2 above, a missed regeneration here does
+   **not** fail at compile time (`static_cast` to an enum always succeeds)
+   -- it surfaces as a nanobind runtime error the first time `.identifier`
+   is read on a lexer whose `SCLEX_*` value isn't yet in the enum.
 
 ### No constant values actually cross between lexilla-py and pyside6-scintilla
 

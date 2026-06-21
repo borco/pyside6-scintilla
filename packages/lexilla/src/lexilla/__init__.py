@@ -7,12 +7,16 @@ created lexer's ``.pointer`` (or the value from ``.detach()``) to any
 Scintilla binding's ``SCI_SETILEXER`` -- see ``docs/specs/mission.md``.
 """
 
-from ._lexilla import Lexer, create_lexer, get_lexer_count, get_lexer_name
+from ._languages import Language
+from ._lexilla import Lexer, LanguageIdentifier, PropertyType, create_lexer, get_lexer_count, get_lexer_name
 
 __version__ = "5.5.0.0"
 
 __all__ = [
+    "Language",
+    "LanguageIdentifier",
     "Lexer",
+    "PropertyType",
     "__version__",
     "create_lexer",
     "get_lexer_count",

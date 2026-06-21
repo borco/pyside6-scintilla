@@ -17,8 +17,8 @@ Real `CreateLexer`/`ILexer5` bindings exist: `create_lexer`, `get_lexer_count`,
 `get_lexer_name`, and a `Lexer` class (name/identifier, property get/set,
 `word_list_set`, and the raw pointer for `SCI_SETILEXER`). `Lex`/`Fold` and
 the cross-binding/wheel-publishing work are not done yet. Nothing is
-published to PyPI yet. See [docs/specs/roadmap.md](docs/specs/roadmap.md)
-for what's next.
+published to PyPI yet. See
+[GitHub Issues](https://github.com/borco/lexilla-py/issues) for what's next.
 
 ## Why this exists
 
@@ -69,7 +69,7 @@ and resets to `0` when Lexilla itself releases a new version.
 | --- | --- |
 | [docs/specs/](docs/specs/) | Design specifications and action plans for in-progress and planned work |
 | [docs/specs/mission.md](docs/specs/mission.md) | Project background, goals, and design decisions |
-| [docs/specs/roadmap.md](docs/specs/roadmap.md) | Ordered list of upcoming work |
+| [GitHub Issues](https://github.com/borco/lexilla-py/issues) | Ordered list of upcoming work |
 | [docs/bindings.md](docs/bindings.md) | How the nanobind bindings are built, and how they're expected to grow |
 | [docs/build.md](docs/build.md) | Build prerequisites, local build/rebuild, wheels, and publishing |
 | [docs/auditing.md](docs/auditing.md) | How to verify the vendored Lexilla source matches upstream |

@@ -41,9 +41,10 @@ calls them itself once a lexer is wired up via `SCI_SETILEXER` -- the
 binding never needs to call them. Binding them as Python-callable would
 mean also binding `IDocument` as a trampoline class Python code can
 implement, a much bigger surface. See
-[docs/specs/roadmap.md](specs/roadmap.md) for the follow-up to investigate
-whether something like Pygments or tree-sitter could usefully back an
-`IDocument`, or whether exposing it is worth doing at all.
+[borco/lexilla-py#6](https://github.com/borco/lexilla-py/issues/6) for the
+follow-up to investigate whether something like Pygments or tree-sitter
+could usefully back an `IDocument`, or whether exposing it is worth doing at
+all.
 
 ## Type stubs (`_lexilla.pyi`)
 

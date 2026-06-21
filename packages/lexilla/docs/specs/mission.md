@@ -65,7 +65,8 @@ normal use (Scintilla calls them itself once a lexer is wired up via
 surface for unclear benefit. A follow-up should investigate whether
 something like Pygments or tree-sitter could back an `IDocument`
 implementation usefully, or whether exposing `IDocument` at all is worth it
-— see [roadmap.md](roadmap.md). The deprecated `CreateLexerLibrary` path and
+— see [borco/lexilla-py#6](https://github.com/borco/lexilla-py/issues/6).
+The deprecated `CreateLexerLibrary` path and
 the full property/word-list introspection API are also deferred.
 
 ### No bare ints/strings for "magic" values: typed enums for property types, language identifiers, and lexer names

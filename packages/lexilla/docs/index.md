@@ -17,7 +17,7 @@ Real `CreateLexer`/`ILexer5` bindings exist: `create_lexer`, `get_lexer_count`,
 `get_lexer_name`, and a `Lexer` class (name/identifier, property get/set,
 `word_list_set`, and the raw pointer for `SCI_SETILEXER`). `Lex`/`Fold` and
 the cross-binding/wheel-publishing work are not done yet. See
-[Roadmap](specs/roadmap.md) for what's next.
+[GitHub Issues](https://github.com/borco/lexilla-py/issues) for what's next.
 
 ## Why this exists
 
@@ -31,7 +31,9 @@ without re-implementing lexer creation itself — see
 
 ## Development
 
-See the **Development** section for the project's mission, roadmap, how the
-vendored Lexilla source is verified against upstream, and (as they fill in)
-the bindings architecture and build instructions. See the **Examples**
-section for what's planned there.
+See the **Development** section for the project's mission, how the vendored
+Lexilla source is verified against upstream, and (as they fill in) the
+bindings architecture and build instructions. See
+[GitHub Issues](https://github.com/borco/lexilla-py/issues) for the ordered
+list of upcoming work, and the **Examples** section for what's planned
+there.

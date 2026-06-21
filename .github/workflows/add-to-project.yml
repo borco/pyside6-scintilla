@@ -1,0 +1,19 @@
+# Auto-adds new issues and PRs to https://github.com/users/borco/projects/3.
+# Substitutes for the built-in Projects "auto-add" workflow, which is capped
+# at one repo per project on the free tier.
+name: Add to project
+
+on:
+  issues:
+    types: [opened]
+  pull_request:
+    types: [opened]
+
+jobs:
+  add-to-project:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/add-to-project@v1.0.2
+        with:
+          project-url: https://github.com/users/borco/projects/3
+          github-token: ${{ secrets.ADD_TO_PROJECT_PAT }}

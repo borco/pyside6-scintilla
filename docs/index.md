@@ -71,3 +71,10 @@ that permissive core directly to PySide6 users — see
 See the **Development** section for how the bindings are built, how to set
 up a local build, and how the vendored Scintilla source is verified against
 upstream.
+
+## Roadmap
+
+The [project board](https://github.com/users/borco/projects/3) tracks the
+joint roadmap for `pyside6-scintilla` and
+[lexilla-py](https://github.com/borco/lexilla-py); issues and PRs from both
+repos are added to it automatically.

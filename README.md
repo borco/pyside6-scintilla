@@ -116,6 +116,7 @@ itself releases a new version.
 | [docs/specs/](https://github.com/borco/pyside6-scintilla/tree/master/docs/specs/) | Design specifications and action plans for in-progress and planned work |
 | [docs/specs/mission.md](https://github.com/borco/pyside6-scintilla/blob/master/docs/specs/mission.md) | Project background, goals, and design decisions |
 | [GitHub Issues](https://github.com/borco/pyside6-scintilla/issues) | Planned and in-progress work |
+| [Project board](https://github.com/users/borco/projects/3) | Joint roadmap for `pyside6-scintilla` and [lexilla-py](https://github.com/borco/lexilla-py); issues/PRs from both repos are auto-added |
 | [docs/testpypi.md](https://github.com/borco/pyside6-scintilla/blob/master/docs/testpypi.md) | Setting up TestPyPI trusted publishing |
 
 ## Development tools

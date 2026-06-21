@@ -14,7 +14,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest, ubuntu-24.04-arm]
+        # ubuntu-24.04-arm disabled: `uv sync` pulls the dev-group
+        # pyside6-scintilla dependency (needed to test/lint the examples),
+        # which has no aarch64 wheel yet -- borco/pyside6-scintilla#4.
+        os: [ubuntu-latest, windows-latest, macos-latest]
     steps:
       - uses: actions/checkout@v5
 

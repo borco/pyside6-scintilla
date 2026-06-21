@@ -37,3 +37,10 @@ bindings architecture and build instructions. See
 [GitHub Issues](https://github.com/borco/lexilla-py/issues) for the ordered
 list of upcoming work, and the **Examples** section for what's planned
 there.
+
+## Roadmap
+
+The [project board](https://github.com/users/borco/projects/3) tracks the
+joint roadmap for `lexilla-py` and
+[pyside6-scintilla](https://github.com/borco/pyside6-scintilla); issues and
+PRs from both repos are added to it automatically.

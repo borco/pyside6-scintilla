@@ -70,6 +70,7 @@ and resets to `0` when Lexilla itself releases a new version.
 | [docs/specs/](docs/specs/) | Design specifications and action plans for in-progress and planned work |
 | [docs/specs/mission.md](docs/specs/mission.md) | Project background, goals, and design decisions |
 | [GitHub Issues](https://github.com/borco/lexilla-py/issues) | Ordered list of upcoming work |
+| [Project board](https://github.com/users/borco/projects/3) | Joint roadmap for `lexilla-py` and [pyside6-scintilla](https://github.com/borco/pyside6-scintilla); issues/PRs from both repos are auto-added |
 | [docs/bindings.md](docs/bindings.md) | How the nanobind bindings are built, and how they're expected to grow |
 | [docs/build.md](docs/build.md) | Build prerequisites, local build/rebuild, wheels, and publishing |
 | [docs/auditing.md](docs/auditing.md) | How to verify the vendored Lexilla source matches upstream |

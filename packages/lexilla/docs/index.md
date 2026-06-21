@@ -1,5 +1,5 @@
 <!-- sync:header -->
-# lexilla
+# lexilla-py: Python bindings for Lexilla
 
 [![CI](https://github.com/borco/lexilla-py/actions/workflows/ci.yml/badge.svg)](https://github.com/borco/lexilla-py/actions/workflows/ci.yml)
 [![PyPI](https://img.shields.io/pypi/v/lexilla)](https://pypi.org/project/lexilla/)

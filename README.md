@@ -20,13 +20,13 @@ are implemented and working — see
 for runnable demos. Pre-built wheels are published on
 [PyPI](https://pypi.org/project/pyside6-scintilla/) for Linux
 (x86_64), Windows (x86_64), and macOS (arm64, x86_64), Python 3.11-3.14 —
-see [Installation](#installation). Linux aarch64 wheels are planned —
-see [docs/specs/roadmap.md](https://github.com/borco/pyside6-scintilla/blob/master/docs/specs/roadmap.md) for the roadmap.
+see [Installation](#installation). Linux aarch64 wheels are tracked as
+[issue #4](https://github.com/borco/pyside6-scintilla/issues/4).
 
 The [docs site](https://borco.github.io/pyside6-scintilla/) has a full
 "Scintilla API" navigation tree, but most pages are still placeholders
 pending conversion from the upstream `ScintillaDoc.html` — see
-[docs/specs/roadmap.md](https://github.com/borco/pyside6-scintilla/blob/master/docs/specs/roadmap.md)
+[issue #2](https://github.com/borco/pyside6-scintilla/issues/2)
 for conversion progress.
 
 ## Why this exists
@@ -115,7 +115,7 @@ itself releases a new version.
 | [docs/documenting.md](https://github.com/borco/pyside6-scintilla/blob/master/docs/documenting.md) | How the docs site is built, and how to add or update a page |
 | [docs/specs/](https://github.com/borco/pyside6-scintilla/tree/master/docs/specs/) | Design specifications and action plans for in-progress and planned work |
 | [docs/specs/mission.md](https://github.com/borco/pyside6-scintilla/blob/master/docs/specs/mission.md) | Project background, goals, and design decisions |
-| [docs/specs/roadmap.md](https://github.com/borco/pyside6-scintilla/blob/master/docs/specs/roadmap.md) | Ordered list of upcoming work |
+| [GitHub Issues](https://github.com/borco/pyside6-scintilla/issues) | Planned and in-progress work |
 | [docs/testpypi.md](https://github.com/borco/pyside6-scintilla/blob/master/docs/testpypi.md) | Setting up TestPyPI trusted publishing |
 
 ## Development tools

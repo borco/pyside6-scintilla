@@ -26,3 +26,18 @@ these.
    implementation to give a better standalone lexing/folding experience
    than what the pyside6-scintilla examples currently offer, or whether
    exposing `IDocument` to Python is worth doing at all.
+8. **CI-driven re-vendoring**: replace `docs/auditing.md`'s manual
+   re-vendoring checklist (download tarball locally, verify checksum,
+   extract, commit) with a `workflow_dispatch` GitHub Action that fetches
+   the official upstream release in CI -- a real `git` checkout of the
+   official tag for Lexilla (now hosted at
+   `github.com/ScintillaOrg/lexilla`), or a checksum-verified tarball
+   download for Scintilla (still Mercurial/SourceForge-only) -- and opens a
+   PR with the resulting diff instead of requiring a maintainer to do the
+   fetch-and-extract step on their own machine. Moves the trust boundary
+   from "the maintainer's local process" to "a logged, reproducible CI run
+   anyone can audit." Same pattern applies to pyside6-scintilla's vendored
+   `src/scintilla/`. Before building this, run it once in dry-run/diff-only
+   mode against the currently-vendored source as a sanity check -- if the
+   diff is empty, no replacement is needed for the current vendoring, only
+   for the next real re-vendor.

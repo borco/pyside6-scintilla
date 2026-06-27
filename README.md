@@ -59,13 +59,9 @@ To build from source instead (e.g. for development), see
 for prerequisites (Qt 6.10+ with `Qt6Core5Compat`, a C++17 compiler) and
 platform-specific setup.
 
-`examples/highlighting/lexilla_highlighting/` pulls
-[lexilla](https://github.com/borco/lexilla-py) as a dev dependency straight
-from its GitHub `master` branch (see `[tool.uv.sources]` in
-`pyproject.toml`) — it isn't published on PyPI yet. A branch ref pins to a
-commit SHA in `uv.lock`, so a plain `uv sync` won't pick up new lexilla-py
-commits on its own, even if `lexilla`'s `__version__` string hasn't
-changed. Run `make resync-lexilla` to pull the latest `master`.
+`examples/highlighting/lexilla_highlighting/` uses
+[lexilla](https://pypi.org/project/lexilla/) as a dev dependency, installed
+from PyPI like any other package.
 
 ## Usage
 

@@ -223,7 +223,30 @@ wheels = [
 [[package]]
 name = "lexilla"
 version = "5.5.0.0"
-source = { git = "https://github.com/borco/lexilla-py?branch=master#2e21d2e3210251fc74f46781fed144933ff31151" }
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/f4/55/2719f04ac500499d232e75923429e6e28598b2642e78d396a8db0c27757d/lexilla-5.5.0.0.tar.gz", hash = "sha256:6045afd61c5c8e29d85401c04af7655f892d691530622ba81c2e23d08779dc78", size = 1031536, upload-time = "2026-06-27T15:55:41.292Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/18/44/de3670256cea10c17ec180c8c76724841b9528beee121aa21fcfbc2048bc/lexilla-5.5.0.0-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:e9cd2c5af63c41d8c501d3606f9dd4c6c1cadc1ce24b3cbc0a596726f80f36e6", size = 720077, upload-time = "2026-06-27T15:55:12.958Z" },
+    { url = "https://files.pythonhosted.org/packages/bc/2a/c96e31e6d8f8d5202535dca29e391407382342088b6ee9f9fdc23744edba/lexilla-5.5.0.0-cp311-cp311-macosx_11_0_x86_64.whl", hash = "sha256:86de9a1572c7f7352cf6a2ab22569ccd844c4150e7f62b7b84f811ac668a7890", size = 799247, upload-time = "2026-06-27T15:55:14.407Z" },
+    { url = "https://files.pythonhosted.org/packages/95/5b/fd273d89478686c4421ac48e86045fed2ce5fa389f8c9641a940d8115398/lexilla-5.5.0.0-cp311-cp311-manylinux_2_26_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:377ff522219dd5db8ce2c9829e37c2aa435c36f7b136b27e2d40111e56310174", size = 1059875, upload-time = "2026-06-27T15:55:15.801Z" },
+    { url = "https://files.pythonhosted.org/packages/cd/fc/6663c0a6959a46b944a3d5b3cf3e48673666e043ac1b6b71c6026c7c2561/lexilla-5.5.0.0-cp311-cp311-manylinux_2_34_x86_64.whl", hash = "sha256:24cde2362911b833cb80e160708bf6405b48fe483f040837cfd5793ff387ecb1", size = 1138515, upload-time = "2026-06-27T15:55:17.115Z" },
+    { url = "https://files.pythonhosted.org/packages/5e/4d/695189d86647016801adb92c65950ac851e4310446241d92871d0169b383/lexilla-5.5.0.0-cp311-cp311-win_amd64.whl", hash = "sha256:01e44863f80feabdfe0d73abef6568f156c293556c5233fc90cacded905e1044", size = 784444, upload-time = "2026-06-27T15:55:18.345Z" },
+    { url = "https://files.pythonhosted.org/packages/32/ba/c2c545a15b3897d961927329b66bbe0a6b42f69c421e66e4afc75680af36/lexilla-5.5.0.0-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:940a8c1ea56ec2460575a1fd672f49b125c4a9720405ec263221771914032f9b", size = 719232, upload-time = "2026-06-27T15:55:19.652Z" },
+    { url = "https://files.pythonhosted.org/packages/8f/9c/6c4c6865a2e556a932be36a1857d8ee92a0bbbcec18b9e36bd08c278dc6b/lexilla-5.5.0.0-cp312-cp312-macosx_11_0_x86_64.whl", hash = "sha256:b04b6d04c1e011f9ba31ea5f1ac557be4e8c9998f74fb96d8e17ece6c72c42e1", size = 798874, upload-time = "2026-06-27T15:55:21.101Z" },
+    { url = "https://files.pythonhosted.org/packages/a2/b2/a8562a4f50e83cc586d66a36b7f2e75807610e333aedc7312ee86e65fab0/lexilla-5.5.0.0-cp312-cp312-manylinux_2_26_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:675d561dd97aba1011417d0394726e97ab26209ef92e2cdc6617ef69920b1ecb", size = 1059651, upload-time = "2026-06-27T15:55:22.591Z" },
+    { url = "https://files.pythonhosted.org/packages/15/09/5aa68a2aff1b7aa1a1ea8ca4431a4cbca858581cb7d1282f1073bd387a16/lexilla-5.5.0.0-cp312-cp312-manylinux_2_34_x86_64.whl", hash = "sha256:259b80814b38d643f0bd119db1ad93ce973b144ab9ec8966507404aef4082ab8", size = 1137692, upload-time = "2026-06-27T15:55:23.831Z" },
+    { url = "https://files.pythonhosted.org/packages/d8/8c/37f144e3b040694ae5b8e673d9e529ca7480893ae5627b0f4c8092f49d0a/lexilla-5.5.0.0-cp312-cp312-win_amd64.whl", hash = "sha256:27008196240ff4fba83cd8758657f1c8ca73654d20e6f922494cc3d1eb8be1b1", size = 783621, upload-time = "2026-06-27T15:55:25.1Z" },
+    { url = "https://files.pythonhosted.org/packages/d3/ee/d027902189650183419eb489098ae96f8491e60a8c905d098799398f1d30/lexilla-5.5.0.0-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:c1e20b7e2ca40d78b7bf327b48f0fe1d9f277140981d1ed597b5d05d72056803", size = 719276, upload-time = "2026-06-27T15:55:26.274Z" },
+    { url = "https://files.pythonhosted.org/packages/17/ea/fff02021aa5a9041b8a125e4077b49259812e8d52eec01535776f3a4e985/lexilla-5.5.0.0-cp313-cp313-macosx_11_0_x86_64.whl", hash = "sha256:4651dfd4084c7d89cab227fb739fe2b10fe497422704f3a91609b4edd181d1f1", size = 798863, upload-time = "2026-06-27T15:55:27.733Z" },
+    { url = "https://files.pythonhosted.org/packages/00/ce/c50c99ca008211d3254eb3ff99b203b3ee5d4a8640c81ebe1d134a3641c6/lexilla-5.5.0.0-cp313-cp313-manylinux_2_26_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:b8a2165ea81493618e01ea793ac90c2dc13277d9e5776c73965530c2fcf44f45", size = 1059702, upload-time = "2026-06-27T15:55:29.011Z" },
+    { url = "https://files.pythonhosted.org/packages/b1/97/ea581a4aa08fe691008926dee9acc73714e09896ba481f25bd5954977fad/lexilla-5.5.0.0-cp313-cp313-manylinux_2_34_x86_64.whl", hash = "sha256:f4c28223e4ce84ee096ef077a3570c67d6377c8e1025caae50c2d23f7a66b482", size = 1137586, upload-time = "2026-06-27T15:55:30.303Z" },
+    { url = "https://files.pythonhosted.org/packages/0b/d9/00b69dccff050881b29ca0b6910e6b0da4607b7736a726ad7776f37561c1/lexilla-5.5.0.0-cp313-cp313-win_amd64.whl", hash = "sha256:203e223be459b2470c7005742fca50e7b428b8fd975d1ac5773790bdc495770c", size = 783464, upload-time = "2026-06-27T15:55:31.961Z" },
+    { url = "https://files.pythonhosted.org/packages/fd/46/2b6d796d1b118b730e0af6c2cb4d385ca17c6685d77de6bb71e2d6167c8d/lexilla-5.5.0.0-cp314-cp314-macosx_11_0_arm64.whl", hash = "sha256:05cd41d4736bf1595068b2e368ae1617bc1907b3c5b94265a9da6eabd640c7de", size = 719103, upload-time = "2026-06-27T15:55:33.188Z" },
+    { url = "https://files.pythonhosted.org/packages/8d/4b/4ea03df8bbc6e7bb45e8216589ed50e86606a40d5a4fc38b3f4d733ab431/lexilla-5.5.0.0-cp314-cp314-macosx_11_0_x86_64.whl", hash = "sha256:02472137535e5dffa8309079a44edde2ae376c6ae532dbc69e1956ceaee0beab", size = 798641, upload-time = "2026-06-27T15:55:35.418Z" },
+    { url = "https://files.pythonhosted.org/packages/d5/55/081e0712da7f891dbf3f6ced9c11f9b3a78d1a0f65f759d28f2e290fd2ff/lexilla-5.5.0.0-cp314-cp314-manylinux_2_26_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:b4e8bda8becf824354fc31ee5b5e22389d1a0e39e07d016214e6bcd563ff0efd", size = 1059859, upload-time = "2026-06-27T15:55:36.669Z" },
+    { url = "https://files.pythonhosted.org/packages/49/cc/2be7bac4c9543fb60bd37427f58def709bec2233c152dad438d001df7782/lexilla-5.5.0.0-cp314-cp314-manylinux_2_34_x86_64.whl", hash = "sha256:8e897731261525aeeea88503fa6f5480f670e1ba73ef1348be6f6996405141d5", size = 1137675, upload-time = "2026-06-27T15:55:38.287Z" },
+    { url = "https://files.pythonhosted.org/packages/6a/3e/25b7c9381f8842e51f955e49796cfb150966965f87a405b9840d2efe1cb9/lexilla-5.5.0.0-cp314-cp314-win_amd64.whl", hash = "sha256:9868cae8ca3b887396b51e6970103ed3074d719867c3d1ee3fe9046b774a8f7c", size = 810937, upload-time = "2026-06-27T15:55:39.743Z" },
+]
 
 [[package]]
 name = "markdown"
@@ -657,7 +680,7 @@ requires-dist = [{ name = "pyside6", specifier = ">=6.10" }]
 [package.metadata.requires-dev]
 dev = [
     { name = "cmake", specifier = ">=3.25" },
-    { name = "lexilla", git = "https://github.com/borco/lexilla-py?branch=master" },
+    { name = "lexilla", specifier = ">=5.5.0.0" },
     { name = "ninja" },
     { name = "pygments", specifier = ">=2.18" },
     { name = "pyright", specifier = ">=1.1.410" },

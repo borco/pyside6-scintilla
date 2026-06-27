@@ -62,7 +62,15 @@ jobs:
           python-version: "3.13"
 
       - name: uv sync
-        run: uv sync
+        # --refresh-package pyside6-scintilla: uv's build cache for a local
+        # path dependency isn't keyed off the C++ binding source tree, so a
+        # plain `uv sync` can silently reuse a stale cached build across
+        # cache-restored CI runs (enable-cache above) instead of recompiling
+        # -- verified by editing src/pyside6_scintilla/bindings and
+        # observing `uv sync` skip the build entirely (borco/pyside6-scintilla#11).
+        # --refresh-package forces this one package to rebuild while still
+        # using the cache for the much slower third-party deps (PySide6 etc.).
+        run: uv sync --refresh-package pyside6-scintilla
 
       - name: Run tests
         env:

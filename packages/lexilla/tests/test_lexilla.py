@@ -21,6 +21,21 @@ def test_create_lexer_unknown_name_returns_none():
     assert lexilla.create_lexer("not-a-real-lexer-name") is None
 
 
+def test_lexer_catalogue_names_all_create():
+    """Every catalogue entry's name resolves to a usable lexer of the same name."""
+    count = lexilla.get_lexer_count()
+    names = [lexilla.get_lexer_name(i) for i in range(count)]
+    assert all(names)
+    assert len(set(names)) == count  # no duplicate catalogue entries
+
+    for name in names:
+        lexer = lexilla.create_lexer(name)
+        assert lexer is not None, f"create_lexer({name!r}) returned None"
+        # CreateLexer is case-insensitive; Lexer.name reflects the lexer's own
+        # registered name, which isn't guaranteed to match the catalogue's casing.
+        assert lexer.name.lower() == name.lower()
+
+
 def test_create_lexer_cpp():
     """A known lexer name creates a Lexer with a usable name and pointer."""
     lexer = lexilla.create_lexer("cpp")
@@ -35,6 +50,26 @@ def test_lexer_property_get_set():
     assert lexer is not None
     lexer.property_set("lexer.cpp.track.preprocessor", "0")
     assert lexer.property_get("lexer.cpp.track.preprocessor") == "0"
+
+
+def test_lexer_property_introspection():
+    """property_names()/property_type()/describe_property() resolve a known cpp property."""
+    lexer = lexilla.create_lexer("cpp")
+    assert lexer is not None
+    names = lexer.property_names()
+    assert "lexer.cpp.track.preprocessor" in names
+    assert lexer.property_type("lexer.cpp.track.preprocessor") == lexilla.PropertyType.BOOLEAN
+    assert lexer.describe_property("lexer.cpp.track.preprocessor")
+
+
+def test_lexer_word_list_set():
+    """describe_word_list_sets() lists at least one slot, and word_list_set() accepts it."""
+    lexer = lexilla.create_lexer("cpp")
+    assert lexer is not None
+    descriptions = lexer.describe_word_list_sets()
+    assert descriptions
+    # cpp's word-list slots are documented in order, starting at 0 (primary keywords).
+    assert isinstance(lexer.word_list_set(0, "foo bar"), int)
 
 
 def test_lexer_identifier_is_enum():
@@ -82,6 +117,16 @@ def test_lexer_sub_styles_roundtrip():
     assert lexer.sub_styles_length(style_base) == 0
 
 
+def test_lexer_primary_style_from_secondary_style():
+    """primary_style_from_style() strips cpp's "inactive" bit added by distance_to_secondary_styles()."""
+    lexer = lexilla.create_lexer("cpp")
+    assert lexer is not None
+    distance = lexer.distance_to_secondary_styles()
+    assert distance > 0
+    secondary_style = 0 + distance
+    assert lexer.primary_style_from_style(secondary_style) == 0
+
+
 def test_lexer_line_end_types_supported_is_enum():
     """line_end_types_supported returns a LineEndType, not a bare int."""
     lexer = lexilla.create_lexer("cpp")
@@ -109,3 +154,20 @@ def test_lexer_detach_then_use_raises():
     except RuntimeError:
         raised = True
     assert raised
+
+
+def test_lexer_release_then_use_raises():
+    """release() destroys the lexer now and stops the wrapper from touching it further."""
+    lexer = lexilla.create_lexer("cpp")
+    assert lexer is not None
+    lexer.release()
+
+    raised = False
+    try:
+        lexer.name
+    except RuntimeError:
+        raised = True
+    assert raised
+
+    # release() is a no-op when already released, not a double-free.
+    lexer.release()

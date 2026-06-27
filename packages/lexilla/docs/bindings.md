@@ -17,7 +17,8 @@ How `_lexilla` is built and what it exposes.
 - `src/lexilla/bindings/_binding.cpp` -- nanobind module source. Exposes
   `create_lexer`, `get_lexer_count`, `get_lexer_name`, and a `Lexer` class
   wrapping `ILexer5` (name/identifier, property get/set/introspection,
-  `word_list_set`, and the raw pointer for `SCI_SETILEXER`).
+  `word_list_set`, named-style/sub-style introspection, `line_end_types_supported`,
+  `private_call`, and the raw pointer for `SCI_SETILEXER`).
 - `src/lexilla/bindings/CMakeLists.txt` -- compiles `_binding.cpp` into
   `_lexilla.{pyd,so,dylib}` via `nanobind_add_module`, linked against
   `lexilla_core`, `add_subdirectory`'d from the top-level `CMakeLists.txt`.

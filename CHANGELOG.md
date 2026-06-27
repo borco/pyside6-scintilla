@@ -6,6 +6,19 @@ Changelog](https://keepachangelog.com/en/1.0.0/); entries are kept high-level
 (what shipped, breaking changes) rather than a full commit-by-commit log —
 see git history for that.
 
+## [5.6.3.4] - 2026-06-27
+
+### Added
+
+- All 74 Scintilla enum classes now bound (previously 11), each with
+  class- and member-level docstrings sourced from `ScintillaDoc.html`, for
+  IDE hover docs.
+- New example: `lexilla_highlighting`, using lexilla-py's `set_lexer()`
+  glue and runtime style-name resolution (`Lexer.named_styles()`/
+  `name_of_style()`).
+
+No breaking changes.
+
 ## [5.6.3.3] - 2026-06-19
 
 ### Fixed

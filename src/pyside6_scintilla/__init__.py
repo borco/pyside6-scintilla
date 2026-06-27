@@ -34,7 +34,7 @@ class ScintillaEdit(_ScintillaEditFixed):
     """
 
 
-__version__ = "5.6.3.3"
+__version__ = "5.6.3.4"
 
 __all__ = [
     "Scintilla",

@@ -118,14 +118,25 @@ test-command = "pytest {project}/tests"
 test-skip = "*-manylinux_aarch64"
 
 [tool.cibuildwheel.linux]
+# manylinux_2_34 matches pyside6-scintilla's own published wheel tag
+# (manylinux_2_34_x86_64) -- the default manylinux_2_28 image's older glibc
+# makes that wheel look incompatible to pip, so `pip install
+# pyside6-scintilla` (test-requires above) falls back to building it from
+# sdist, which needs a not-yet-released PySide6 build dependency and fails.
+manylinux-x86_64-image = "manylinux_2_34"
 # manylinux images are missing the system Qt6Gui runtime libs needed to load
 # even the offscreen platform plugin (same libs pyside6-scintilla's own CI
 # installs via apt on Debian-based runners, here via dnf for the
-# manylinux_2_28/AlmaLinux base image).
+# manylinux_2_34/AlmaLinux base image).
 before-test = "dnf install -y mesa-libGL mesa-libEGL libxkbcommon || true"
 
 [tool.cibuildwheel.macos]
 archs = ["arm64", "x86_64"]
+# cibuildwheel's x86_64 default (-mmacosx-version-min=10.9) is too old for
+# nanobind's use of aligned operator delete, which needs macOS >=10.13.
+# 11.0 also matches the arm64 build's own default, so both archs end up
+# with the same deployment target.
+environment = { MACOSX_DEPLOYMENT_TARGET = "11.0" }
 
 
 # ---------------------------------------------------------------------------

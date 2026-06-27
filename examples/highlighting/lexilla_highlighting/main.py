@@ -1,18 +1,19 @@
 """Minimal QMainWindow showing real C++ syntax highlighting via Lexilla.
 
-Wires a lexilla-created "cpp" lexer into a ScintillaEdit via SCI_SETILEXER
-(setILexer()) -- the cross-binding pointer path described in lexilla-py's
-docs/specs/mission.md "Cross-binding integration" decision. Unlike this
-repo's own pygments_highlighting/tree_sitter_highlighting examples, no
-re-tokenizing glue code is needed here: once the lexer is wired up,
-Scintilla calls its Lex()/Fold() itself whenever the editor needs to
-(re)style text.
+Wires a lexilla-created "cpp" lexer into a ScintillaEdit via lexilla's
+set_lexer() glue (which itself calls SCI_SETILEXER/setILexer()) -- the
+cross-binding pointer path described in lexilla-py's docs/specs/mission.md
+"Cross-binding integration" decision. Unlike this repo's own
+pygments_highlighting/tree_sitter_highlighting examples, no re-tokenizing
+glue code is needed here: once the lexer is wired up, Scintilla calls its
+Lex()/Fold() itself whenever the editor needs to (re)style text.
 
 Run with:
     uv run python examples/highlighting/lexilla_highlighting/main.py
 """
 
 import sys
+from dataclasses import dataclass
 from typing import Final
 
 from PySide6.QtGui import QFontDatabase
@@ -20,25 +21,27 @@ from PySide6.QtWidgets import QApplication, QMainWindow
 from pyside6_scintilla import Scintilla, ScintillaEdit
 
 from lexilla import Language, create_lexer
+from lexilla.pyside6_scintilla import set_lexer
 
-# SCE_C_* style numbers the "cpp" lexer assigns, from Lexilla's own
-# SciLexer.h -- lexilla-py doesn't bind these (they're Lexilla's, not
-# Scintilla's, and out of this project's scope; see lexilla-py's
-# docs/specs/mission.md). Only the subset styled below is listed.
-SCE_C_DEFAULT = 0
-SCE_C_COMMENT = 1
-SCE_C_COMMENTLINE = 2
-SCE_C_COMMENTDOC = 3
-SCE_C_NUMBER = 4
-SCE_C_WORD = 5
-SCE_C_STRING = 6
-SCE_C_PREPROCESSOR = 9
-SCE_C_OPERATOR = 10
-SCE_C_IDENTIFIER = 11
-
-# Fold margin -- the second default margin (index 0 is the line-number
-# margin set up below; margin 1 is what Scintilla creates with the
-# Scintilla.MarginType.Symbol type out of the box).
+# Scintilla starts with 5 margins, plain slots numbered 0..Scintilla.MaxMargin
+# (4) -- editor.setMargins(n) can allocate more/fewer. A margin index by
+# itself means nothing; setMarginTypeN()/setMarginWidthN()/etc. below are
+# what actually give a slot a role (line numbers, symbols, folding, ...),
+# so there's no Scintilla or pyside6-scintilla enum for "the line-number
+# margin" or "the fold margin" -- only for what you *do* with a slot once
+# picked (e.g. Scintilla.MarginType, used below). By convention (not
+# enforced by Scintilla) margin 0 defaults to line numbers and margin 1 to
+# non-folding symbols, which is why this example reuses them for the same
+# roles instead of inventing its own numbering.
+#
+# To add a third margin -- e.g. for git-blame/revision text, or a separate
+# bookmark margin distinct from the fold margin -- pick an unused index
+# (2, 3, or 4 here) and give it a role the same way: setMarginTypeN() with
+# Scintilla.MarginType.Text/RText for application-drawn text (see
+# marginSetText()), or another Symbol margin with its own setMarginMaskN()
+# (e.g. Scintilla.MaskHistory instead of MaskFolders) so its markers don't
+# collide with the fold margin's.
+MARGIN_LINE_NUMBER: Final = 0
 MARGIN_FOLD: Final = 1
 
 # The classic "boxes" fold-margin marker set (as seen in SciTE/Notepad++):
@@ -59,19 +62,45 @@ FOLD_MARKERS: Final = {
 # up the marginClicked signal by hand.
 AUTOMATIC_FOLD_SHOW_AND_CLICK: Final = Scintilla.AutomaticFold.Show | Scintilla.AutomaticFold.Click
 
-# (red, green, blue) per style -- packed to Scintilla's 0xBBGGRR colour
+
+@dataclass(frozen=True)
+class StyleSpec:
+    """Visuals for one named style; color is an (red, green, blue) triple."""
+
+    color: tuple[int, int, int]
+    bold: bool = False
+    italic: bool = False
+
+
+# Visuals per style, keyed by the cpp lexer's own symbolic style names (e.g.
+# "SCE_C_DEFAULT"). Neither the SCE_C_* numbers nor their names are bound as
+# constants by lexilla-py -- each lexer defines its own style set, and
+# binding all of them is out of lexilla-py's scope (see its
+# docs/specs/mission.md) -- so a plain string is the only handle available;
+# there is no enum member to import instead. Resolved to the cpp lexer's
+# actual style numbers at runtime in __setup_editor() via
+# Lexer.named_styles()/name_of_style(), and checked there against typos
+# since nothing else (type checker, linter) can catch a bad key here. To see
+# the full list of names/descriptions a lexer exposes, run e.g.:
+#   from lexilla import Language, create_lexer
+#   lexer = create_lexer(Language.CPP)
+#   for s in range(lexer.named_styles()):
+#       print(s, lexer.name_of_style(s), lexer.description_of_style(s))
+#
+# The (red, green, blue) colors below are this example's own palette choice
+# -- not Lexilla or Scintilla values -- packed to Scintilla's 0xBBGGRR
 # format by rgb() below, at the point of use.
-STYLE_COLORS: Final = {
-    SCE_C_DEFAULT: (0x00, 0x00, 0x00),
-    SCE_C_COMMENT: (0x80, 0x80, 0x80),
-    SCE_C_COMMENTLINE: (0x80, 0x80, 0x80),
-    SCE_C_COMMENTDOC: (0x80, 0x80, 0x80),
-    SCE_C_NUMBER: (0x80, 0x00, 0x80),
-    SCE_C_WORD: (0x00, 0x00, 0x80),
-    SCE_C_STRING: (0x00, 0x80, 0x00),
-    SCE_C_PREPROCESSOR: (0x80, 0x40, 0x00),
-    SCE_C_OPERATOR: (0x40, 0x40, 0x40),
-    SCE_C_IDENTIFIER: (0x00, 0x00, 0x00),
+STYLES_BY_NAME: Final = {
+    "SCE_C_DEFAULT": StyleSpec((0x00, 0x00, 0x00)),
+    "SCE_C_COMMENT": StyleSpec((0x80, 0x80, 0x80), italic=True),
+    "SCE_C_COMMENTLINE": StyleSpec((0x80, 0x80, 0x80), italic=True),
+    "SCE_C_COMMENTDOC": StyleSpec((0x80, 0x80, 0x80), italic=True),
+    "SCE_C_NUMBER": StyleSpec((0x80, 0x00, 0x80)),
+    "SCE_C_WORD": StyleSpec((0x00, 0x00, 0x80), bold=True),
+    "SCE_C_STRING": StyleSpec((0x00, 0x80, 0x00)),
+    "SCE_C_PREPROCESSOR": StyleSpec((0x80, 0x40, 0x00)),
+    "SCE_C_OPERATOR": StyleSpec((0x40, 0x40, 0x40)),
+    "SCE_C_IDENTIFIER": StyleSpec((0x00, 0x00, 0x00)),
 }
 
 # Word list 0 ("Primary keywords and identifiers", per
@@ -86,7 +115,7 @@ CPP_KEYWORDS: Final = (
 )
 
 SAMPLE_TEXT: Final = """\
-// lexilla-py: cpp lexer wired into pyside6-scintilla via SCI_SETILEXER
+// lexilla-py: cpp lexer wired into pyside6-scintilla via set_lexer()
 #include <cstdio>
 
 class Greeter {
@@ -126,32 +155,41 @@ class MainWindow(QMainWindow):
     def __setup_editor(self) -> None:
         editor = self.__editor
 
-        fixed_font = QFontDatabase.systemFont(QFontDatabase.SystemFont.FixedFont)
-        for style, (red, green, blue) in STYLE_COLORS.items():
-            editor.styleSetFont(style, fixed_font.family())
-            editor.styleSetFore(style, rgb(red, green, blue))
-        editor.styleSetBold(SCE_C_WORD, True)
-        editor.styleSetItalic(SCE_C_COMMENT, True)
-        editor.styleSetItalic(SCE_C_COMMENTLINE, True)
-        editor.styleSetItalic(SCE_C_COMMENTDOC, True)
-
         # create_lexer() returns a Lexer that owns the underlying ILexer5
-        # until detach() hands it to Scintilla -- after this, the editor
-        # (not lexer) owns its lifetime, and Lexer.pointer/other methods
-        # must not be used again. "fold" must be set on the lexer itself
-        # (it controls whether Fold() computes fold levels at all), so set
-        # it before detaching.
+        # until detach() (called by set_lexer() below) hands it to
+        # Scintilla -- after that, the editor (not lexer) owns its
+        # lifetime, and Lexer.pointer/other methods must not be used
+        # again. Resolve style names to numbers, and set "fold" (which
+        # controls whether Fold() computes fold levels at all), before
+        # that handoff.
         lexer = create_lexer(Language.CPP)
         assert lexer is not None
+        style_by_name = {lexer.name_of_style(style): style for style in range(lexer.named_styles())}
+        # STYLES_BY_NAME's keys are plain strings (see its comment above for
+        # why), so a typo there would otherwise only surface as a KeyError
+        # below, off in the styling loop with no hint of the actual cause.
+        unknown_names = STYLES_BY_NAME.keys() - style_by_name.keys()
+        assert not unknown_names, f"unknown cpp lexer style names: {sorted(unknown_names)}"
+
+        fixed_font = QFontDatabase.systemFont(QFontDatabase.SystemFont.FixedFont)
+        for name, spec in STYLES_BY_NAME.items():
+            style = style_by_name[name]
+            editor.styleSetFont(style, fixed_font.family())
+            editor.styleSetFore(style, rgb(*spec.color))
+            if spec.bold:
+                editor.styleSetBold(style, True)
+            if spec.italic:
+                editor.styleSetItalic(style, True)
+
         lexer.property_set("fold", "1")
-        editor.setILexer(lexer.detach())
+        set_lexer(editor, lexer)
         editor.setKeyWords(0, CPP_KEYWORDS)
 
         editor.setText(SAMPLE_TEXT)
         editor.colourise(0, -1)
 
-        editor.setMarginWidthN(0, 40)
-        editor.setMarginTypeN(0, Scintilla.MarginType.Number)
+        editor.setMarginWidthN(MARGIN_LINE_NUMBER, 40)
+        editor.setMarginTypeN(MARGIN_LINE_NUMBER, Scintilla.MarginType.Number)
 
         self.__setup_folding(editor)
 

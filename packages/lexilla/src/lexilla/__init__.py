@@ -8,7 +8,15 @@ Scintilla binding's ``SCI_SETILEXER`` -- see ``docs/specs/mission.md``.
 """
 
 from ._languages import Language
-from ._lexilla import Lexer, LanguageIdentifier, PropertyType, create_lexer, get_lexer_count, get_lexer_name
+from ._lexilla import (
+    Lexer,
+    LanguageIdentifier,
+    LineEndType,
+    PropertyType,
+    create_lexer,
+    get_lexer_count,
+    get_lexer_name,
+)
 
 __version__ = "5.5.0.0"
 
@@ -16,6 +24,7 @@ __all__ = [
     "Language",
     "LanguageIdentifier",
     "Lexer",
+    "LineEndType",
     "PropertyType",
     "__version__",
     "create_lexer",

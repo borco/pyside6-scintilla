@@ -15,6 +15,19 @@ class PropertyType(enum.IntEnum):
     STRING = 2
     """A property whose value is interpreted as a string."""
 
+class LineEndType(enum.IntEnum):
+    """
+    Line-end styles a lexer supports (see Lexer.line_end_types_supported), mirroring Scintilla.h's SC_LINE_END_TYPE_*.
+    """
+
+    DEFAULT = 0
+    r"""Only \r, \n, and \r\n are treated as line ends."""
+
+    UNICODE = 1
+    """
+    Unicode line-end characters (e.g. U+2028 LINE SEPARATOR) are also treated as line ends.
+    """
+
 class LanguageIdentifier(enum.IntEnum):
     """
     Numeric language identifier of a lexer (see Lexer.identifier), mirroring SciLexer.h's SCLEX_*.
@@ -500,6 +513,74 @@ class Lexer:
     def word_list_set(self, n: int, word_list: str) -> int:
         """
         Set word-list slot n (see describe_word_list_sets) to a space-separated list of words.
+        """
+
+    def named_styles(self) -> int:
+        """
+        Number of named styles this lexer defines (including allocated sub-styles), for iterating name_of_style/tags_of_style/description_of_style(0..named_styles()-1).
+        """
+
+    def name_of_style(self, style: int) -> str:
+        """
+        Symbolic name of a style number (e.g. "SCE_C_DEFAULT" for cpp style 0).
+        """
+
+    def tags_of_style(self, style: int) -> str:
+        """
+        Space-separated semantic tags for a style number (e.g. "literal numeric").
+        """
+
+    def description_of_style(self, style: int) -> str:
+        """Human-readable description of what a style number represents."""
+
+    def allocate_sub_styles(self, style_base: int, number_styles: int) -> int:
+        """
+        Allocate number_styles new style numbers derived from style_base (e.g. per-identifier-class highlighting); returns the first allocated style number, or -1 if none could be allocated.
+        """
+
+    def sub_styles_start(self, style_base: int) -> int:
+        """
+        First sub-style number allocated from style_base via allocate_sub_styles, or -1 if none.
+        """
+
+    def sub_styles_length(self, style_base: int) -> int:
+        """
+        Number of sub-styles allocated from style_base via allocate_sub_styles.
+        """
+
+    def style_from_sub_style(self, sub_style: int) -> int:
+        """Base style a previously allocated sub-style number was derived from."""
+
+    def primary_style_from_style(self, style: int) -> int:
+        """
+        Primary style a secondary style number maps to (see distance_to_secondary_styles).
+        """
+
+    def free_sub_styles(self) -> None:
+        """Release all sub-styles previously allocated via allocate_sub_styles."""
+
+    def set_identifiers(self, style: int, identifiers: str) -> None:
+        """
+        Assign a space-separated list of identifiers to a sub-style number, so the lexer recognizes them as that class (e.g. known type names).
+        """
+
+    def distance_to_secondary_styles(self) -> int:
+        """
+        Offset added to a primary style number to reach its secondary-style counterpart, or 0 if this lexer has none.
+        """
+
+    def get_sub_style_bases(self) -> str:
+        """
+        Style numbers that allocate_sub_styles can be called on for this lexer, as a string with one style number per character (cast each char to int).
+        """
+
+    @property
+    def line_end_types_supported(self) -> LineEndType:
+        """Line-end styles this lexer supports (see the LineEndType enum)."""
+
+    def private_call(self, operation: int, pointer: int) -> int:
+        """
+        Lexer-specific opaque escape hatch; operation and the address-sized pointer/return value are defined by the individual lexer, if it implements this at all. No lexer in vendored Lexilla 5.5.0 currently does (all stub it as a no-op returning 0).
         """
 
 def create_lexer(name: str) -> Lexer:

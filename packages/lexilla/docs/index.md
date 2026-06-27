@@ -13,11 +13,41 @@
 
 ## Status
 
-Real `CreateLexer`/`ILexer5` bindings exist: `create_lexer`, `get_lexer_count`,
-`get_lexer_name`, and a `Lexer` class (name/identifier, property get/set,
-`word_list_set`, and the raw pointer for `SCI_SETILEXER`). `Lex`/`Fold` and
-the cross-binding/wheel-publishing work are not done yet. See
-[GitHub Issues](https://github.com/borco/lexilla-py/issues) for what's next.
+See [GitHub Issues](https://github.com/borco/lexilla-py/issues) for what's
+done and what's next, and the
+[project board](https://github.com/users/borco/projects/3) for the joint
+roadmap with [pyside6-scintilla](https://github.com/borco/pyside6-scintilla)
+(issues and PRs from both repos are added to it automatically).
+
+## Installation
+
+<!-- sync:installation -->
+Install from [PyPI](https://pypi.org/project/lexilla/):
+
+```bash
+pip install lexilla
+```
+<!-- /sync:installation -->
+
+## Usage
+
+<!-- sync:usage-example -->
+```python
+from lexilla import Language, create_lexer
+from lexilla.pyside6_scintilla import set_lexer
+from pyside6_scintilla import ScintillaEdit
+
+editor = ScintillaEdit()
+lexer = create_lexer(Language.CPP)
+assert lexer is not None
+set_lexer(editor, lexer)
+```
+<!-- /sync:usage-example -->
+
+`set_lexer()` hands a created lexer to a `pyside6-scintilla` `ScintillaEdit`
+via `SCI_SETILEXER`, transferring ownership to it — see the
+[lexilla_highlighting example](https://github.com/borco/pyside6-scintilla/tree/master/examples/highlighting/lexilla_highlighting/)
+for a complete example.
 
 ## Why this exists
 
@@ -26,9 +56,11 @@ attaches via `SCI_SETILEXER` — it's a separate, Qt-free C++ library from
 Scintilla itself since Scintilla 5.0. This project exposes that library
 directly to Python. In practice,
 [pyside6-scintilla](https://github.com/borco/pyside6-scintilla) is its only
-consumer; it's kept as a separate package so this binding's release cadence
-and vendored Lexilla version can track upstream Lexilla releases
-independently of pyside6-scintilla's own release cycle — see
+consumer, wired up via the `set_lexer()` convenience function (see Usage
+above) rather than raw `SCI_SETILEXER` pointer plumbing; it's kept as a
+separate package so this binding's release cadence and vendored Lexilla
+version can track upstream Lexilla releases independently of
+pyside6-scintilla's own release cycle — see
 [Project mission](specs/mission.md) for the full background.
 
 ## Development
@@ -37,12 +69,6 @@ See the **Development** section for the project's mission, how the vendored
 Lexilla source is verified against upstream, and (as they fill in) the
 bindings architecture and build instructions. See
 [GitHub Issues](https://github.com/borco/lexilla-py/issues) for the ordered
-list of upcoming work, and the **Examples** section for what's planned
-there.
-
-## Roadmap
-
-The [project board](https://github.com/users/borco/projects/3) tracks the
-joint roadmap for `lexilla-py` and
-[pyside6-scintilla](https://github.com/borco/pyside6-scintilla); issues and
-PRs from both repos are added to it automatically.
+list of upcoming work. This repo has no examples of its own — see
+[pyside6-scintilla's examples](https://github.com/borco/pyside6-scintilla/tree/master/examples)
+instead.

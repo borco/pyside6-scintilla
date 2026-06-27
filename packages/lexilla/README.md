@@ -13,12 +13,8 @@
 
 ## Status
 
-Real `CreateLexer`/`ILexer5` bindings exist: `create_lexer`, `get_lexer_count`,
-`get_lexer_name`, and a `Lexer` class (name/identifier, property get/set,
-`word_list_set`, and the raw pointer for `SCI_SETILEXER`). `Lex`/`Fold` and
-the cross-binding/wheel-publishing work are not done yet. Nothing is
-published to PyPI yet. See
-[GitHub Issues](https://github.com/borco/lexilla-py/issues) for what's next.
+See [GitHub Issues](https://github.com/borco/lexilla-py/issues) for what's
+done and what's next.
 
 ## Why this exists
 
@@ -27,9 +23,11 @@ attaches via `SCI_SETILEXER` — it's a separate, Qt-free C++ library from
 Scintilla itself since Scintilla 5.0. This project exposes that library
 directly to Python. In practice,
 [pyside6-scintilla](https://github.com/borco/pyside6-scintilla) is its only
-consumer; it's kept as a separate package so this binding's release cadence
-and vendored Lexilla version can track upstream Lexilla releases
-independently of pyside6-scintilla's own release cycle — see
+consumer, wired up via the `set_lexer()` convenience function (see Usage
+below) rather than raw `SCI_SETILEXER` pointer plumbing; it's kept as a
+separate package so this binding's release cadence and vendored Lexilla
+version can track upstream Lexilla releases independently of
+pyside6-scintilla's own release cycle — see
 [docs/specs/mission.md](docs/specs/mission.md) for the full background.
 
 ## Goals
@@ -48,11 +46,33 @@ independently of pyside6-scintilla's own release cycle — see
 
 ## Installation
 
-Not yet published. Once it is:
+<!-- sync:installation -->
+Install from [PyPI](https://pypi.org/project/lexilla/):
 
 ```bash
 pip install lexilla
 ```
+<!-- /sync:installation -->
+
+## Usage
+
+<!-- sync:usage-example -->
+```python
+from lexilla import Language, create_lexer
+from lexilla.pyside6_scintilla import set_lexer
+from pyside6_scintilla import ScintillaEdit
+
+editor = ScintillaEdit()
+lexer = create_lexer(Language.CPP)
+assert lexer is not None
+set_lexer(editor, lexer)
+```
+<!-- /sync:usage-example -->
+
+`set_lexer()` hands a created lexer to a `pyside6-scintilla` `ScintillaEdit`
+via `SCI_SETILEXER`, transferring ownership to it — see
+[lexilla_highlighting](https://github.com/borco/pyside6-scintilla/tree/master/examples/highlighting/lexilla_highlighting/)
+for a complete example.
 
 ## Versioning
 
@@ -65,16 +85,16 @@ and resets to `0` when Lexilla itself releases a new version.
 
 | Doc | Contents |
 | --- | --- |
-| [docs/specs/](docs/specs/) | Design specifications and action plans for in-progress and planned work |
-| [docs/specs/mission.md](docs/specs/mission.md) | Project background, goals, and design decisions |
-| [GitHub Issues](https://github.com/borco/lexilla-py/issues) | Ordered list of upcoming work |
-| [Project board](https://github.com/users/borco/projects/3) | Joint roadmap for `lexilla-py` and [pyside6-scintilla](https://github.com/borco/pyside6-scintilla); issues/PRs from both repos are auto-added |
+| [docs/auditing.md](docs/auditing.md) | How to verify the vendored Lexilla source matches upstream |
 | [docs/bindings.md](docs/bindings.md) | How the nanobind bindings are built, and how they're expected to grow |
 | [docs/build.md](docs/build.md) | Build prerequisites, local build/rebuild, wheels, and publishing |
-| [docs/auditing.md](docs/auditing.md) | How to verify the vendored Lexilla source matches upstream |
 | [docs/documenting.md](docs/documenting.md) | How the docs site is built (stub) |
+| [docs/specs/](docs/specs/) | Design specifications and action plans for in-progress and planned work |
+| [docs/specs/mission.md](docs/specs/mission.md) | Project background, goals, and design decisions |
 | [docs/testpypi.md](docs/testpypi.md) | Setting up TestPyPI trusted publishing |
-| [examples/](examples/) | Standalone example apps (planned) |
+| [examples/](examples/) | No examples of its own — see [pyside6-scintilla/examples/](https://github.com/borco/pyside6-scintilla/tree/master/examples) |
+| [GitHub Issues](https://github.com/borco/lexilla-py/issues) | Ordered list of upcoming work |
+| [Project board](https://github.com/users/borco/projects/3) | Joint roadmap for `lexilla-py` and [pyside6-scintilla](https://github.com/borco/pyside6-scintilla); issues/PRs from both repos are auto-added |
 
 ## License
 

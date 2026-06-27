@@ -48,6 +48,17 @@ uv run python examples/<example>/main.py
 
 <div class="grid cards" markdown>
 
+-   :material-marker:{ .lg .middle } __Lexilla highlighting and folding__
+
+    ---
+
+    Real C++ syntax highlighting *and* folding in a `ScintillaEdit`, driven
+    by a [lexilla](https://github.com/borco/lexilla-py)-created `"cpp"`
+    lexer wired in via `SCI_SETILEXER` — no per-edit re-tokenizing glue
+    needed, since Scintilla calls the lexer's `Lex()`/`Fold()` itself.
+
+    [:octicons-arrow-right-24: More](../highlighting/lexilla_highlighting.md)
+
 -   :material-marker:{ .lg .middle } __Pygments highlighting__
 
     ---

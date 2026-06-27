@@ -34,6 +34,16 @@ project.
 
 ## Highlighting
 
+### [`lexilla_highlighting`](highlighting/lexilla_highlighting/)
+
+`QMainWindow` with a `ScintillaEdit` central widget showing real C++ syntax
+highlighting and folding driven by a
+[lexilla](https://github.com/borco/lexilla-py)-created `"cpp"` lexer, wired
+in via lexilla's `set_lexer()` glue (itself `setILexer()`/`SCI_SETILEXER`) —
+unlike the `pygments_highlighting`/`tree_sitter_highlighting` examples
+below, no per-edit re-tokenizing glue code is needed once the lexer is
+attached, since Scintilla calls its `Lex()`/`Fold()` itself.
+
 ### [`pygments_highlighting`](highlighting/pygments_highlighting/)
 
 `QMainWindow` with a `ScintillaEdit` central widget showing Python syntax
@@ -51,13 +61,3 @@ applied manually via raw `SCI_STYLE*` messages and a highlight query,
 folding via `setFoldLevel()` and the tree's `block` nodes (no lexer binding
 required for either). The reusable highlighter lives in
 `tree_sitter_highlighter.py`, copyable into your own project.
-
-### [`lexilla_highlighting`](highlighting/lexilla_highlighting/)
-
-`QMainWindow` with a `ScintillaEdit` central widget showing real C++ syntax
-highlighting and folding driven by a
-[lexilla](https://github.com/borco/lexilla-py)-created `"cpp"` lexer, wired
-in via `setILexer()` (`SCI_SETILEXER`) — unlike the `pygments_highlighting`/
-`tree_sitter_highlighting` examples above, no per-edit re-tokenizing glue
-code is needed once the lexer is attached, since Scintilla calls its
-`Lex()`/`Fold()` itself.

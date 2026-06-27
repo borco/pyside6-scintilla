@@ -1,4 +1,4 @@
-# lexilla_highlighting
+# Lexilla syntax highlighting and folding
 
 A minimal `QMainWindow` with a `ScintillaEdit` central widget, showing real
 C++ syntax highlighting driven by a
@@ -19,9 +19,9 @@ set_lexer(editor, lexer)
 (`setILexer()`) and takes ownership from there — the `Lexer` wrapper must not
 be used again afterwards. Once wired up, Scintilla calls the lexer's
 `Lex()`/`Fold()` itself whenever it needs to (re)style text, so — unlike
-this repo's own `pygments_highlighting`/`tree_sitter_highlighting` examples,
-which re-tokenize on every edit because pyside6-scintilla has no lexer of
-its own — no per-edit glue code is needed here.
+the `pygments_highlighting`/`tree_sitter_highlighting` examples below, which
+re-tokenize on every edit because `pyside6-scintilla` has no lexer of its
+own — no per-edit glue code is needed here.
 
 This example still sets the *colors* per style number itself
 (`styleSetFore()`), and the keyword word list (`setKeyWords()`) — the lexer
@@ -74,7 +74,7 @@ Scintilla starts with 5 margins, plain slots numbered `0..Scintilla.MaxMargin`
 (4) — `setMargins(n)` can allocate more or fewer. A margin index by itself
 means nothing; `setMarginTypeN()`/`setMarginWidthN()`/etc. are what actually
 give a slot a role (line numbers, symbols, folding, ...), so there's no
-Scintilla or pyside6-scintilla enum for "the line-number margin" or "the
+Scintilla or `pyside6-scintilla` enum for "the line-number margin" or "the
 fold margin" — only for what you *do* with a slot once picked (e.g.
 `Scintilla.MarginType`, used in `main.py`). By convention (not enforced by
 Scintilla) margin 0 defaults to line numbers and margin 1 to non-folding
@@ -114,6 +114,10 @@ uv run python examples/highlighting/lexilla_highlighting/main.py
 it is not a dependency of the `pyside6-scintilla` package itself. It's
 installed from its [PyPI release](https://pypi.org/project/lexilla/).
 
+## Source
+
+[`examples/highlighting/lexilla_highlighting/`](https://github.com/borco/pyside6-scintilla/tree/master/examples/highlighting/lexilla_highlighting)
+
 ## Screenshots
 
-![Lexilla syntax highlighting](../../../docs/assets/images/examples/lexilla_highlighting.png)
+![Lexilla syntax highlighting](../assets/images/examples/lexilla_highlighting.png)

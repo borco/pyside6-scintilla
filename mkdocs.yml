@@ -100,6 +100,7 @@ nav:
       - examples/simple_scintilla_edit.md
       - examples/bscintillaedit.md
       - Highlighting:
+          - highlighting/lexilla_highlighting.md
           - highlighting/pygments_highlighting.md
           - highlighting/tree_sitter_highlighting.md
   - Scintilla API:

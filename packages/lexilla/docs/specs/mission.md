@@ -53,7 +53,7 @@ editor.send(SCI_SETILEXER, 0, lexer.pointer)
 ```
 
 For ergonomics, convenience glue that knows about pyside6-scintilla's API
-directly (e.g. a `lexer.set_on(editor)` helper) is also provided — this is
+directly (e.g. a `set_lexer(editor, lexer)` helper) is also provided — this is
 the only place the two packages are allowed to depend on each other.
 
 ### Scope: minimal first, full API later

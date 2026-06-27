@@ -54,7 +54,185 @@ class Scintilla(Shiboken.Object):
     IndicatorMax: typing.Final = 43
     r"""Highest valid indicator number."""
 
+    class Accessibility(enum.IntEnum):
+        r"""Controls whether accessibility (screen reader) support is enabled, set with `SCI_SETACCESSIBILITY`/`SCI_GETACCESSIBILITY`."""
+
+        Disabled                  = 0x0
+        Enabled                   = 0x1
+
+    class Alpha(enum.IntEnum):
+        r"""Translucency level used by alpha-blended drawing such as marker and selection layers."""
+
+        Transparent               = 0x0
+        r"""Value 0; completely transparent."""
+        Opaque                    = 0xff
+        r"""Value 255; fully opaque."""
+        NoAlpha                   = 0x100
+        r"""Legacy value (256) meaning drawing is performed opaquely directly on the base layer; prefer choosing a layer via the `Layer`-based APIs instead."""
+
+    class AnnotationVisible(enum.IntEnum):
+        r"""Display mode for line annotations, set with `SCI_ANNOTATIONSETVISIBLE`/`SCI_ANNOTATIONGETVISIBLE`."""
+
+        Hidden                    = 0x0
+        r"""Annotations are not displayed."""
+        Standard                  = 0x1
+        r"""Annotations are drawn left justified with no adornment."""
+        Boxed                     = 0x2
+        r"""Annotations are indented to match the text and are surrounded by a box."""
+        Indented                  = 0x3
+        r"""Annotations are indented to match the text."""
+
+    class AutoCompleteOption(enum.IntEnum):
+        r"""Options controlling autocompletion list display and selection behaviour, set with `SCI_AUTOCSETOPTIONS`."""
+
+        Normal                    = 0x0
+        FixedSize                 = 0x1
+        r"""On Win32 only, uses a fixed-size list instead of one resizable by the user; also avoids a header rectangle above the list."""
+        SelectFirstItem           = 0x2
+        r"""Always selects the first item in the list regardless of the entered text; useful when the application's autocompletion logic already sorts so the best match is on top. Without this option, Scintilla selects the item matching the entered text."""
+
+    class AutomaticFold(enum.IntEnum):
+        r"""Bit flags choosing which parts of fold-handling behaviour Scintilla performs automatically instead of relying on the container, set with `SCI_SETAUTOMATICFOLD`."""
+
+        None_                     = 0x0
+        Show                      = 0x1
+        r"""Automatically shows lines as needed, avoiding the `SCN_NEEDSHOWN` notification."""
+        Click                     = 0x2
+        r"""Handles clicks in the fold margin automatically, avoiding the `SCN_MARGINCLICK` notification for folding margins."""
+        Change                    = 0x4
+        r"""Shows lines as needed when the fold structure changes; `SCN_MODIFIED` is still sent unless disabled by the container."""
+
+    class Bidirectional(enum.IntEnum):
+        r"""Selects the default text direction for bidirectional (e.g. Arabic/Hebrew) text support, set with `SCI_SETBIDIRECTIONAL`."""
+
+        Disabled                  = 0x0
+        r"""Bidirectional support is off; also the value returned by `SCI_GETBIDIRECTIONAL` if a previous `SCI_SETBIDIRECTIONAL` call failed."""
+        L2R                       = 0x1
+        r"""Left-to-right is the default direction. Currently the only mode with actual bidirectional display support (experimental, Win32 DirectWrite and macOS Cocoa only); only UTF-8 documents show bidirectional behaviour."""
+        R2L                       = 0x2
+        r"""Right-to-left is the default direction. Reserved for future implementation; not yet functional."""
+
+    class CaretPolicy(enum.IntEnum):
+        r"""Bit flags controlling how the caret is kept in view, passed as the `caretPolicy` argument to `SCI_SETXCARETPOLICY`/`SCI_SETYCARETPOLICY` together with a `caretSlop` value."""
+
+        Slop                      = 0x1
+        r"""Enables a slop value (`caretSlop`) defining an unwanted zone near the margins (pixels for vertical margins, lines for horizontal margins) that the caret is kept out of, so surrounding context stays visible."""
+        Strict                    = 0x4
+        r"""Strictly enforces the slop policy: the caret is centred on the display if no slop is set, and cannot enter the unwanted zone if slop is set."""
+        Even                      = 0x8
+        r"""If NOT set, the left/bottom unwanted zones are extended to match the right/top ones (asymmetrical), favouring visibility of line starts and the lines following the caret."""
+        Jumps                     = 0x10
+        r"""Moves the display more energetically so the caret can travel further in one direction before the policy reapplies."""
+
+    class CaretSticky(enum.IntEnum):
+        r"""Controls when the caret's horizontal position on a line is remembered when moving between lines, set with `SCI_SETCARETSTICKY`."""
+
+        Off                       = 0x0
+        r"""Default: all text changes and caret position changes remember the caret's new horizontal position when moving to a different line."""
+        On                        = 0x1
+        r"""Only moving the caret directly via mouse or keyboard updates the remembered horizontal position; text changes do not."""
+        WhiteSpace                = 0x2
+        r"""Behaves like `Off` except when only space/tab characters are inserted -- in that one case the horizontal position is not updated."""
+
+    class CaretStyle(enum.IntEnum):
+        r"""Caret drawing style, set with `SCI_SETCARETSTYLE`; separate bit ranges select insert-mode, overtype-mode, and curses-mode appearance."""
+
+        Invisible                 = 0x0
+        r"""Carets are not drawn at all."""
+        OverstrikeBar             = 0x0
+        r"""Draws an overstrike caret as a bar; the default for overtype mode (shares value 0 with `Invisible`, but applies to the separate overtype-mode bit, not the insert-mode bits)."""
+        Line                      = 0x1
+        r"""Draws insertion carets as lines; the default."""
+        Block                     = 0x2
+        r"""Draws insertion carets as blocks."""
+        InsMask                   = 0xf
+        r"""Mask (lower 4 bits) isolating the insert-mode caret style bits."""
+        OverstrikeBlock           = 0x10
+        r"""Draws an overstrike caret as a block; OR with one of the insert-mode styles (`Line`/`Block`/`Invisible`)."""
+        Curses                    = 0x20
+        r"""Draws additional (non-main) carets as blocks for environments, such as a terminal, that cannot draw them otherwise; the main caret is left to the terminal."""
+        BlockAfter                = 0x100
+        r"""When the caret end of a range is at the end of the selection and a block caret style is chosen, draws the block outside the selection instead of inside; OR with `Block` or `Curses`."""
+
+    class CaseInsensitiveBehaviour(enum.IntEnum):
+        r"""Controls how case-insensitive autocompletion selects among matching entries, set with `SCI_AUTOCSETCASEINSENSITIVEBEHAVIOUR`."""
+
+        RespectCase               = 0x0
+        r"""Default: even with case-insensitive autocompletion, still selects the first list entry that matches the entered text in a case-sensitive way."""
+        IgnoreCase                = 0x1
+        r"""Ignores case entirely when selecting the matching autocompletion entry."""
+
+    class CaseVisible(enum.IntEnum):
+        r"""Forces how a style's text is displayed (upper/lower/camel case) without altering the stored text, set with `SCI_STYLESETCASE`."""
+
+        Mixed                     = 0x0
+        r"""Displays text normally, unmodified."""
+        Upper                     = 0x1
+        Lower                     = 0x2
+        Camel                     = 0x3
+
+    class ChangeHistoryOption(enum.IntEnum):
+        r"""Bit flags enabling change-history tracking and how it is displayed, set with `SCI_SETCHANGEHISTORY`."""
+
+        Disabled                  = 0x0
+        r"""Default: change history is turned off."""
+        Enabled                   = 0x1
+        r"""Tracks changes to the document."""
+        Markers                   = 0x2
+        r"""Displays changes in the margin using the `MarkerOutline` history markers."""
+        Indicators                = 0x4
+        r"""Displays changes in the text using the `IndicatorNumbers` history indicators."""
+
+    class CharacterSet(enum.IntEnum):
+        r"""Character set used to display a style's text (independent of document encoding), set with `SCI_STYLESETCHARACTERSET`; useful for comments/string literals in a different language than the rest of the document. This binding's Qt platform layer (`PlatQt.cpp`) maps each value to a Qt `QTextCodec` name, so support depends only on which codecs Qt ships, not on the OS -- unlike Scintilla's native GTK/Cocoa/Win32 ports, where support and code-page mapping vary by platform."""
+
+        Ansi                      = 0x0
+        r"""Not mapped to a codec by this binding's Qt platform layer -- falls back to the same "ISO 8859-1" codec as `Default` regardless of platform."""
+        Default                   = 0x1
+        r"""Maps to the "ISO 8859-1" (Latin-1) codec; the default character set used by styles unless changed."""
+        Symbol                    = 0x2
+        r"""Not mapped to a codec by this binding's Qt platform layer -- falls back to the same "ISO 8859-1" codec as `Default` regardless of platform."""
+        Mac                       = 0x4d
+        r"""Maps to the "Apple Roman" codec."""
+        ShiftJis                  = 0x80
+        r"""Maps to the "Shift-JIS" codec."""
+        Hangul                    = 0x81
+        r"""Maps to the "CP949" codec."""
+        Johab                     = 0x82
+        r"""Not mapped to a codec by this binding's Qt platform layer -- falls back to the same "ISO 8859-1" codec as `Default` regardless of platform."""
+        GB2312                    = 0x86
+        r"""Maps to the "GB18030-0" codec."""
+        ChineseBig5               = 0x88
+        r"""Maps to the "Big5" codec."""
+        Greek                     = 0xa1
+        r"""Maps to the "ISO 8859-7" codec."""
+        Turkish                   = 0xa2
+        r"""Maps to the "ISO 8859-9" codec."""
+        Vietnamese                = 0xa3
+        r"""Maps to the "Windows-1258" codec."""
+        Hebrew                    = 0xb1
+        r"""Maps to the "ISO 8859-8" codec."""
+        Arabic                    = 0xb2
+        r"""Maps to the "ISO 8859-6" codec."""
+        Baltic                    = 0xba
+        r"""Maps to the "ISO 8859-13" codec."""
+        Russian                   = 0xcc
+        r"""Maps to the "KOI8-R" codec."""
+        Thai                      = 0xde
+        r"""Maps to the "TIS-620" codec."""
+        EastEurope                = 0xee
+        r"""Maps to the "ISO 8859-2" codec."""
+        Oem                       = 0xff
+        r"""Not mapped to a codec by this binding's Qt platform layer -- falls back to the same "ISO 8859-1" codec as `Default` regardless of platform."""
+        Oem866                    = 0x362
+        r"""Not mapped to a codec by this binding's Qt platform layer -- falls back to the same "ISO 8859-1" codec as `Default` regardless of platform."""
+        Iso8859_15                = 0x3e8
+        r"""Maps to the "ISO 8859-15" (Latin-9) codec."""
+        Cyrillic                  = 0x4e3
+        r"""Maps to the "Windows-1251" codec."""
+
     class CharacterSource(enum.IntEnum):
+        r"""Identifies how a character was entered, reported as `NotificationData.characterSource` on the `SCN_CHARADDED` notification -- only available via the raw `notify` signal, since the typed `charAdded` signal only carries the character code."""
 
         DirectInput               = 0x0
         r"""Direct input characters."""
@@ -64,40 +242,560 @@ class Scintilla(Shiboken.Object):
         r"""IME (either inline or windowed mode) full composited string."""
 
     class CompletionMethods(enum.IntEnum):
+        r"""Identifies how an autocompletion list selection was triggered, reported as the `listCompletionMethod` field of `SCN_AUTOCSELECTION`/`SCN_AUTOCCOMPLETED` notifications."""
 
         FillUp                    = 0x1
+        r"""A fillup character (see `SCI_AUTOCSETFILLUPS`) triggered the completion; the character used is reported separately."""
         DoubleClick               = 0x2
+        r"""A double-click on a list item triggered the completion."""
         Tab                       = 0x3
+        r"""The Tab key, or `SCI_TAB`, triggered the completion."""
         Newline                   = 0x4
+        r"""A newline, or `SCI_NEWLINE`, triggered the completion."""
         Command                   = 0x5
+        r"""The `SCI_AUTOCSELECT` message triggered the completion."""
         SingleChoice              = 0x6
+        r"""There was only a single choice in the list and 'choose single' mode was active, as set by `SCI_AUTOCSETCHOOSESINGLE`."""
 
-    class FoldLevel(enum.IntEnum):
+    class CursorShape(enum.IntEnum):
+        r"""Mouse cursor shape shown over the editor or a margin, set with `SCI_SETCURSOR`/`SCI_SETMARGINCURSORN`."""
+
+        Normal                    = -1
+        Arrow                     = 0x2
+        Wait                      = 0x4
+        r"""The wait cursor, shown when the mouse is over (or captured by) Scintilla and Scintilla is busy."""
+        ReverseArrow              = 0x7
+        r"""A reversed arrow, normally shown over margins by default."""
+
+    class DocumentOption(enum.IntEnum):
+        r"""Bit flags chosen when creating a document with `SCI_CREATEDOCUMENT`, affecting memory allocation and performance."""
+
+        Default                   = 0x0
+        StylesNone                = 0x1
+        r"""Stops allocation of memory for per-character styles, treating the whole document as style 0; saves significant memory. Lexers may still style visually via indicators. Often combined with the null lexer for documents too large to lex efficiently."""
+        TextLarge                 = 0x100
+        r"""Allows the document to be larger than 2 GB, for 64-bit executables."""
+
+    class EOLAnnotationVisible(enum.IntEnum):
+        r"""Display mode and decoration style for end-of-line annotations, set with `SCI_EOLANNOTATIONSETVISIBLE`/`SCI_EOLANNOTATIONGETVISIBLE`."""
+
+        Hidden                    = 0x0
+        r"""End-of-line annotations are not displayed."""
+        Standard                  = 0x1
+        r"""Drawn left justified with no adornment."""
+        Boxed                     = 0x2
+        r"""Drawn surrounded by a box."""
+        Stadium                   = 0x100
+        r"""Surrounded with a ◖stadium◗ -- a rectangle with rounded ends."""
+        FlatCircle                = 0x101
+        r"""Surrounded with a |shape◗ -- flat left end, curved right end."""
+        AngleCircle               = 0x102
+        r"""Surrounded with a ◄shape◗ -- angled left end, curved right end."""
+        CircleFlat                = 0x110
+        r"""Surrounded with a ◖shape| -- curved left end, flat right end."""
+        Flats                     = 0x111
+        r"""Surrounded with a |shape| -- flat on both ends."""
+        AngleFlat                 = 0x112
+        r"""Surrounded with a ◄shape| -- angled left end, flat right end."""
+        CircleAngle               = 0x120
+        r"""Surrounded with a ◖shape▶ -- curved left end, angled right end."""
+        FlatAngle                 = 0x121
+        r"""Surrounded with a |shape▶ -- flat left end, angled right end."""
+        Angles                    = 0x122
+        r"""Surrounded with a ◄shape▶ -- angled on both ends."""
+
+    class EdgeVisualStyle(enum.IntEnum):
+        r"""Used with `SCI_SETEDGEMODE`/`SCI_GETEDGEMODE` to control how the long-line edge marker is displayed."""
 
         None_                     = 0x0
+        r"""Long lines are not marked. This is the default state."""
+        Line                      = 0x1
+        r"""Draws a vertical line at the column set by `SCI_SETEDGECOLUMN`; works well for monospaced fonts but may not align well with proportional fonts."""
+        Background                = 0x2
+        r"""Changes the background colour of characters after the column limit; recommended for proportional fonts."""
+        MultiLine                 = 0x3
+        r"""Like `Line` but draws a configurable set of vertical lines simultaneously, using an independent dataset configured via the `SCI_MULTIEDGE*` messages."""
+
+    class Element(enum.IntEnum):
+        r"""Identifies a visual element (selection, caret, whitespace, fold/hidden line, etc.) whose colour can be get/set with `SCI_SETELEMENTCOLOUR`/`SCI_GETELEMENTCOLOUR`."""
+
+        List                      = 0x0
+        r"""Text colour in autocompletion lists; on Win32 this is currently provided by the platform layer."""
+        ListBack                  = 0x1
+        r"""Background colour of autocompletion lists; on Win32 this is currently provided by the platform layer."""
+        ListSelected              = 0x2
+        r"""Text colour of the selected item in autocompletion lists; on Win32 this is currently provided by the platform layer."""
+        ListSelectedBack          = 0x3
+        r"""Background colour of the selected item in autocompletion lists; on Win32 this is currently provided by the platform layer."""
+        SelectionText             = 0xa
+        r"""Overrides the default selection text colour."""
+        SelectionBack             = 0xb
+        r"""Overrides the default selection background colour; can be drawn translucently (see `SCI_SETSELECTIONLAYER`) or opaquely."""
+        SelectionAdditionalText   = 0xc
+        r"""Text colour used for additional selections (multiple/rectangular selection) alongside the main selection."""
+        SelectionAdditionalBack   = 0xd
+        r"""Background colour used for additional selections (multiple/rectangular selection) alongside the main selection."""
+        SelectionSecondaryText    = 0xe
+        r"""On X11/Wayland, used instead of the main selection colours when another application has taken over the 'primary selection'; commonly grey."""
+        SelectionSecondaryBack    = 0xf
+        r"""On X11/Wayland, used instead of the main selection colours when another application has taken over the 'primary selection'; commonly grey."""
+        SelectionInactiveText     = 0x10
+        r"""Colour used for the selection when the window has lost keyboard focus, customarily greyed out."""
+        SelectionInactiveBack     = 0x11
+        r"""Colour used for the selection when the window has lost keyboard focus, customarily greyed out."""
+        SelectionInactiveAdditionalText = 0x12
+        r"""Colour for additional (multiple) selections when unfocused; if not explicitly set, falls back to `SelectionInactiveText`."""
+        SelectionInactiveAdditionalBack = 0x13
+        r"""Colour for additional (multiple) selections when unfocused; if not explicitly set, falls back to `SelectionInactiveBack`."""
+        Caret                     = 0x28
+        r"""Colour of the text caret for the main selection; allows setting caret translucency, unlike the discouraged `SCI_SETCARETFORE`."""
+        CaretAdditional           = 0x29
+        r"""Colour of the caret for additional (multiple) selections."""
+        CaretLineBack             = 0x32
+        r"""Background colour of the line containing the caret; can be drawn translucently (`SCI_SETCARETLINELAYER`) or opaquely, with the highest priority over other background colours such as markers when drawn opaquely."""
+        WhiteSpace                = 0x3c
+        r"""Overrides the lexer-determined foreground colour of visible whitespace globally."""
+        WhiteSpaceBack            = 0x3d
+        r"""Overrides the lexer-determined background colour of visible whitespace globally."""
+        HotSpotActive             = 0x46
+        r"""Text colour of an active hot spot."""
+        HotSpotActiveBack         = 0x47
+        r"""Background colour of an active hot spot."""
+        FoldLine                  = 0x50
+        r"""Colour of the lines drawn in the text area to indicate folds (set via `SCI_SETFOLDFLAGS`); if not set, the `StylesCommon.Default` foreground colour is used."""
+        HiddenLine                = 0x51
+        r"""If set, draws a horizontal line in this colour to indicate hidden lines (from `SCI_HIDELINES`); a fold line drawn at the same position takes precedence."""
+
+    class EndOfLine(enum.IntEnum):
+        r"""Selects the line-ending character sequence used by `SCI_SETEOLMODE`/`SCI_CONVERTEOLS`."""
+
+        CrLf                      = 0x0
+        Cr                        = 0x1
+        Lf                        = 0x2
+
+    class FindOption(enum.IntEnum):
+        r"""Flags (combinable by OR-ing) controlling how `SCI_SEARCHINTARGET` and related search messages match text, set via `SCI_SETSEARCHFLAGS`."""
+
+        None_                     = 0x0
+        r"""Default setting is a case-insensitive literal match."""
+        WholeWord                 = 0x2
+        r"""A match only occurs if the characters before and after are not word characters, as defined by `SCI_SETWORDCHARS`."""
+        MatchCase                 = 0x4
+        r"""A match only occurs with text that matches the case of the search string."""
+        WordStart                 = 0x100000
+        r"""A match only occurs if the character immediately before the match is not a word character (unlike `WholeWord`, the character after is not checked)."""
+        RegExp                    = 0x200000
+        r"""Interpret the search string as a regular expression, using Scintilla's base implementation unless combined with `Cxx11RegEx`; matches never span multiple lines."""
+        Posix                     = 0x400000
+        r"""Treat the regular expression in a more POSIX-compatible manner by interpreting bare '(' and ')' as tagged sections rather than requiring '\(' and '\)'; has no effect when `Cxx11RegEx` is set."""
+        Cxx11RegEx                = 0x800000
+        r"""Use the C++11 <regex> library instead of Scintilla's basic regular expressions, with ECMAScript semantics and Unicode-aware behaviour on UTF-8 documents; requires `RegExp` to also be set, and returns -1 with status `Status.RegEx` if the expression is invalid."""
+
+    class FocusChange(enum.IntEnum):
+        r"""Notification codes sent to the container for `SCEN_CHANGE`/`SCEN_SETFOCUS`/`SCEN_KILLFOCUS` events."""
+
+        Killfocus                 = 0x100
+        r"""Fired when Scintilla loses focus."""
+        Setfocus                  = 0x200
+        r"""Fired when Scintilla receives focus."""
+        Change                    = 0x300
+        r"""Fired when the text (not the styling) of the document changes; carries no further detail -- use the `modified` signal/`SCN_MODIFIED` for more detailed change information."""
+
+    class FoldAction(enum.IntEnum):
+        r"""Action to perform on a fold point, used with `SCI_FOLDLINE`, `SCI_FOLDCHILDREN`, and `SCI_FOLDALL`."""
+
+        Contract                  = 0x0
+        Expand                    = 0x1
+        Toggle                    = 0x2
+        r"""Toggles between contracted and expanded; for `SCI_FOLDALL`, the first fold header in the document is examined to decide whether to expand or contract the whole document."""
+        ContractEveryLevel        = 0x4
+        r"""Used only with `SCI_FOLDALL`; can be combined (OR-ed) with `Contract` or `Toggle` to contract all fold levels instead of only the top level."""
+
+    class FoldDisplayTextStyle(enum.IntEnum):
+        r"""Controls how fold-tag text (set via `SCI_TOGGLEFOLDSHOWTEXT`/`SCI_SETDEFAULTFOLDDISPLAYTEXT`) is rendered, via `SCI_FOLDDISPLAYTEXTSETSTYLE`."""
+
+        Hidden                    = 0x0
+        r"""Do not display the fold text tags. This is the default."""
+        Standard                  = 0x1
+        Boxed                     = 0x2
+        r"""Display the fold text tags with a box drawn around them."""
+
+    class FoldFlag(enum.IntEnum):
+        r"""Bit flags controlling where fold-indicator lines are drawn in the text area, set with `SCI_SETFOLDFLAGS`."""
+
+        None_                     = 0x0
+        LineBeforeExpanded        = 0x2
+        r"""Draws a line above the fold header when it is expanded."""
+        LineBeforeContracted      = 0x4
+        r"""Draws a line above the fold header when it is not expanded."""
+        LineAfterExpanded         = 0x8
+        r"""Draws a line below the fold header when it is expanded."""
+        LineAfterContracted       = 0x10
+        r"""Draws a line below the fold header when it is not expanded."""
+        LevelNumbers              = 0x40
+        r"""Displays hexadecimal fold levels in the line margin to aid debugging of folding; cannot be combined with `LineState`."""
+        LineState                 = 0x80
+        r"""Displays hexadecimal line state in the line margin to aid debugging of lexing and folding; cannot be used together with `LevelNumbers`."""
+
+    class FoldLevel(enum.IntEnum):
+        r"""A line's fold level and associated flags, set/got with `SCI_SETFOLDLEVEL`/`SCI_GETFOLDLEVEL` as a single 32-bit value combining a level number with flag bits."""
+
+        None_                     = 0x0
+        r"""A default level that may occur before folding is applied."""
         Base                      = 0x400
+        r"""The initial fold level assigned to a line, allowing unsigned arithmetic on levels below it."""
         NumberMask                = 0xfff
+        r"""Mask (0xFFF) isolating the level-number portion from the flag bits; the level number itself ranges from 0 to this mask."""
         WhiteFlag                 = 0x1000
+        r"""Indicates the line is blank, so it should be treated as part of the preceding section (e.g. not a fold point) even if its level number suggests otherwise."""
         HeaderFlag                = 0x2000
+        r"""Indicates the line is a header, i.e. a fold point; OR this into the level when calling `SCI_SETFOLDLEVEL`."""
+
+    class FontQuality(enum.IntEnum):
+        r"""Controls the antialiasing method used to render fonts, set/got via `SCI_SETFONTQUALITY`/`SCI_GETFONTQUALITY` (Windows only at present)."""
+
+        QualityDefault            = 0x0
+        r"""The backward-compatible default antialiasing behaviour."""
+        QualityNonAntialiased     = 0x1
+        QualityAntialiased        = 0x2
+        QualityLcdOptimized       = 0x3
+        QualityMask               = 0xf
+        r"""Mask (0xF) isolating the bits used for the quality value."""
+
+    class FontStretch(enum.IntEnum):
+        r"""Horizontal stretch/condensation of a font's glyphs, set with `SCI_STYLESETSTRETCH`; corresponds to a horizontal magnification between 50% and 200%, though most fonts/platforms only support 2-3 of these values well."""
+
+        UltraCondensed            = 0x1
+        r"""Corresponds to 50% horizontal width."""
+        ExtraCondensed            = 0x2
+        r"""Corresponds to 62.5% horizontal width."""
+        Condensed                 = 0x3
+        r"""Corresponds to 75% horizontal width; one of the best-supported stretch values along with `Normal` and `Expanded`."""
+        SemiCondensed             = 0x4
+        r"""Corresponds to 87.5% horizontal width."""
+        Normal                    = 0x5
+        r"""Corresponds to 100% horizontal width (no stretch); one of the best-supported stretch values along with `Condensed` and `Expanded`."""
+        SemiExpanded              = 0x6
+        r"""Corresponds to 112.5% horizontal width."""
+        Expanded                  = 0x7
+        r"""Corresponds to 125% horizontal width; one of the best-supported stretch values along with `Condensed` and `Normal`."""
+        ExtraExpanded             = 0x8
+        r"""Corresponds to 150% horizontal width."""
+        UltraExpanded             = 0x9
+        r"""Corresponds to 200% horizontal width."""
+
+    class FontWeight(enum.IntEnum):
+        r"""Font boldness/weight, set with `SCI_STYLESETWEIGHT`; any value from 1 (very light) to 999 (very heavy) is accepted, though fonts typically only support 2-4 distinct weights."""
+
+        Normal                    = 0x190
+        r"""Standard weight (400); selected by `SCI_STYLESETBOLD` when its boolean argument is false."""
+        SemiBold                  = 0x258
+        r"""Semi-bold weight (600), between `Normal` and `Bold`."""
+        Bold                      = 0x2bc
+        r"""Bold weight (700); selected by `SCI_STYLESETBOLD` when its boolean argument is true."""
+
+    class IMEInteraction(enum.IntEnum):
+        r"""Selects how the platform's Input Method Editor (for Chinese, Japanese, or Korean text entry) is displayed, set with `SCI_SETIMEINTERACTION`."""
+
+        Windowed                  = 0x0
+        r"""The IME is shown as a separate window above Scintilla, like in other applications."""
+        Inline                    = 0x1
+        r"""The IME is displayed by Scintilla itself as text; works better with rectangular/multiple selection. Scintilla may ignore this setting in some cases, e.g. it may only be supported for certain languages."""
+
+    class IdleStyling(enum.IntEnum):
+        r"""Controls whether syntax styling of text outside the immediately visible area is deferred to an idle-time background task, set with `SCI_SETIDLESTYLING`."""
+
+        None_                     = 0x0
+        r"""Default: styling is performed for all currently visible text before displaying it, which may make scrolling slow on very large files."""
+        ToVisible                 = 0x1
+        r"""A small amount of styling is done before display, then the rest of the visible text is styled incrementally in the background; text may briefly appear uncoloured."""
+        AfterVisible              = 0x2
+        r"""Text after the currently visible portion is also styled in the background during idle time."""
+        All                       = 0x3
+        r"""Styles text both before and after the visible portion in the background during idle time."""
+
+    class IndentView(enum.IntEnum):
+        r"""Controls how far indentation guides extend on blank/empty lines, set with `SCI_SETINDENTATIONGUIDES`."""
+
+        None_                     = 0x0
+        r"""No indentation guides are shown (turns the feature off)."""
+        Real                      = 0x1
+        r"""Indentation guides are shown only inside real (actual) indentation white space on a line."""
+        LookForward               = 0x2
+        r"""Indentation guides extend beyond the actual indentation up to the level of the next non-empty line."""
+        LookBoth                  = 0x3
+        r"""Indentation guides extend up to whichever of the next or previous non-empty line has the greater indentation level; recommended for most languages."""
+
+    class IndicFlag(enum.IntEnum):
+        r"""Flags controlling indicator colouring behaviour, set/got with `SCI_INDICSETFLAGS`/`SCI_INDICGETFLAGS`."""
+
+        None_                     = 0x0
+        r"""Default: the indicator uses its configured fore colour."""
+        ValueFore                 = 0x1
+        r"""The indicator's colour is taken from the per-character indicator value (see `IndicValue`) rather than its fore setting, allowing many colours for a single indicator."""
+
+    class IndicValue(enum.IntEnum):
+        r"""Masks for packing an RGB colour into the indicator value used with `SCI_SETINDICATORVALUE` when `IndicFlag.ValueFore` is set."""
+
+        Mask                      = 0xffffff
+        r"""Mask (0xFFFFFF) used to extract the RGB colour portion from an indicator value."""
+        Bit                       = 0x1000000
+        r"""Bit (0x1000000) OR-ed into the RGB colour to mark it as a per-character indicator colour value."""
+
+    class IndicatorNumbers(enum.IntEnum):
+        r"""Identifies the indicator number ranges reserved for containers, IME, and change-history use, as passed to the `SCI_INDIC*` messages."""
+
+        Container                 = 0x8
+        r"""First indicator number in the range reserved for use by containers; indicators 0-7 are reserved for lexers."""
+        Ime                       = 0x20
+        r"""First indicator number reserved for IME (Input Method Editor) indicators."""
+        ImeMax                    = 0x23
+        r"""Last indicator number reserved for IME indicators."""
+        HistoryRevertedToOriginInsertion = 0x24
+        r"""Indicator for text that was deleted and saved but then reverted to its original state; the text has not been saved to disk."""
+        HistoryRevertedToOriginDeletion = 0x25
+        r"""Indicator for text that was inserted and saved but then reverted to its original state; there is text on disk that is missing."""
+        HistorySavedInsertion     = 0x26
+        r"""Indicator for text that was inserted and saved; this text is the same as on disk."""
+        HistorySavedDeletion      = 0x27
+        r"""Indicator for text that was deleted and saved; this range is the same as on disk."""
+        HistoryModifiedInsertion  = 0x28
+        r"""Indicator for text that was inserted but not yet saved."""
+        HistoryModifiedDeletion   = 0x29
+        r"""Indicator for text that was deleted but not yet saved."""
+        HistoryRevertedToModifiedInsertion = 0x2a
+        r"""Indicator for text that was deleted and saved but then reverted, though not to its original state; the text has not been saved to disk."""
+        HistoryRevertedToModifiedDeletion = 0x2b
+        r"""Indicator for text that was inserted and saved but then reverted, though not to its original state; there is text on disk that is missing."""
+        Max                       = 0x2b
+        r"""The last valid indicator number."""
+
+    class IndicatorStyle(enum.IntEnum):
+        r"""Visual appearance of an indicator, set with `SCI_INDICSETSTYLE` and used to highlight text such as syntax errors, deprecated names, or URLs."""
+
+        Plain                     = 0x0
+        r"""Underlined with a single, straight line."""
+        Squiggle                  = 0x1
+        r"""A squiggly underline; requires 3 pixels of descender space."""
+        TT                        = 0x2
+        r"""A line of small T shapes."""
+        Diagonal                  = 0x3
+        r"""Diagonal hatching."""
+        Strike                    = 0x4
+        Hidden                    = 0x5
+        r"""An indicator with no visual effect, useful for tracking content invisibly."""
+        Box                       = 0x6
+        r"""A rectangle drawn around the text."""
+        RoundBox                  = 0x7
+        r"""A translucent rectangle with rounded corners around the text; fill and outline alpha are controlled with `SCI_INDICSETALPHA`/`SCI_INDICSETOUTLINEALPHA`."""
+        StraightBox               = 0x8
+        r"""Like `RoundBox` but with square corners; does not colour the top pixel of the line so indicators on contiguous lines stay visually distinct."""
+        Dash                      = 0x9
+        r"""A dashed underline."""
+        Dots                      = 0xa
+        r"""A dotted underline."""
+        SquiggleLow               = 0xb
+        r"""Like `Squiggle` but only 2 vertical pixels tall, so it fits under small fonts."""
+        DotBox                    = 0xc
+        r"""A dotted rectangle drawn with alternating alpha/outline-alpha translucency."""
+        SquigglePixmap            = 0xd
+        r"""A pixmap-based version of `Squiggle` for performance; appearance is worse than `Squiggle` on macOS HiDPI."""
+        CompositionThick          = 0xe
+        r"""A 2-pixel-thick underline near the bottom of the line, resembling the target style used in Asian language input composition."""
+        CompositionThin           = 0xf
+        r"""A 1-pixel-thick underline just above the bottom of the line, resembling non-target ranges in Asian language input composition."""
+        FullBox                   = 0x10
+        r"""Like `StraightBox` but covers the entire character area, including the top pixel."""
+        TextFore                  = 0x11
+        r"""Changes the text colour to the indicator's foreground colour instead of drawing a decoration."""
+        Point                     = 0x12
+        r"""Draws a small triangle below the start of the indicator range."""
+        PointCharacter            = 0x13
+        r"""Draws a small triangle below the centre of the first character of the indicator range."""
+        Gradient                  = 0x14
+        r"""A vertical gradient from the indicator colour/alpha at top fading to fully transparent at bottom."""
+        GradientCentre            = 0x15
+        r"""A vertical gradient with the colour/alpha centred in the middle, fading to fully transparent at both top and bottom."""
+        PointTop                  = 0x16
+        r"""Draws a small triangle above the start of the indicator range."""
 
     class KeyMod(enum.IntEnum):
+        r"""Modifier-key flags (combinable by OR-ing) used alongside a `Keys` code in a `keyDefinition` passed to `SCI_ASSIGNCMDKEY`/`SCI_CLEARCMDKEY` for custom key bindings."""
 
         Norm                      = 0x0
+        r"""No modifiers; useful as the zero value when building a key-binding table."""
         Shift                     = 0x1
         Ctrl                      = 0x2
         Alt                       = 0x4
         Super                     = 0x8
+        r"""A system-dependent modifier key, such as the Windows key on Windows or the GTK 'Super'/Meta key on Linux."""
         Meta                      = 0x10
+        r"""On macOS, the Mac Control key is mapped to this modifier (while the Mac Command key is mapped to `Ctrl`)."""
+
+    class Keys(enum.IntEnum):
+        r"""Virtual key codes used in a `keyDefinition` (with `KeyMod` modifiers) passed to `SCI_ASSIGNCMDKEY`/`SCI_CLEARCMDKEY` for custom key bindings."""
+
+        Escape                    = 0x7
+        Back                      = 0x8
+        Tab                       = 0x9
+        Return                    = 0xd
+        Down                      = 0x12c
+        Up                        = 0x12d
+        Left                      = 0x12e
+        Right                     = 0x12f
+        Home                      = 0x130
+        End                       = 0x131
+        Prior                     = 0x132
+        r"""Page Up key."""
+        Next                      = 0x133
+        r"""Page Down key."""
+        Delete                    = 0x134
+        Insert                    = 0x135
+        Add                       = 0x136
+        Subtract                  = 0x137
+        Divide                    = 0x138
+        Win                       = 0x139
+        RWin                      = 0x13a
+        Menu                      = 0x13b
+
+    class Layer(enum.IntEnum):
+        r"""Controls whether a background effect (selection or caret-line background) is drawn opaquely on the base layer or translucently under/over the text, used by `SCI_SETSELECTIONLAYER`/`SCI_SETCARETLINELAYER`."""
+
+        Base                      = 0x0
+        r"""Draw the background opaquely on the base layer."""
+        UnderText                 = 0x1
+        r"""Draw the background translucently under the text; does not work in single-phase drawing mode (`PhasesDraw.One`) since there is no under-text phase."""
+        OverText                  = 0x2
+        r"""Draw the background translucently over the text."""
+
+    class LineCache(enum.IntEnum):
+        r"""Controls which lines have their layout (wrapping/positions) cached, set with `SCI_SETLAYOUTCACHE`."""
+
+        None_                     = 0x0
+        r"""No lines are cached."""
+        Caret                     = 0x1
+        r"""Only the line containing the caret is cached; this is the default."""
+        Page                      = 0x2
+        r"""The visible lines plus the line containing the caret are cached."""
+        Document                  = 0x3
+        r"""All lines in the document are cached."""
+
+    class LineCharacterIndexType(enum.IntEnum):
+        r"""Identifies which line/character position index is active, used with `SCI_GETLINECHARACTERINDEX`/`SCI_ALLOCATELINECHARACTERINDEX`; only supported for UTF-8 documents."""
+
+        None_                     = 0x0
+        r"""No line-character index is active."""
+        Utf32                     = 0x1
+        r"""Index by whole (UTF-32) characters."""
+        Utf16                     = 0x2
+        r"""Index by UTF-16 code units."""
+
+    class LineEndType(enum.IntEnum):
+        r"""Selects whether only ASCII line endings or also Unicode line endings are recognized, used with `SCI_SETLINEENDTYPESALLOWED`/`SCI_GETLINEENDTYPESSUPPORTED`; Unicode mode is ineffective unless the active lexer also supports it."""
+
+        Default                   = 0x0
+        r"""Only ASCII line ends (CR, LF, CRLF) are interpreted."""
+        Unicode                   = 0x1
+        r"""Unicode line-ending characters are also interpreted, if the lexer supports it."""
+
+    class MarginOption(enum.IntEnum):
+        r"""Bit flags for `SCI_SETMARGINOPTIONS` that control margin click behaviour."""
+
+        None_                     = 0x0
+        SubLineSelect             = 0x1
+        r"""Clicking the margin in front of a wrapped line selects only that sub-line instead of the whole wrapped line."""
 
     class MarginType(enum.IntEnum):
+        r"""The kind of content a margin shows, set with `SCI_SETMARGINTYPEN`; by convention margin 0 is used for line numbers and the next two for symbols."""
 
         Symbol                    = 0x0
+        r"""A symbol margin, e.g. for markers (breakpoints, bookmarks)."""
         Number                    = 0x1
+        r"""A line-number margin."""
         Back                      = 0x2
+        r"""A symbol margin whose background colour matches `StylesCommon.Default`'s background."""
         Fore                      = 0x3
+        r"""A symbol margin whose background colour matches `StylesCommon.Default`'s foreground."""
         Text                      = 0x4
+        r"""A margin showing application-defined text, set with `SCI_MARGINSETTEXT`."""
         RText                     = 0x5
+        r"""Like `Text`, but right-justified."""
         Colour                    = 0x6
+        r"""A symbol margin whose background colour is set explicitly with `SCI_SETMARGINBACKN`."""
+
+    class MarkerOutline(enum.IntEnum):
+        r"""Marker numbers reserved by Scintilla for change-history tracking and folding margin symbols, used with `SCI_MARKERDEFINE`."""
+
+        HistoryRevertedToOrigin   = 0x15
+        r"""Marks a line that was changed and saved but then reverted to its original state; the line differs from its on-disk state."""
+        HistorySaved              = 0x16
+        r"""Marks a line that was modified and saved; the line matches its on-disk state."""
+        HistoryModified           = 0x17
+        r"""Marks a line that was modified but not yet saved; the line differs from its on-disk state."""
+        HistoryRevertedToModified = 0x18
+        r"""Marks a line that was changed and saved but then reverted, though not to its original state; the line differs from its on-disk state."""
+        FolderEnd                 = 0x19
+        r"""In the flattened-tree folding style: a closed fold header nested inside another fold, so it needs a tree connector below it (e.g. `MarkerSymbol.CirclePlusConnected`)."""
+        FolderOpenMid             = 0x1a
+        r"""In the flattened-tree folding style: an open fold header nested inside another fold, so it needs a tree connector below it (e.g. `MarkerSymbol.CircleMinusConnected`)."""
+        FolderMidTail             = 0x1b
+        r"""In the flattened-tree folding style: the last child line of a fold that is itself nested inside another fold, combining a corner with a continuing connector for the parent (e.g. `MarkerSymbol.TCornerCurve`)."""
+        FolderTail                = 0x1c
+        r"""In the flattened-tree folding style: the last child line of a top-level fold (e.g. `MarkerSymbol.LCornerCurve`)."""
+        FolderSub                 = 0x1d
+        r"""In the flattened-tree folding style: a child line of a fold that is neither the first nor last, drawn as a plain vertical connector (e.g. `MarkerSymbol.VLine`)."""
+        Folder                    = 0x1e
+        r"""Marks a line where a closed fold is present; pair with `FolderOpen` using a symbol like Plus/Minus or Arrow/ArrowDown."""
+        FolderOpen                = 0x1f
+        r"""Marks a line where an open fold is present; pair with `Folder`."""
+
+    class MarkerSymbol(enum.IntEnum):
+        r"""Symbol drawn for a given marker number in the selection margin, assigned with `SCI_MARKERDEFINE`; by default all 32 markers use `Circle`."""
+
+        Circle                    = 0x0
+        RoundRect                 = 0x1
+        Arrow                     = 0x2
+        SmallRect                 = 0x3
+        ShortArrow                = 0x4
+        Empty                     = 0x5
+        r"""An invisible symbol, useful for tracking line movement programmatically."""
+        ArrowDown                 = 0x6
+        Minus                     = 0x7
+        Plus                      = 0x8
+        VLine                     = 0x9
+        LCorner                   = 0xa
+        TCorner                   = 0xb
+        BoxPlus                   = 0xc
+        BoxPlusConnected          = 0xd
+        BoxMinus                  = 0xe
+        BoxMinusConnected         = 0xf
+        LCornerCurve              = 0x10
+        TCornerCurve              = 0x11
+        CirclePlus                = 0x12
+        CirclePlusConnected       = 0x13
+        CircleMinus               = 0x14
+        CircleMinusConnected      = 0x15
+        Background                = 0x16
+        r"""Changes only the background colour of the line, drawing no symbol."""
+        DotDotDot                 = 0x17
+        Arrows                    = 0x18
+        Pixmap                    = 0x19
+        r"""Used automatically when a marker is defined via `SCI_MARKERDEFINEPIXMAP`."""
+        FullRect                  = 0x1a
+        r"""Mirrors `Background` but changes only the margin background colour instead of the line."""
+        LeftRect                  = 0x1b
+        Available                 = 0x1c
+        r"""A convention applications can use to indicate that a marker number is free for plugins to allocate."""
+        Underline                 = 0x1d
+        r"""Draws an underline across the text rather than a margin symbol."""
+        RgbaImage                 = 0x1e
+        r"""Used automatically when a marker is defined via `SCI_MARKERDEFINERGBAIMAGE`."""
+        Bookmark                  = 0x1f
+        VerticalBookmark          = 0x20
+        Bar                       = 0x21
+        r"""Drawn first/underneath all other markers regardless of marker number, since bars often span multiple lines (e.g. change history) while other markers mark individual lines."""
+        Character                 = 0x2710
+        r"""Add a Unicode code point to this base value (10000) to use that character as the marker, e.g. `Character + 9637`."""
 
     class Message(enum.IntEnum):
 
@@ -1735,6 +2433,7 @@ class Scintilla(Shiboken.Object):
         r"""Set the lexer from an ILexer*."""
 
     class ModificationFlags(enum.IntEnum):
+        r"""Bitmask describing what kind of document change occurred, delivered as the `type`/`modification_type` parameter of `ScintillaEditBase.modified`/`ScintillaDocument.modified` (SCN_MODIFIED), and used to filter which kinds of modification get reported at all via `SCI_SETMODEVENTMASK`/`SCI_GETMODEVENTMASK`."""
 
         None_                     = 0x0
         r"""Base value with no fields valid. Will not occur but is useful in tests."""
@@ -1787,40 +2486,89 @@ class Scintilla(Shiboken.Object):
         EventMaskAll              = 0x7fffff
         r"""Mask for all valid flags; the default mask state set by SCI_SETMODEVENTMASK."""
 
+    class MultiAutoComplete(enum.IntEnum):
+        r"""Controls whether autocompleted text is inserted into just the main selection or into every selection, set with `SCI_AUTOCSETMULTI`."""
+
+        Once                      = 0x0
+        r"""Autocompleted text goes into only the main selection; this is the default."""
+        Each                      = 0x1
+        r"""Autocompleted text is inserted into each selection."""
+
+    class MultiPaste(enum.IntEnum):
+        r"""Controls whether pasted text goes into just the main selection or into every selection, set with `SCI_SETMULTIPASTE`."""
+
+        Once                      = 0x0
+        r"""Pasted text goes into only the main selection; this is the default."""
+        Each                      = 0x1
+        r"""Pasted text is inserted into each selection."""
+
     class Notification(enum.IntEnum):
+        r"""Identifies which Scintilla notification (`SCN_*`) a `NotificationData` carries, as `NotificationData.nmhdr.code` -- delivered via the raw `notify` signal, or (for most values) a corresponding typed signal on `ScintillaEditBase` that carries the same notification already unpacked into typed parameters."""
 
         StyleNeeded               = 0x7d0
+        r"""Corresponds to the `styleNeeded` signal."""
         CharAdded                 = 0x7d1
+        r"""Corresponds to the `charAdded` signal."""
         SavePointReached          = 0x7d2
+        r"""Corresponds to the `savePointChanged` signal with `dirty=False`."""
         SavePointLeft             = 0x7d3
+        r"""Corresponds to the `savePointChanged` signal with `dirty=True`."""
         ModifyAttemptRO           = 0x7d4
+        r"""Corresponds to the `modifyAttemptReadOnly` signal."""
         Key                       = 0x7d5
+        r"""Corresponds to the `key` signal."""
         DoubleClick               = 0x7d6
+        r"""Corresponds to the `doubleClick` signal."""
         UpdateUI                  = 0x7d7
+        r"""Corresponds to the `updateUi` signal."""
         Modified                  = 0x7d8
+        r"""Corresponds to the `modified` signal."""
         MacroRecord               = 0x7d9
+        r"""Corresponds to the `macroRecord` signal."""
         MarginClick               = 0x7da
+        r"""Corresponds to the `marginClicked` signal."""
         NeedShown                 = 0x7db
+        r"""Corresponds to the `needShown` signal."""
         Painted                   = 0x7dd
+        r"""Corresponds to the `painted` signal."""
         UserListSelection         = 0x7de
+        r"""Corresponds to the `userListSelection` signal."""
         URIDropped                = 0x7df
+        r"""Corresponds to the `uriDropped` signal."""
         DwellStart                = 0x7e0
+        r"""Corresponds to the `dwellStart` signal."""
         DwellEnd                  = 0x7e1
+        r"""Corresponds to the `dwellEnd` signal."""
         Zoom                      = 0x7e2
+        r"""Corresponds to the `zoom` signal."""
         HotSpotClick              = 0x7e3
+        r"""Corresponds to the `hotSpotClick` signal."""
         HotSpotDoubleClick        = 0x7e4
+        r"""Corresponds to the `hotSpotDoubleClick` signal."""
         CallTipClick              = 0x7e5
+        r"""Corresponds to the `callTipClick` signal."""
         AutoCSelection            = 0x7e6
+        r"""Corresponds to the `autoCompleteSelection` signal."""
         IndicatorClick            = 0x7e7
+        r"""The mouse was clicked over an indicator; no typed signal exists for this -- only reachable via the raw `notify` signal."""
         IndicatorRelease          = 0x7e8
+        r"""The mouse button was released after a click over an indicator; no typed signal exists for this -- only reachable via the raw `notify` signal."""
         AutoCCancelled            = 0x7e9
+        r"""Corresponds to the `autoCompleteCancelled` signal."""
         AutoCCharDeleted          = 0x7ea
+        r"""A character was deleted from an active autocompletion word; no typed signal exists for this -- only reachable via the raw `notify` signal."""
         HotSpotReleaseClick       = 0x7eb
+        r"""The mouse button was released after a click on hotspot-styled text; no typed signal exists for this -- only reachable via the raw `notify` signal."""
         FocusIn                   = 0x7ec
+        r"""Corresponds to the `focusChanged` signal with `focused=True`."""
         FocusOut                  = 0x7ed
+        r"""Corresponds to the `focusChanged` signal with `focused=False`."""
         AutoCCompleted            = 0x7ee
+        r"""Autocompleted text has just been inserted; no typed signal exists for this -- only reachable via the raw `notify` signal."""
         MarginRightClick          = 0x7ef
+        r"""The mouse was right-clicked in a sensitive margin; no typed signal exists for this -- only reachable via the raw `notify` signal."""
         AutoCSelectionChange      = 0x7f0
+        r"""The current selection in an autocompletion list changed without being chosen; no typed signal exists for this -- only reachable via the raw `notify` signal."""
 
     class NotificationData(Shiboken.Object):
 
@@ -1853,18 +2601,180 @@ class Scintilla(Shiboken.Object):
 
         def __copy__(self, /) -> typing.Self: ...
 
+    class Ordering(enum.IntEnum):
+        r"""Controls how the autocompletion list passed to `SCI_AUTOCSHOW` is ordered, set with `SCI_AUTOCSETORDER` before showing the list."""
+
+        PreSorted                 = 0x0
+        r"""The default; requires the application to supply the list already in alphabetical sorted order."""
+        PerformSort               = 0x1
+        r"""Scintilla sorts the list itself; takes additional time compared to `PreSorted`."""
+        Custom                    = 0x2
+        r"""The application provides the list in a priority order other than alphabetical; requires extra processing to build a sorted index."""
+
+    class PhasesDraw(enum.IntEnum):
+        r"""Selects the drawing order/strategy for the text area, trading speed against correctly rendering overlapping pixels, set with `SCI_SETPHASESDRAW`."""
+
+        One                       = 0x0
+        r"""Deprecated single-phase drawing: each run of characters is drawn with its background in one pass, which can let a following run's background cut off an overhanging character. Should not be used by applications."""
+        Two                       = 0x1
+        r"""The default: draws all line backgrounds first, then all text in transparent mode; lines never overlap, so extreme ascenders/descenders are clipped."""
+        Multiple                  = 0x2
+        r"""Draws the whole area multiple times, layering backgrounds then text without clipping to line boundaries, allowing extreme ascenders/descenders to overflow into adjacent lines; slower than `Two`, and incompatible with buffered drawing."""
+
+    class PopUp(enum.IntEnum):
+        r"""Controls when the built-in default context/edit menu is shown, set with `SCI_USEPOPUP`."""
+
+        Never                     = 0x0
+        r"""Never show the default editing menu; context-menu messages are passed to the parent window instead."""
+        All                       = 0x1
+        r"""Show the default editing menu when clicking anywhere on the Scintilla window."""
+        Text                      = 0x2
+        r"""Show the default editing menu only when clicking on the text area."""
+
+    class PrintOption(enum.IntEnum):
+        r"""Colour mode used when printing the document, set with `SCI_SETPRINTCOLOURMODE`; useful for saving ink/toner when the editor uses a dark screen theme."""
+
+        Normal                    = 0x0
+        r"""Default: prints using the current screen colours, except line-number margins print on a white background."""
+        InvertLight               = 0x1
+        r"""Inverts the lightness of all colours and prints on a white background, saving ink for dark screen themes."""
+        BlackOnWhite              = 0x2
+        r"""Prints all text as black on a white background."""
+        ColourOnWhite             = 0x3
+        r"""Prints everything in its own colour on a white background."""
+        ColourOnWhiteDefaultBG    = 0x4
+        r"""Prints everything in its own foreground colour, but all styles up to and including the line-number style print on a white background."""
+        ScreenColours             = 0x5
+        r"""Prints using the current screen colours for both foreground and background; the only mode that does not force the line-number margin background to white."""
+
+    class RepresentationAppearance(enum.IntEnum):
+        r"""Flags controlling how a character representation set with `SCI_SETREPRESENTATION` is drawn, used with `SCI_SETREPRESENTATIONAPPEARANCE`."""
+
+        Plain                     = 0x0
+        r"""Draws the representation text with no decoration."""
+        Blob                      = 0x1
+        r"""Draws the representation text inverted inside a rounded rectangle (a small badge); this is the default appearance."""
+        Colour                    = 0x10
+        r"""If set, the representation is drawn in the colour set for it; if a colour is set but this flag is not, the representation shows in the colour of the underlying text instead."""
+
+    class SelectionMode(enum.IntEnum):
+        r"""The selection mode used by `SCI_SETSELECTIONMODE`/`SCI_CHANGESELECTIONMODE`/`SCI_GETSELECTIONMODE`, controlling how caret moves extend the selection."""
+
+        Stream                    = 0x0
+        r"""Regular, contiguous text selection."""
+        Rectangle                 = 0x1
+        r"""Rectangular (column) selection."""
+        Lines                     = 0x2
+        r"""Selection extended by whole lines."""
+        Thin                      = 0x3
+        r"""The mode entered automatically after typing into a rectangular selection, ensuring no characters remain selected."""
+
+    class Status(enum.IntEnum):
+        r"""Error/warning status codes returned by `SCI_GETSTATUS` and set by `SCI_SETSTATUS`; values 1-999 are errors and `WarnStart` (1000) and above are warnings."""
+
+        Ok                        = 0x0
+        r"""No failures."""
+        Failure                   = 0x1
+        r"""Generic failure."""
+        BadAlloc                  = 0x2
+        r"""Memory is exhausted."""
+        OutsideDocument           = 0x3
+        r"""An operation was attempted on a position that is outside the document."""
+        WarnStart                 = 0x3e8
+        r"""The threshold at and above which status codes are warnings rather than errors."""
+        RegEx                     = 0x3e9
+        r"""The regular expression is invalid; returned when the C++11 <regex> engine is selected and given a malformed pattern."""
+
     class StylesCommon(enum.IntEnum):
+        r"""Predefined style numbers with special meaning, used with `SCI_STYLESETFORE` and friends; lexer styles occupy 0 to `Max`, and `SCI_STYLECLEARALL` resets every style to `Default`'s attributes."""
 
         Default                   = 0x20
+        r"""The attributes every style is reset to by `SCI_STYLECLEARALL`."""
         LineNumber                = 0x21
+        r"""Attributes of the line-number margin's text; its background colour also sets the background of any margin not used for folding (see `SCI_SETMARGINMASKN`)."""
         BraceLight                = 0x22
+        r"""Attributes used to highlight a matched brace, via `SCI_BRACEHIGHLIGHT`, and its corresponding indentation guide via `SCI_SETHIGHLIGHTGUIDE`."""
         BraceBad                  = 0x23
+        r"""Attributes used to mark an unmatched brace, via `SCI_BRACEBADLIGHT`."""
         ControlChar               = 0x24
+        r"""Font used when drawing control characters; only font/size/bold/italic/character-set attributes apply, not colour -- see also `SCI_SETCONTROLCHARSYMBOL`."""
         IndentGuide               = 0x25
+        r"""Foreground/background colours used when drawing indentation guides."""
         CallTip                   = 0x26
+        r"""Attributes for call tips when `SCI_CALLTIPUSESTYLE` is used; otherwise call tips use `Default`. Only font face/size, foreground/background colour, and character set apply."""
         FoldDisplayText           = 0x27
+        r"""Attributes for text tags attached to folded text."""
         LastPredefined            = 0x27
+        r"""The last predefined style number (39), so client code can discover the range of predefined styles without hardcoding it."""
         Max                       = 0xff
+        r"""The highest style number that can be set (255); styles between `LastPredefined` and this value are free for lexers/applications to use."""
+
+    class Supports(enum.IntEnum):
+        r"""Feature flags queried with `SCI_SUPPORTSFEATURE` to check which drawing/measurement capabilities the current platform supports."""
+
+        LineDrawsFinal            = 0x0
+        r"""Whether drawing a line draws its final position; only false on Win32 GDI."""
+        PixelDivisions            = 0x1
+        r"""Whether logical pixels are larger than physical pixels (sub-pixel positioning is possible); currently only true for macOS Cocoa with 'retina' displays."""
+        FractionalStrokeWidth     = 0x2
+        r"""Whether lines can be drawn with fractional widths like 1.5 or 0.5 pixels."""
+        TranslucentStroke         = 0x3
+        r"""Whether translucent lines, polygons, ellipses, and text can be drawn (e.g. true for Direct2D, false for GDI)."""
+        PixelModification         = 0x4
+        r"""Whether individual pixels can be modified; false for character-cell platforms like curses."""
+        ThreadSafeMeasureWidths   = 0x5
+        r"""Whether text measurement can be safely performed concurrently on multiple threads."""
+
+    class TabDrawMode(enum.IntEnum):
+        r"""How tab characters are drawn when white space is made visible, set with `SCI_SETTABDRAWMODE`."""
+
+        LongArrow                 = 0x0
+        r"""The default mode: an arrow stretching until the tabstop."""
+        StrikeOut                 = 0x1
+        r"""A horizontal line stretching until the tabstop."""
+        ControlChar               = 0x2
+        r"""Drawn as a control code according to the configured character representation, without any indentation."""
+
+    class Technology(enum.IntEnum):
+        r"""The drawing API/technology used for rendering, set with `SCI_SETTECHNOLOGY`; choices beyond `Default` are Windows-specific DirectWrite variants."""
+
+        Default                   = 0x0
+        r"""Use the older GDI API, compatible with all versions of Windows including Vista and XP."""
+        DirectWrite               = 0x1
+        r"""Use the Direct2D and DirectWrite APIs for higher quality antialiased drawing (Windows 7+)."""
+        DirectWriteRetain         = 0x2
+        r"""Request that the frame is retained after being presented, which may prevent drawing failures on some cards and drivers."""
+        DirectWriteDC             = 0x3
+        r"""Use DirectWrite to draw into a GDI DC; may work for remote access/RDP sessions."""
+        DirectWrite1              = 0x4
+        r"""Use DirectWrite in a lower-level way that manages graphics state more explicitly."""
+
+    class TypeProperty(enum.IntEnum):
+        r"""How to interpret the string value of a named lexer property (set via `SCI_SETPROPERTY`), as reported by `SCI_PROPERTYTYPE` -- all property values are passed as plain strings regardless of type. Only available for newer lexers; a companion to `SCI_PROPERTYNAMES` (lists property names) and `SCI_DESCRIBEPROPERTY` (a human-readable description), e.g. for building a generic lexer property editor."""
+
+        Boolean                   = 0x0
+        r"""The property's string value is "0" or "1"."""
+        Integer                   = 0x1
+        r"""The property's string value is a number."""
+        String                    = 0x2
+        r"""The property's string value is arbitrary text."""
+
+    class UndoFlags(enum.IntEnum):
+        r"""Flags passed to `SCI_ADDUNDOACTION` controlling how a container-supplied undo action interacts with coalescing of other undo actions."""
+
+        None_                     = 0x0
+        MayCoalesce               = 0x1
+        r"""The container action may be coalesced together with surrounding insertion/deletion actions into a single compound action."""
+
+    class UndoSelectionHistoryOption(enum.IntEnum):
+        r"""Controls whether selection (and scroll position) state is restored when performing undo/redo, set with `SCI_SETUNDOSELECTIONHISTORY`."""
+
+        Disabled                  = 0x0
+        r"""The default: undo selection history turned off."""
+        Enabled                   = 0x1
+        r"""Restore the selection for each undo and redo."""
+        Scroll                    = 0x2
+        r"""Also restore the vertical scroll position; has no effect unless combined with `Enabled`."""
 
     class Update(enum.IntEnum):
 
@@ -1890,6 +2800,71 @@ class Scintilla(Shiboken.Object):
         NoWrapLineStart           = 0x4
         r"""Left arrow does not wrap to the previous line."""
 
+    class VisiblePolicy(enum.IntEnum):
+        r"""Flags for `SCI_SETVISIBLEPOLICY` controlling vertical positioning when `SCI_ENSUREVISIBLEENFORCEPOLICY` is called; operates like the caret's vertical policy (`SCI_SETYCARETPOLICY`)."""
+
+        Slop                      = 0x1
+        r"""Defines an unwanted zone, a number of lines near the vertical margins where the target line should not end up, keeping it within visible context."""
+        Strict                    = 0x4
+        r"""Enforces the slop policy strictly: the line is centred on the display if no slop value is set, and cannot land in the unwanted zone if one is set."""
+
+    class WhiteSpace(enum.IntEnum):
+        r"""The white-space display mode set with `SCI_SETVIEWWS`/`SCI_GETVIEWWS`, controlling whether spaces and tabs are drawn as visible dots and arrows."""
+
+        Invisible                 = 0x0
+        r"""The normal display mode: white space is displayed as an empty background colour."""
+        VisibleAlways             = 0x1
+        r"""White space characters are always drawn as dots and arrows."""
+        VisibleAfterIndent        = 0x2
+        r"""Indentation white space is displayed normally, but after the first visible character on the line, white space is shown as dots and arrows."""
+        VisibleOnlyInIndent       = 0x3
+        r"""Only the white space used for indentation is displayed as dots and arrows; white space elsewhere on the line is shown normally."""
+
+    class Wrap(enum.IntEnum):
+        r"""The line-wrap mode set with `SCI_SETWRAPMODE` (and, partially, `SCI_SETPRINTWRAPMODE`)."""
+
+        None_                     = 0x0
+        r"""Disables line wrapping."""
+        Word                      = 0x1
+        r"""Wraps on word or style boundaries; if a word is longer than a line it is still wrapped before the line end."""
+        Char                      = 0x2
+        r"""Wraps between any characters; preferred for Asian languages where there is no white space between words. Not supported for printing."""
+        WhiteSpace                = 0x3
+        r"""Wraps on whitespace boundaries."""
+
+    class WrapIndentMode(enum.IntEnum):
+        r"""Controls how wrapped sublines of a line are indented relative to the first subline, set with `SCI_SETWRAPINDENTMODE`."""
+
+        Fixed                     = 0x0
+        r"""Wrapped sublines are aligned to the left of the window plus the amount set by `SCI_SETWRAPSTARTINDENT` (the default mode)."""
+        Same                      = 0x1
+        r"""Wrapped sublines are aligned to the first subline's indent."""
+        Indent                    = 0x2
+        r"""Wrapped sublines are aligned to the first subline's indent plus one more level of indentation."""
+        DeepIndent                = 0x3
+        r"""Wrapped sublines are aligned to the first subline's indent plus two more levels of indentation."""
+
+    class WrapVisualFlag(enum.IntEnum):
+        r"""Bit flags for `SCI_SETWRAPVISUALFLAGS` controlling which visual indicators are drawn to show a line has wrapped."""
+
+        None_                     = 0x0
+        End                       = 0x1
+        r"""Draws a visual flag at the end of each wrapped subline."""
+        Start                     = 0x2
+        r"""Draws a visual flag at the start of each wrapped subline; the subline is indented by at least 1 to make room for the flag."""
+        Margin                    = 0x4
+        r"""Draws a visual flag in the line-number margin."""
+
+    class WrapVisualLocation(enum.IntEnum):
+        r"""Set with `SCI_SETWRAPVISUALFLAGSLOCATION`, controls where wrap visual flags are drawn relative to the text versus the window border."""
+
+        Default                   = 0x0
+        r"""Visual flags are drawn near the border."""
+        EndByText                 = 0x1
+        r"""The end-of-subline visual flag is drawn near the text instead of the border."""
+        StartByText               = 0x2
+        r"""The start-of-subline visual flag is drawn near the text instead of the border."""
+
 
     @staticmethod
     def LevelIsHeader(level: _pyside6_scintilla.Scintilla.FoldLevel, /) -> bool: ...
@@ -1909,7 +2884,7 @@ class ScintillaDocument(PySide6.QtCore.QObject):
     Obtain one from an existing editor via `ScintillaEdit.get_doc()` (and share it with another editor via `set_doc()`), or construct one standalone to hold text off-screen. Exposes a subset of `ScintillaEdit`'s editing/undo API directly on the buffer, plus `modified`/`save_point`/etc. signals."""
 
     error_occurred           : typing.ClassVar[Signal] = ... # error_occurred(int)
-    r"""An internal error occurred while editing the document. `status` is one of Scintilla's internal `Status` codes (e.g. out-of-memory or a malformed regular expression) -- not currently exposed as an enum by this binding."""
+    r"""An internal error occurred while editing the document. `status` is one of Scintilla's internal `Scintilla.Status` codes (e.g. out-of-memory or a malformed regular expression)."""
     modified                 : typing.ClassVar[Signal] = ... # modified(int,int,QByteArray,int,int,int,int,int)
     r"""The document's text or styling changed, or is about to (SCN_MODIFIED). `modification_type` is a `Scintilla.ModificationFlags` bitmask describing what; `text` holds the inserted/deleted bytes for `Scintilla.ModificationFlags.InsertText`/`DeleteText`."""
     modify_attempt           : typing.ClassVar[Signal] = ... # modify_attempt()

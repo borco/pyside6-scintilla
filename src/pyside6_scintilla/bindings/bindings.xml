@@ -3,12 +3,18 @@
      shiboken6 typesystem for the `_pyside6_scintilla` extension module.
 
      Declares which of the C++ types visible through bindings.h get Python
-     wrappers generated. Only types actually referenced by ScintillaEditBase's
-     public signals/slots/methods need to be listed; shiboken errors out
-     (naming the missing type) if a wrapped member references something not
-     declared here. See docs/bindings.md for the iterative process of growing
-     this file (e.g. for Phase 2's ScintillaEdit).
--->
+     wrappers generated. shiboken errors out (naming the missing type) if a
+     wrapped member references something not declared here; see
+     docs/bindings.md for that iterative process.
+
+     The <enum-type> list below covers every `enum class` in
+     ScintillaTypes.h (plus Message from ScintillaMessages.h), not just the
+     ones referenced by ScintillaEditBase/ScintillaEdit's bound C++
+     signatures (which are almost all plain `sptr_t`/int, generated from
+     Scintilla.iface). Exposing the full set under the Scintilla namespace
+     gives Python callers a typed constant for every SCI_* message
+     parameter/return value, instead of having to hardcode the matching
+     SC_*/SCI_* magic int themselves (see issue #1). -->
 <typesystem package="_pyside6_scintilla">
     <load-typesystem name="typesystem_widgets.xml" generate="no"/>
 
@@ -28,17 +34,80 @@
         <primitive-type name="sptr_t"/>
         <primitive-type name="uptr_t"/>
 
-        <enum-type name="Update"/>
-        <enum-type name="ModificationFlags"/>
-        <enum-type name="FoldLevel"/>
-        <enum-type name="KeyMod"/>
-        <enum-type name="Notification"/>
-        <enum-type name="CompletionMethods"/>
+        <enum-type name="Accessibility"/>
+        <enum-type name="Alpha"/>
+        <enum-type name="AnnotationVisible"/>
+        <enum-type name="AutoCompleteOption"/>
+        <enum-type name="AutomaticFold"/>
+        <enum-type name="Bidirectional"/>
+        <enum-type name="CaretPolicy"/>
+        <enum-type name="CaretSticky"/>
+        <enum-type name="CaretStyle"/>
+        <enum-type name="CaseInsensitiveBehaviour"/>
+        <enum-type name="CaseVisible"/>
+        <enum-type name="ChangeHistoryOption"/>
+        <enum-type name="CharacterSet"/>
         <enum-type name="CharacterSource"/>
-        <enum-type name="Message"/>
+        <enum-type name="CompletionMethods"/>
+        <enum-type name="CursorShape"/>
+        <enum-type name="DocumentOption"/>
+        <enum-type name="EOLAnnotationVisible"/>
+        <enum-type name="EdgeVisualStyle"/>
+        <enum-type name="Element"/>
+        <enum-type name="EndOfLine"/>
+        <enum-type name="FindOption"/>
+        <enum-type name="FocusChange"/>
+        <enum-type name="FoldAction"/>
+        <enum-type name="FoldDisplayTextStyle"/>
+        <enum-type name="FoldFlag"/>
+        <enum-type name="FoldLevel"/>
+        <enum-type name="FontQuality"/>
+        <enum-type name="FontStretch"/>
+        <enum-type name="FontWeight"/>
+        <enum-type name="IMEInteraction"/>
+        <enum-type name="IdleStyling"/>
+        <enum-type name="IndentView"/>
+        <enum-type name="IndicFlag"/>
+        <enum-type name="IndicValue"/>
+        <enum-type name="IndicatorNumbers"/>
+        <enum-type name="IndicatorStyle"/>
+        <enum-type name="Keys"/>
+        <enum-type name="KeyMod"/>
+        <enum-type name="Layer"/>
+        <enum-type name="LineCache"/>
+        <enum-type name="LineCharacterIndexType"/>
+        <enum-type name="LineEndType"/>
+        <enum-type name="MarginOption"/>
         <enum-type name="MarginType"/>
+        <enum-type name="MarkerOutline"/>
+        <enum-type name="MarkerSymbol"/>
+        <enum-type name="Message"/>
+        <enum-type name="ModificationFlags"/>
+        <enum-type name="MultiAutoComplete"/>
+        <enum-type name="MultiPaste"/>
+        <enum-type name="Notification"/>
+        <enum-type name="Ordering"/>
+        <enum-type name="PhasesDraw"/>
+        <enum-type name="PopUp"/>
+        <enum-type name="PrintOption"/>
+        <enum-type name="RepresentationAppearance"/>
+        <enum-type name="SelectionMode"/>
+        <enum-type name="Status"/>
         <enum-type name="StylesCommon"/>
+        <enum-type name="Supports"/>
+        <enum-type name="TabDrawMode"/>
+        <enum-type name="Technology"/>
+        <enum-type name="TypeProperty"/>
+        <enum-type name="Update"/>
+        <enum-type name="UndoFlags"/>
+        <enum-type name="UndoSelectionHistoryOption"/>
         <enum-type name="VirtualSpace"/>
+        <enum-type name="VisiblePolicy"/>
+        <enum-type name="WhiteSpace"/>
+        <enum-type name="Wrap"/>
+        <enum-type name="WrapIndentMode"/>
+        <enum-type name="WrapVisualFlag"/>
+        <enum-type name="WrapVisualLocation"/>
 
         <value-type name="NotificationData">
             <!-- Scintilla::Message is registered twice when this field is

@@ -236,6 +236,991 @@ MODIFICATION_FLAGS_DOCS: Final = {
 }
 
 
+# Hand-transcribed from the relevant `SCI_*` message descriptions in
+# src/scintilla/doc/ScintillaDoc.html for each of the 63 `enum class`es bound
+# in bindings.xml that have neither `Scintilla.iface` doc comments (like
+# Message/CharacterSource above) nor a dedicated hand-transcribed dict (like
+# VirtualSpace/Update/ModificationFlags above). Maps enum name -> (class
+# docstring or None, {member name: docstring}); members with nothing beyond
+# their name in ScintillaDoc.html are simply omitted from the inner dict --
+# unlike source comments elsewhere in this codebase, these become end-user
+# hover docs in an IDE, so the bar is "as helpful as possible without being
+# verbose," not "omit anything an identifier already implies."
+ENUM_DOCS: Final[dict[str, tuple[str | None, dict[str, str]]]] = {
+    "Accessibility": (
+        "Controls whether accessibility (screen reader) support is enabled, set with "
+        "`SCI_SETACCESSIBILITY`/`SCI_GETACCESSIBILITY`.",
+        {},
+    ),
+    "Alpha": (
+        "Translucency level used by alpha-blended drawing such as marker and selection layers.",
+        {
+            "Transparent": "Value 0; completely transparent.",
+            "Opaque": "Value 255; fully opaque.",
+            "NoAlpha": "Legacy value (256) meaning drawing is performed opaquely directly on the base layer; "
+            "prefer choosing a layer via the `Layer`-based APIs instead.",
+        },
+    ),
+    "AnnotationVisible": (
+        "Display mode for line annotations, set with `SCI_ANNOTATIONSETVISIBLE`/`SCI_ANNOTATIONGETVISIBLE`.",
+        {
+            "Hidden": "Annotations are not displayed.",
+            "Standard": "Annotations are drawn left justified with no adornment.",
+            "Boxed": "Annotations are indented to match the text and are surrounded by a box.",
+            "Indented": "Annotations are indented to match the text.",
+        },
+    ),
+    "AutoCompleteOption": (
+        "Options controlling autocompletion list display and selection behaviour, set with "
+        "`SCI_AUTOCSETOPTIONS`.",
+        {
+            "FixedSize": "On Win32 only, uses a fixed-size list instead of one resizable by the user; also "
+            "avoids a header rectangle above the list.",
+            "SelectFirstItem": "Always selects the first item in the list regardless of the entered text; "
+            "useful when the application's autocompletion logic already sorts so the best match is on top. "
+            "Without this option, Scintilla selects the item matching the entered text.",
+        },
+    ),
+    "AutomaticFold": (
+        "Bit flags choosing which parts of fold-handling behaviour Scintilla performs automatically instead "
+        "of relying on the container, set with `SCI_SETAUTOMATICFOLD`.",
+        {
+            "Show": "Automatically shows lines as needed, avoiding the `SCN_NEEDSHOWN` notification.",
+            "Click": "Handles clicks in the fold margin automatically, avoiding the `SCN_MARGINCLICK` "
+            "notification for folding margins.",
+            "Change": "Shows lines as needed when the fold structure changes; `SCN_MODIFIED` is still sent "
+            "unless disabled by the container.",
+        },
+    ),
+    "Bidirectional": (
+        "Selects the default text direction for bidirectional (e.g. Arabic/Hebrew) text support, set with "
+        "`SCI_SETBIDIRECTIONAL`.",
+        {
+            "Disabled": "Bidirectional support is off; also the value returned by `SCI_GETBIDIRECTIONAL` if a "
+            "previous `SCI_SETBIDIRECTIONAL` call failed.",
+            "L2R": "Left-to-right is the default direction. Currently the only mode with actual bidirectional "
+            "display support (experimental, Win32 DirectWrite and macOS Cocoa only); only UTF-8 documents show "
+            "bidirectional behaviour.",
+            "R2L": "Right-to-left is the default direction. Reserved for future implementation; not yet "
+            "functional.",
+        },
+    ),
+    "CaretPolicy": (
+        "Bit flags controlling how the caret is kept in view, passed as the `caretPolicy` argument to "
+        "`SCI_SETXCARETPOLICY`/`SCI_SETYCARETPOLICY` together with a `caretSlop` value.",
+        {
+            "Slop": "Enables a slop value (`caretSlop`) defining an unwanted zone near the margins (pixels for "
+            "vertical margins, lines for horizontal margins) that the caret is kept out of, so surrounding "
+            "context stays visible.",
+            "Strict": "Strictly enforces the slop policy: the caret is centred on the display if no slop is "
+            "set, and cannot enter the unwanted zone if slop is set.",
+            "Even": "If NOT set, the left/bottom unwanted zones are extended to match the right/top ones "
+            "(asymmetrical), favouring visibility of line starts and the lines following the caret.",
+            "Jumps": "Moves the display more energetically so the caret can travel further in one direction "
+            "before the policy reapplies.",
+        },
+    ),
+    "CaretSticky": (
+        "Controls when the caret's horizontal position on a line is remembered when moving between lines, set "
+        "with `SCI_SETCARETSTICKY`.",
+        {
+            "Off": "Default: all text changes and caret position changes remember the caret's new horizontal "
+            "position when moving to a different line.",
+            "On": "Only moving the caret directly via mouse or keyboard updates the remembered horizontal "
+            "position; text changes do not.",
+            "WhiteSpace": "Behaves like `Off` except when only space/tab characters are inserted -- in that one "
+            "case the horizontal position is not updated.",
+        },
+    ),
+    "CaretStyle": (
+        "Caret drawing style, set with `SCI_SETCARETSTYLE`; separate bit ranges select insert-mode, "
+        "overtype-mode, and curses-mode appearance.",
+        {
+            "Invisible": "Carets are not drawn at all.",
+            "Line": "Draws insertion carets as lines; the default.",
+            "Block": "Draws insertion carets as blocks.",
+            "OverstrikeBar": "Draws an overstrike caret as a bar; the default for overtype mode (shares value "
+            "0 with `Invisible`, but applies to the separate overtype-mode bit, not the insert-mode bits).",
+            "InsMask": "Mask (lower 4 bits) isolating the insert-mode caret style bits.",
+            "OverstrikeBlock": "Draws an overstrike caret as a block; OR with one of the insert-mode styles "
+            "(`Line`/`Block`/`Invisible`).",
+            "Curses": "Draws additional (non-main) carets as blocks for environments, such as a terminal, "
+            "that cannot draw them otherwise; the main caret is left to the terminal.",
+            "BlockAfter": "When the caret end of a range is at the end of the selection and a block caret "
+            "style is chosen, draws the block outside the selection instead of inside; OR with `Block` or "
+            "`Curses`.",
+        },
+    ),
+    "CaseInsensitiveBehaviour": (
+        "Controls how case-insensitive autocompletion selects among matching entries, set with "
+        "`SCI_AUTOCSETCASEINSENSITIVEBEHAVIOUR`.",
+        {
+            "RespectCase": "Default: even with case-insensitive autocompletion, still selects the first list "
+            "entry that matches the entered text in a case-sensitive way.",
+            "IgnoreCase": "Ignores case entirely when selecting the matching autocompletion entry.",
+        },
+    ),
+    "CaseVisible": (
+        "Forces how a style's text is displayed (upper/lower/camel case) without altering the stored text, "
+        "set with `SCI_STYLESETCASE`.",
+        {"Mixed": "Displays text normally, unmodified."},
+    ),
+    "ChangeHistoryOption": (
+        "Bit flags enabling change-history tracking and how it is displayed, set with "
+        "`SCI_SETCHANGEHISTORY`.",
+        {
+            "Disabled": "Default: change history is turned off.",
+            "Enabled": "Tracks changes to the document.",
+            "Markers": "Displays changes in the margin using the `MarkerOutline` history markers.",
+            "Indicators": "Displays changes in the text using the `IndicatorNumbers` history indicators.",
+        },
+    ),
+    "CharacterSet": (
+        "Character set used to display a style's text (independent of document encoding), set with "
+        "`SCI_STYLESETCHARACTERSET`; useful for comments/string literals in a different language than the "
+        "rest of the document. This binding's Qt platform layer (`PlatQt.cpp`) maps each value to a Qt "
+        "`QTextCodec` name, so support depends only on which codecs Qt ships, not on the OS -- unlike "
+        "Scintilla's native GTK/Cocoa/Win32 ports, where support and code-page mapping vary by platform.",
+        {
+            "Default": 'Maps to the "ISO 8859-1" (Latin-1) codec; the default character set used by styles '
+            "unless changed.",
+            "Ansi": 'Not mapped to a codec by this binding\'s Qt platform layer -- falls back to the same '
+            '"ISO 8859-1" codec as `Default` regardless of platform.',
+            "Symbol": "Not mapped to a codec by this binding's Qt platform layer -- falls back to the same "
+            '"ISO 8859-1" codec as `Default` regardless of platform.',
+            "Mac": 'Maps to the "Apple Roman" codec.',
+            "ShiftJis": 'Maps to the "Shift-JIS" codec.',
+            "Hangul": 'Maps to the "CP949" codec.',
+            "Johab": "Not mapped to a codec by this binding's Qt platform layer -- falls back to the same "
+            '"ISO 8859-1" codec as `Default` regardless of platform.',
+            "GB2312": 'Maps to the "GB18030-0" codec.',
+            "ChineseBig5": 'Maps to the "Big5" codec.',
+            "Greek": 'Maps to the "ISO 8859-7" codec.',
+            "Turkish": 'Maps to the "ISO 8859-9" codec.',
+            "Vietnamese": 'Maps to the "Windows-1258" codec.',
+            "Hebrew": 'Maps to the "ISO 8859-8" codec.',
+            "Arabic": 'Maps to the "ISO 8859-6" codec.',
+            "Baltic": 'Maps to the "ISO 8859-13" codec.',
+            "Russian": 'Maps to the "KOI8-R" codec.',
+            "Thai": 'Maps to the "TIS-620" codec.',
+            "EastEurope": 'Maps to the "ISO 8859-2" codec.',
+            "Oem": "Not mapped to a codec by this binding's Qt platform layer -- falls back to the same "
+            '"ISO 8859-1" codec as `Default` regardless of platform.',
+            "Oem866": "Not mapped to a codec by this binding's Qt platform layer -- falls back to the same "
+            '"ISO 8859-1" codec as `Default` regardless of platform.',
+            "Iso8859_15": 'Maps to the "ISO 8859-15" (Latin-9) codec.',
+            "Cyrillic": 'Maps to the "Windows-1251" codec.',
+        },
+    ),
+    # CharacterSource already gets its per-member docs from Scintilla.iface's
+    # `# ` comments, via parse_character_source_docs() in main() -- this
+    # entry only adds the class-level summary that mechanism doesn't produce.
+    "CharacterSource": (
+        "Identifies how a character was entered, reported as `NotificationData.characterSource` on the "
+        "`SCN_CHARADDED` notification -- only available via the raw `notify` signal, since the typed "
+        "`charAdded` signal only carries the character code.",
+        {},
+    ),
+    "CompletionMethods": (
+        "Identifies how an autocompletion list selection was triggered, reported as the "
+        "`listCompletionMethod` field of `SCN_AUTOCSELECTION`/`SCN_AUTOCCOMPLETED` notifications.",
+        {
+            "FillUp": "A fillup character (see `SCI_AUTOCSETFILLUPS`) triggered the completion; the "
+            "character used is reported separately.",
+            "DoubleClick": "A double-click on a list item triggered the completion.",
+            "Tab": "The Tab key, or `SCI_TAB`, triggered the completion.",
+            "Newline": "A newline, or `SCI_NEWLINE`, triggered the completion.",
+            "Command": "The `SCI_AUTOCSELECT` message triggered the completion.",
+            "SingleChoice": "There was only a single choice in the list and 'choose single' mode was "
+            "active, as set by `SCI_AUTOCSETCHOOSESINGLE`.",
+        },
+    ),
+    "CursorShape": (
+        "Mouse cursor shape shown over the editor or a margin, set with "
+        "`SCI_SETCURSOR`/`SCI_SETMARGINCURSORN`.",
+        {
+            "Normal": "The normal pointer cursor; also the value returned by `SCI_GETCURSOR` if no cursor "
+            "type has been set.",
+            "Wait": "The wait cursor, shown when the mouse is over (or captured by) Scintilla and Scintilla "
+            "is busy.",
+            "ReverseArrow": "A reversed arrow, normally shown over margins by default.",
+        },
+    ),
+    "DocumentOption": (
+        "Bit flags chosen when creating a document with `SCI_CREATEDOCUMENT`, affecting memory allocation and "
+        "performance.",
+        {
+            "StylesNone": "Stops allocation of memory for per-character styles, treating the whole document "
+            "as style 0; saves significant memory. Lexers may still style visually via indicators. Often "
+            "combined with the null lexer for documents too large to lex efficiently.",
+            "TextLarge": "Allows the document to be larger than 2 GB, for 64-bit executables.",
+        },
+    ),
+    "EOLAnnotationVisible": (
+        "Display mode and decoration style for end-of-line annotations, set with "
+        "`SCI_EOLANNOTATIONSETVISIBLE`/`SCI_EOLANNOTATIONGETVISIBLE`.",
+        {
+            "Hidden": "End-of-line annotations are not displayed.",
+            "Standard": "Drawn left justified with no adornment.",
+            "Boxed": "Drawn surrounded by a box.",
+            "Stadium": "Surrounded with a ◖stadium◗ -- a rectangle with rounded ends.",
+            "FlatCircle": "Surrounded with a |shape◗ -- flat left end, curved right end.",
+            "AngleCircle": "Surrounded with a ◄shape◗ -- angled left end, curved right end.",
+            "CircleFlat": "Surrounded with a ◖shape| -- curved left end, flat right end.",
+            "Flats": "Surrounded with a |shape| -- flat on both ends.",
+            "AngleFlat": "Surrounded with a ◄shape| -- angled left end, flat right end.",
+            "CircleAngle": "Surrounded with a ◖shape▶ -- curved left end, angled right end.",
+            "FlatAngle": "Surrounded with a |shape▶ -- flat left end, angled right end.",
+            "Angles": "Surrounded with a ◄shape▶ -- angled on both ends.",
+        },
+    ),
+    "EdgeVisualStyle": (
+        "Used with `SCI_SETEDGEMODE`/`SCI_GETEDGEMODE` to control how the long-line edge marker is displayed.",
+        {
+            "None_": "Long lines are not marked. This is the default state.",
+            "Line": "Draws a vertical line at the column set by `SCI_SETEDGECOLUMN`; works well for "
+            "monospaced fonts but may not align well with proportional fonts.",
+            "Background": "Changes the background colour of characters after the column limit; recommended "
+            "for proportional fonts.",
+            "MultiLine": "Like `Line` but draws a configurable set of vertical lines simultaneously, using an "
+            "independent dataset configured via the `SCI_MULTIEDGE*` messages.",
+        },
+    ),
+    "Element": (
+        "Identifies a visual element (selection, caret, whitespace, fold/hidden line, etc.) whose colour can "
+        "be get/set with `SCI_SETELEMENTCOLOUR`/`SCI_GETELEMENTCOLOUR`.",
+        {
+            "List": "Text colour in autocompletion lists; on Win32 this is currently provided by the "
+            "platform layer.",
+            "ListBack": "Background colour of autocompletion lists; on Win32 this is currently provided by "
+            "the platform layer.",
+            "ListSelected": "Text colour of the selected item in autocompletion lists; on Win32 this is "
+            "currently provided by the platform layer.",
+            "ListSelectedBack": "Background colour of the selected item in autocompletion lists; on Win32 "
+            "this is currently provided by the platform layer.",
+            "SelectionText": "Overrides the default selection text colour.",
+            "SelectionBack": "Overrides the default selection background colour; can be drawn translucently "
+            "(see `SCI_SETSELECTIONLAYER`) or opaquely.",
+            "SelectionAdditionalText": "Text colour used for additional selections (multiple/rectangular "
+            "selection) alongside the main selection.",
+            "SelectionAdditionalBack": "Background colour used for additional selections (multiple/"
+            "rectangular selection) alongside the main selection.",
+            "SelectionSecondaryText": "On X11/Wayland, used instead of the main selection colours when "
+            "another application has taken over the 'primary selection'; commonly grey.",
+            "SelectionSecondaryBack": "On X11/Wayland, used instead of the main selection colours when "
+            "another application has taken over the 'primary selection'; commonly grey.",
+            "SelectionInactiveText": "Colour used for the selection when the window has lost keyboard focus, "
+            "customarily greyed out.",
+            "SelectionInactiveBack": "Colour used for the selection when the window has lost keyboard focus, "
+            "customarily greyed out.",
+            "SelectionInactiveAdditionalText": "Colour for additional (multiple) selections when unfocused; "
+            "if not explicitly set, falls back to `SelectionInactiveText`.",
+            "SelectionInactiveAdditionalBack": "Colour for additional (multiple) selections when unfocused; "
+            "if not explicitly set, falls back to `SelectionInactiveBack`.",
+            "Caret": "Colour of the text caret for the main selection; allows setting caret translucency, "
+            "unlike the discouraged `SCI_SETCARETFORE`.",
+            "CaretAdditional": "Colour of the caret for additional (multiple) selections.",
+            "CaretLineBack": "Background colour of the line containing the caret; can be drawn translucently "
+            "(`SCI_SETCARETLINELAYER`) or opaquely, with the highest priority over other background colours "
+            "such as markers when drawn opaquely.",
+            "WhiteSpace": "Overrides the lexer-determined foreground colour of visible whitespace globally.",
+            "WhiteSpaceBack": "Overrides the lexer-determined background colour of visible whitespace "
+            "globally.",
+            "HotSpotActive": "Text colour of an active hot spot.",
+            "HotSpotActiveBack": "Background colour of an active hot spot.",
+            "FoldLine": "Colour of the lines drawn in the text area to indicate folds (set via "
+            "`SCI_SETFOLDFLAGS`); if not set, the `StylesCommon.Default` foreground colour is used.",
+            "HiddenLine": "If set, draws a horizontal line in this colour to indicate hidden lines (from "
+            "`SCI_HIDELINES`); a fold line drawn at the same position takes precedence.",
+        },
+    ),
+    "EndOfLine": (
+        "Selects the line-ending character sequence used by `SCI_SETEOLMODE`/`SCI_CONVERTEOLS`.",
+        {},
+    ),
+    "FindOption": (
+        "Flags (combinable by OR-ing) controlling how `SCI_SEARCHINTARGET` and related search messages match "
+        "text, set via `SCI_SETSEARCHFLAGS`.",
+        {
+            "None_": "Default setting is a case-insensitive literal match.",
+            "WholeWord": "A match only occurs if the characters before and after are not word characters, as "
+            "defined by `SCI_SETWORDCHARS`.",
+            "MatchCase": "A match only occurs with text that matches the case of the search string.",
+            "WordStart": "A match only occurs if the character immediately before the match is not a word "
+            "character (unlike `WholeWord`, the character after is not checked).",
+            "RegExp": "Interpret the search string as a regular expression, using Scintilla's base "
+            "implementation unless combined with `Cxx11RegEx`; matches never span multiple lines.",
+            "Posix": "Treat the regular expression in a more POSIX-compatible manner by interpreting bare "
+            "'(' and ')' as tagged sections rather than requiring '\\(' and '\\)'; has no effect when "
+            "`Cxx11RegEx` is set.",
+            "Cxx11RegEx": "Use the C++11 <regex> library instead of Scintilla's basic regular expressions, "
+            "with ECMAScript semantics and Unicode-aware behaviour on UTF-8 documents; requires `RegExp` to "
+            "also be set, and returns -1 with status `Status.RegEx` if the expression is invalid.",
+        },
+    ),
+    "FocusChange": (
+        "Notification codes sent to the container for `SCEN_CHANGE`/`SCEN_SETFOCUS`/`SCEN_KILLFOCUS` events.",
+        {
+            "Killfocus": "Fired when Scintilla loses focus.",
+            "Setfocus": "Fired when Scintilla receives focus.",
+            "Change": "Fired when the text (not the styling) of the document changes; carries no further "
+            "detail -- use the `modified` signal/`SCN_MODIFIED` for more detailed change information.",
+        },
+    ),
+    "FoldAction": (
+        "Action to perform on a fold point, used with `SCI_FOLDLINE`, `SCI_FOLDCHILDREN`, and "
+        "`SCI_FOLDALL`.",
+        {
+            "Toggle": "Toggles between contracted and expanded; for `SCI_FOLDALL`, the first fold header in "
+            "the document is examined to decide whether to expand or contract the whole document.",
+            "ContractEveryLevel": "Used only with `SCI_FOLDALL`; can be combined (OR-ed) with `Contract` or "
+            "`Toggle` to contract all fold levels instead of only the top level.",
+        },
+    ),
+    "FoldDisplayTextStyle": (
+        "Controls how fold-tag text (set via `SCI_TOGGLEFOLDSHOWTEXT`/`SCI_SETDEFAULTFOLDDISPLAYTEXT`) is "
+        "rendered, via `SCI_FOLDDISPLAYTEXTSETSTYLE`.",
+        {
+            "Hidden": "Do not display the fold text tags. This is the default.",
+            "Boxed": "Display the fold text tags with a box drawn around them.",
+        },
+    ),
+    "FoldFlag": (
+        "Bit flags controlling where fold-indicator lines are drawn in the text area, set with "
+        "`SCI_SETFOLDFLAGS`.",
+        {
+            "LineBeforeExpanded": "Draws a line above the fold header when it is expanded.",
+            "LineBeforeContracted": "Draws a line above the fold header when it is not expanded.",
+            "LineAfterExpanded": "Draws a line below the fold header when it is expanded.",
+            "LineAfterContracted": "Draws a line below the fold header when it is not expanded.",
+            "LevelNumbers": "Displays hexadecimal fold levels in the line margin to aid debugging of "
+            "folding; cannot be combined with `LineState`.",
+            "LineState": "Displays hexadecimal line state in the line margin to aid debugging of lexing and "
+            "folding; cannot be used together with `LevelNumbers`.",
+        },
+    ),
+    # FoldLevel was already bound before this batch of 63 (like KeyMod/MarginType/
+    # StylesCommon/Notification below) but never documented; added here for the
+    # same reason as those.
+    "FoldLevel": (
+        "A line's fold level and associated flags, set/got with `SCI_SETFOLDLEVEL`/`SCI_GETFOLDLEVEL` as a "
+        "single 32-bit value combining a level number with flag bits.",
+        {
+            "None_": "A default level that may occur before folding is applied.",
+            "Base": "The initial fold level assigned to a line, allowing unsigned arithmetic on levels "
+            "below it.",
+            "NumberMask": "Mask (0xFFF) isolating the level-number portion from the flag bits; the level "
+            "number itself ranges from 0 to this mask.",
+            "WhiteFlag": "Indicates the line is blank, so it should be treated as part of the preceding "
+            "section (e.g. not a fold point) even if its level number suggests otherwise.",
+            "HeaderFlag": "Indicates the line is a header, i.e. a fold point; OR this into the level when "
+            "calling `SCI_SETFOLDLEVEL`.",
+        },
+    ),
+    "FontQuality": (
+        "Controls the antialiasing method used to render fonts, set/got via "
+        "`SCI_SETFONTQUALITY`/`SCI_GETFONTQUALITY` (Windows only at present).",
+        {
+            "QualityDefault": "The backward-compatible default antialiasing behaviour.",
+            "QualityMask": "Mask (0xF) isolating the bits used for the quality value.",
+        },
+    ),
+    "FontStretch": (
+        "Horizontal stretch/condensation of a font's glyphs, set with `SCI_STYLESETSTRETCH`; corresponds to "
+        "a horizontal magnification between 50% and 200%, though most fonts/platforms only support 2-3 of "
+        "these values well.",
+        {
+            "UltraCondensed": "Corresponds to 50% horizontal width.",
+            "ExtraCondensed": "Corresponds to 62.5% horizontal width.",
+            "Condensed": "Corresponds to 75% horizontal width; one of the best-supported stretch values along "
+            "with `Normal` and `Expanded`.",
+            "SemiCondensed": "Corresponds to 87.5% horizontal width.",
+            "Normal": "Corresponds to 100% horizontal width (no stretch); one of the best-supported stretch "
+            "values along with `Condensed` and `Expanded`.",
+            "SemiExpanded": "Corresponds to 112.5% horizontal width.",
+            "Expanded": "Corresponds to 125% horizontal width; one of the best-supported stretch values along "
+            "with `Condensed` and `Normal`.",
+            "ExtraExpanded": "Corresponds to 150% horizontal width.",
+            "UltraExpanded": "Corresponds to 200% horizontal width.",
+        },
+    ),
+    "FontWeight": (
+        "Font boldness/weight, set with `SCI_STYLESETWEIGHT`; any value from 1 (very light) to 999 (very "
+        "heavy) is accepted, though fonts typically only support 2-4 distinct weights.",
+        {
+            "Normal": "Standard weight (400); selected by `SCI_STYLESETBOLD` when its boolean argument is "
+            "false.",
+            "SemiBold": "Semi-bold weight (600), between `Normal` and `Bold`.",
+            "Bold": "Bold weight (700); selected by `SCI_STYLESETBOLD` when its boolean argument is true.",
+        },
+    ),
+    "IMEInteraction": (
+        "Selects how the platform's Input Method Editor (for Chinese, Japanese, or Korean text entry) is "
+        "displayed, set with `SCI_SETIMEINTERACTION`.",
+        {
+            "Windowed": "The IME is shown as a separate window above Scintilla, like in other applications.",
+            "Inline": "The IME is displayed by Scintilla itself as text; works better with rectangular/"
+            "multiple selection. Scintilla may ignore this setting in some cases, e.g. it may only be "
+            "supported for certain languages.",
+        },
+    ),
+    "IdleStyling": (
+        "Controls whether syntax styling of text outside the immediately visible area is deferred to an "
+        "idle-time background task, set with `SCI_SETIDLESTYLING`.",
+        {
+            "None_": "Default: styling is performed for all currently visible text before displaying it, "
+            "which may make scrolling slow on very large files.",
+            "ToVisible": "A small amount of styling is done before display, then the rest of the visible "
+            "text is styled incrementally in the background; text may briefly appear uncoloured.",
+            "AfterVisible": "Text after the currently visible portion is also styled in the background "
+            "during idle time.",
+            "All": "Styles text both before and after the visible portion in the background during idle "
+            "time.",
+        },
+    ),
+    "IndentView": (
+        "Controls how far indentation guides extend on blank/empty lines, set with "
+        "`SCI_SETINDENTATIONGUIDES`.",
+        {
+            "None_": "No indentation guides are shown (turns the feature off).",
+            "Real": "Indentation guides are shown only inside real (actual) indentation white space on a "
+            "line.",
+            "LookForward": "Indentation guides extend beyond the actual indentation up to the level of the "
+            "next non-empty line.",
+            "LookBoth": "Indentation guides extend up to whichever of the next or previous non-empty line "
+            "has the greater indentation level; recommended for most languages.",
+        },
+    ),
+    "IndicFlag": (
+        "Flags controlling indicator colouring behaviour, set/got with "
+        "`SCI_INDICSETFLAGS`/`SCI_INDICGETFLAGS`.",
+        {
+            "None_": "Default: the indicator uses its configured fore colour.",
+            "ValueFore": "The indicator's colour is taken from the per-character indicator value (see "
+            "`IndicValue`) rather than its fore setting, allowing many colours for a single indicator.",
+        },
+    ),
+    "IndicValue": (
+        "Masks for packing an RGB colour into the indicator value used with `SCI_SETINDICATORVALUE` when "
+        "`IndicFlag.ValueFore` is set.",
+        {
+            "Mask": "Mask (0xFFFFFF) used to extract the RGB colour portion from an indicator value.",
+            "Bit": "Bit (0x1000000) OR-ed into the RGB colour to mark it as a per-character indicator colour "
+            "value.",
+        },
+    ),
+    "IndicatorNumbers": (
+        "Identifies the indicator number ranges reserved for containers, IME, and change-history use, as "
+        "passed to the `SCI_INDIC*` messages.",
+        {
+            "Container": "First indicator number in the range reserved for use by containers; indicators "
+            "0-7 are reserved for lexers.",
+            "Ime": "First indicator number reserved for IME (Input Method Editor) indicators.",
+            "ImeMax": "Last indicator number reserved for IME indicators.",
+            "HistoryRevertedToOriginInsertion": "Indicator for text that was deleted and saved but then "
+            "reverted to its original state; the text has not been saved to disk.",
+            "HistoryRevertedToOriginDeletion": "Indicator for text that was inserted and saved but then "
+            "reverted to its original state; there is text on disk that is missing.",
+            "HistorySavedInsertion": "Indicator for text that was inserted and saved; this text is the same "
+            "as on disk.",
+            "HistorySavedDeletion": "Indicator for text that was deleted and saved; this range is the same "
+            "as on disk.",
+            "HistoryModifiedInsertion": "Indicator for text that was inserted but not yet saved.",
+            "HistoryModifiedDeletion": "Indicator for text that was deleted but not yet saved.",
+            "HistoryRevertedToModifiedInsertion": "Indicator for text that was deleted and saved but then "
+            "reverted, though not to its original state; the text has not been saved to disk.",
+            "HistoryRevertedToModifiedDeletion": "Indicator for text that was inserted and saved but then "
+            "reverted, though not to its original state; there is text on disk that is missing.",
+            "Max": "The last valid indicator number.",
+        },
+    ),
+    "IndicatorStyle": (
+        "Visual appearance of an indicator, set with `SCI_INDICSETSTYLE` and used to highlight text such as "
+        "syntax errors, deprecated names, or URLs.",
+        {
+            "Plain": "Underlined with a single, straight line.",
+            "Squiggle": "A squiggly underline; requires 3 pixels of descender space.",
+            "TT": "A line of small T shapes.",
+            "Diagonal": "Diagonal hatching.",
+            "Hidden": "An indicator with no visual effect, useful for tracking content invisibly.",
+            "Box": "A rectangle drawn around the text.",
+            "RoundBox": "A translucent rectangle with rounded corners around the text; fill and outline "
+            "alpha are controlled with `SCI_INDICSETALPHA`/`SCI_INDICSETOUTLINEALPHA`.",
+            "StraightBox": "Like `RoundBox` but with square corners; does not colour the top pixel of the "
+            "line so indicators on contiguous lines stay visually distinct.",
+            "Dash": "A dashed underline.",
+            "Dots": "A dotted underline.",
+            "SquiggleLow": "Like `Squiggle` but only 2 vertical pixels tall, so it fits under small fonts.",
+            "DotBox": "A dotted rectangle drawn with alternating alpha/outline-alpha translucency.",
+            "SquigglePixmap": "A pixmap-based version of `Squiggle` for performance; appearance is worse than "
+            "`Squiggle` on macOS HiDPI.",
+            "CompositionThick": "A 2-pixel-thick underline near the bottom of the line, resembling the target "
+            "style used in Asian language input composition.",
+            "CompositionThin": "A 1-pixel-thick underline just above the bottom of the line, resembling "
+            "non-target ranges in Asian language input composition.",
+            "FullBox": "Like `StraightBox` but covers the entire character area, including the top pixel.",
+            "TextFore": "Changes the text colour to the indicator's foreground colour instead of drawing a "
+            "decoration.",
+            "Point": "Draws a small triangle below the start of the indicator range.",
+            "PointCharacter": "Draws a small triangle below the centre of the first character of the "
+            "indicator range.",
+            "PointTop": "Draws a small triangle above the start of the indicator range.",
+            "Gradient": "A vertical gradient from the indicator colour/alpha at top fading to fully "
+            "transparent at bottom.",
+            "GradientCentre": "A vertical gradient with the colour/alpha centred in the middle, fading to "
+            "fully transparent at both top and bottom.",
+        },
+    ),
+    # KeyMod was already bound before this batch of 63 (like FoldLevel above and
+    # MarginType/StylesCommon/Notification below) but never documented; added
+    # here for the same reason as those.
+    "KeyMod": (
+        "Modifier-key flags (combinable by OR-ing) used alongside a `Keys` code in a `keyDefinition` passed "
+        "to `SCI_ASSIGNCMDKEY`/`SCI_CLEARCMDKEY` for custom key bindings.",
+        {
+            "Norm": "No modifiers; useful as the zero value when building a key-binding table.",
+            "Super": "A system-dependent modifier key, such as the Windows key on Windows or the GTK "
+            "'Super'/Meta key on Linux.",
+            "Meta": "On macOS, the Mac Control key is mapped to this modifier (while the Mac Command key is "
+            "mapped to `Ctrl`).",
+        },
+    ),
+    "Keys": (
+        "Virtual key codes used in a `keyDefinition` (with `KeyMod` modifiers) passed to "
+        "`SCI_ASSIGNCMDKEY`/`SCI_CLEARCMDKEY` for custom key bindings.",
+        {"Prior": "Page Up key.", "Next": "Page Down key."},
+    ),
+    "Layer": (
+        "Controls whether a background effect (selection or caret-line background) is drawn opaquely on the "
+        "base layer or translucently under/over the text, used by `SCI_SETSELECTIONLAYER`/"
+        "`SCI_SETCARETLINELAYER`.",
+        {
+            "Base": "Draw the background opaquely on the base layer.",
+            "UnderText": "Draw the background translucently under the text; does not work in single-phase "
+            "drawing mode (`PhasesDraw.One`) since there is no under-text phase.",
+            "OverText": "Draw the background translucently over the text.",
+        },
+    ),
+    "LineCache": (
+        "Controls which lines have their layout (wrapping/positions) cached, set with "
+        "`SCI_SETLAYOUTCACHE`.",
+        {
+            "None_": "No lines are cached.",
+            "Caret": "Only the line containing the caret is cached; this is the default.",
+            "Page": "The visible lines plus the line containing the caret are cached.",
+            "Document": "All lines in the document are cached.",
+        },
+    ),
+    "LineCharacterIndexType": (
+        "Identifies which line/character position index is active, used with "
+        "`SCI_GETLINECHARACTERINDEX`/`SCI_ALLOCATELINECHARACTERINDEX`; only supported for UTF-8 documents.",
+        {
+            "None_": "No line-character index is active.",
+            "Utf32": "Index by whole (UTF-32) characters.",
+            "Utf16": "Index by UTF-16 code units.",
+        },
+    ),
+    "LineEndType": (
+        "Selects whether only ASCII line endings or also Unicode line endings are recognized, used with "
+        "`SCI_SETLINEENDTYPESALLOWED`/`SCI_GETLINEENDTYPESSUPPORTED`; Unicode mode is ineffective unless the "
+        "active lexer also supports it.",
+        {
+            "Default": "Only ASCII line ends (CR, LF, CRLF) are interpreted.",
+            "Unicode": "Unicode line-ending characters are also interpreted, if the lexer supports it.",
+        },
+    ),
+    "MarginOption": (
+        "Bit flags for `SCI_SETMARGINOPTIONS` that control margin click behaviour.",
+        {
+            "SubLineSelect": "Clicking the margin in front of a wrapped line selects only that sub-line "
+            "instead of the whole wrapped line.",
+        },
+    ),
+    # MarginType was already bound before this batch of 63 (like FoldLevel/
+    # KeyMod above and StylesCommon/Notification below) but never documented;
+    # added here for the same reason as those.
+    "MarginType": (
+        "The kind of content a margin shows, set with `SCI_SETMARGINTYPEN`; by convention margin 0 is used "
+        "for line numbers and the next two for symbols.",
+        {
+            "Symbol": "A symbol margin, e.g. for markers (breakpoints, bookmarks).",
+            "Number": "A line-number margin.",
+            "Back": "A symbol margin whose background colour matches `StylesCommon.Default`'s background.",
+            "Fore": "A symbol margin whose background colour matches `StylesCommon.Default`'s foreground.",
+            "Text": "A margin showing application-defined text, set with `SCI_MARGINSETTEXT`.",
+            "RText": "Like `Text`, but right-justified.",
+            "Colour": "A symbol margin whose background colour is set explicitly with "
+            "`SCI_SETMARGINBACKN`.",
+        },
+    ),
+    "MarkerOutline": (
+        "Marker numbers reserved by Scintilla for change-history tracking and folding margin symbols, used "
+        "with `SCI_MARKERDEFINE`.",
+        {
+            "HistoryRevertedToOrigin": "Marks a line that was changed and saved but then reverted to its "
+            "original state; the line differs from its on-disk state.",
+            "HistorySaved": "Marks a line that was modified and saved; the line matches its on-disk state.",
+            "HistoryModified": "Marks a line that was modified but not yet saved; the line differs from its "
+            "on-disk state.",
+            "HistoryRevertedToModified": "Marks a line that was changed and saved but then reverted, though "
+            "not to its original state; the line differs from its on-disk state.",
+            "Folder": "Marks a line where a closed fold is present; pair with `FolderOpen` using a symbol "
+            "like Plus/Minus or Arrow/ArrowDown.",
+            "FolderOpen": "Marks a line where an open fold is present; pair with `Folder`.",
+            "FolderEnd": "In the flattened-tree folding style: a closed fold header nested inside another "
+            "fold, so it needs a tree connector below it (e.g. `MarkerSymbol.CirclePlusConnected`).",
+            "FolderOpenMid": "In the flattened-tree folding style: an open fold header nested inside "
+            "another fold, so it needs a tree connector below it (e.g. "
+            "`MarkerSymbol.CircleMinusConnected`).",
+            "FolderMidTail": "In the flattened-tree folding style: the last child line of a fold that is "
+            "itself nested inside another fold, combining a corner with a continuing connector for the "
+            "parent (e.g. `MarkerSymbol.TCornerCurve`).",
+            "FolderTail": "In the flattened-tree folding style: the last child line of a top-level fold "
+            "(e.g. `MarkerSymbol.LCornerCurve`).",
+            "FolderSub": "In the flattened-tree folding style: a child line of a fold that is neither the "
+            "first nor last, drawn as a plain vertical connector (e.g. `MarkerSymbol.VLine`).",
+        },
+    ),
+    "MarkerSymbol": (
+        "Symbol drawn for a given marker number in the selection margin, assigned with `SCI_MARKERDEFINE`; "
+        "by default all 32 markers use `Circle`.",
+        {
+            "Background": "Changes only the background colour of the line, drawing no symbol.",
+            "FullRect": "Mirrors `Background` but changes only the margin background colour instead of the "
+            "line.",
+            "Underline": "Draws an underline across the text rather than a margin symbol.",
+            "Empty": "An invisible symbol, useful for tracking line movement programmatically.",
+            "Available": "A convention applications can use to indicate that a marker number is free for "
+            "plugins to allocate.",
+            "Character": "Add a Unicode code point to this base value (10000) to use that character as the "
+            "marker, e.g. `Character + 9637`.",
+            "Pixmap": "Used automatically when a marker is defined via `SCI_MARKERDEFINEPIXMAP`.",
+            "RgbaImage": "Used automatically when a marker is defined via `SCI_MARKERDEFINERGBAIMAGE`.",
+            "Bar": "Drawn first/underneath all other markers regardless of marker number, since bars often "
+            "span multiple lines (e.g. change history) while other markers mark individual lines.",
+        },
+    ),
+    "MultiAutoComplete": (
+        "Controls whether autocompleted text is inserted into just the main selection or into every "
+        "selection, set with `SCI_AUTOCSETMULTI`.",
+        {
+            "Once": "Autocompleted text goes into only the main selection; this is the default.",
+            "Each": "Autocompleted text is inserted into each selection.",
+        },
+    ),
+    "MultiPaste": (
+        "Controls whether pasted text goes into just the main selection or into every selection, set with "
+        "`SCI_SETMULTIPASTE`.",
+        {
+            "Once": "Pasted text goes into only the main selection; this is the default.",
+            "Each": "Pasted text is inserted into each selection.",
+        },
+    ),
+    # Notification was already bound before this batch of 63 (like FoldLevel/
+    # KeyMod/MarginType above) but never documented; added here for the same
+    # reason as those. Most values have a corresponding typed signal on
+    # ScintillaEditBase (see SCINTILLA_EDIT_BASE_SIGNAL_DOCS below) that
+    # delivers the same notification without needing this enum directly --
+    # noted on each member where one exists. The few without one are only
+    # reachable via the raw `notify` signal's `NotificationData.nmhdr.code`.
+    "Notification": (
+        "Identifies which Scintilla notification (`SCN_*`) a `NotificationData` carries, as "
+        "`NotificationData.nmhdr.code` -- delivered via the raw `notify` signal, or (for most values) a "
+        "corresponding typed signal on `ScintillaEditBase` that carries the same notification already "
+        "unpacked into typed parameters.",
+        {
+            "StyleNeeded": "Corresponds to the `styleNeeded` signal.",
+            "CharAdded": "Corresponds to the `charAdded` signal.",
+            "SavePointReached": "Corresponds to the `savePointChanged` signal with `dirty=False`.",
+            "SavePointLeft": "Corresponds to the `savePointChanged` signal with `dirty=True`.",
+            "ModifyAttemptRO": "Corresponds to the `modifyAttemptReadOnly` signal.",
+            "Key": "Corresponds to the `key` signal.",
+            "DoubleClick": "Corresponds to the `doubleClick` signal.",
+            "UpdateUI": "Corresponds to the `updateUi` signal.",
+            "Modified": "Corresponds to the `modified` signal.",
+            "MacroRecord": "Corresponds to the `macroRecord` signal.",
+            "MarginClick": "Corresponds to the `marginClicked` signal.",
+            "NeedShown": "Corresponds to the `needShown` signal.",
+            "Painted": "Corresponds to the `painted` signal.",
+            "UserListSelection": "Corresponds to the `userListSelection` signal.",
+            "URIDropped": "Corresponds to the `uriDropped` signal.",
+            "DwellStart": "Corresponds to the `dwellStart` signal.",
+            "DwellEnd": "Corresponds to the `dwellEnd` signal.",
+            "Zoom": "Corresponds to the `zoom` signal.",
+            "HotSpotClick": "Corresponds to the `hotSpotClick` signal.",
+            "HotSpotDoubleClick": "Corresponds to the `hotSpotDoubleClick` signal.",
+            "CallTipClick": "Corresponds to the `callTipClick` signal.",
+            "AutoCSelection": "Corresponds to the `autoCompleteSelection` signal.",
+            "IndicatorClick": "The mouse was clicked over an indicator; no typed signal exists for this -- "
+            "only reachable via the raw `notify` signal.",
+            "IndicatorRelease": "The mouse button was released after a click over an indicator; no typed "
+            "signal exists for this -- only reachable via the raw `notify` signal.",
+            "AutoCCancelled": "Corresponds to the `autoCompleteCancelled` signal.",
+            "AutoCCharDeleted": "A character was deleted from an active autocompletion word; no typed "
+            "signal exists for this -- only reachable via the raw `notify` signal.",
+            "HotSpotReleaseClick": "The mouse button was released after a click on hotspot-styled text; no "
+            "typed signal exists for this -- only reachable via the raw `notify` signal.",
+            "FocusIn": "Corresponds to the `focusChanged` signal with `focused=True`.",
+            "FocusOut": "Corresponds to the `focusChanged` signal with `focused=False`.",
+            "AutoCCompleted": "Autocompleted text has just been inserted; no typed signal exists for this "
+            "-- only reachable via the raw `notify` signal.",
+            "MarginRightClick": "The mouse was right-clicked in a sensitive margin; no typed signal exists "
+            "for this -- only reachable via the raw `notify` signal.",
+            "AutoCSelectionChange": "The current selection in an autocompletion list changed without being "
+            "chosen; no typed signal exists for this -- only reachable via the raw `notify` signal.",
+        },
+    ),
+    "Ordering": (
+        "Controls how the autocompletion list passed to `SCI_AUTOCSHOW` is ordered, set with "
+        "`SCI_AUTOCSETORDER` before showing the list.",
+        {
+            "PreSorted": "The default; requires the application to supply the list already in alphabetical "
+            "sorted order.",
+            "PerformSort": "Scintilla sorts the list itself; takes additional time compared to `PreSorted`.",
+            "Custom": "The application provides the list in a priority order other than alphabetical; "
+            "requires extra processing to build a sorted index.",
+        },
+    ),
+    "PhasesDraw": (
+        "Selects the drawing order/strategy for the text area, trading speed against correctly rendering "
+        "overlapping pixels, set with `SCI_SETPHASESDRAW`.",
+        {
+            "One": "Deprecated single-phase drawing: each run of characters is drawn with its background in "
+            "one pass, which can let a following run's background cut off an overhanging character. Should "
+            "not be used by applications.",
+            "Two": "The default: draws all line backgrounds first, then all text in transparent mode; lines "
+            "never overlap, so extreme ascenders/descenders are clipped.",
+            "Multiple": "Draws the whole area multiple times, layering backgrounds then text without "
+            "clipping to line boundaries, allowing extreme ascenders/descenders to overflow into adjacent "
+            "lines; slower than `Two`, and incompatible with buffered drawing.",
+        },
+    ),
+    "PopUp": (
+        "Controls when the built-in default context/edit menu is shown, set with `SCI_USEPOPUP`.",
+        {
+            "Never": "Never show the default editing menu; context-menu messages are passed to the parent "
+            "window instead.",
+            "All": "Show the default editing menu when clicking anywhere on the Scintilla window.",
+            "Text": "Show the default editing menu only when clicking on the text area.",
+        },
+    ),
+    "PrintOption": (
+        "Colour mode used when printing the document, set with `SCI_SETPRINTCOLOURMODE`; useful for saving "
+        "ink/toner when the editor uses a dark screen theme.",
+        {
+            "Normal": "Default: prints using the current screen colours, except line-number margins print "
+            "on a white background.",
+            "InvertLight": "Inverts the lightness of all colours and prints on a white background, saving "
+            "ink for dark screen themes.",
+            "BlackOnWhite": "Prints all text as black on a white background.",
+            "ColourOnWhite": "Prints everything in its own colour on a white background.",
+            "ColourOnWhiteDefaultBG": "Prints everything in its own foreground colour, but all styles up to "
+            "and including the line-number style print on a white background.",
+            "ScreenColours": "Prints using the current screen colours for both foreground and background; "
+            "the only mode that does not force the line-number margin background to white.",
+        },
+    ),
+    "RepresentationAppearance": (
+        "Flags controlling how a character representation set with `SCI_SETREPRESENTATION` is drawn, used "
+        "with `SCI_SETREPRESENTATIONAPPEARANCE`.",
+        {
+            "Plain": "Draws the representation text with no decoration.",
+            "Blob": "Draws the representation text inverted inside a rounded rectangle (a small badge); "
+            "this is the default appearance.",
+            "Colour": "If set, the representation is drawn in the colour set for it; if a colour is set but "
+            "this flag is not, the representation shows in the colour of the underlying text instead.",
+        },
+    ),
+    "SelectionMode": (
+        "The selection mode used by `SCI_SETSELECTIONMODE`/`SCI_CHANGESELECTIONMODE`/`SCI_GETSELECTIONMODE`, "
+        "controlling how caret moves extend the selection.",
+        {
+            "Stream": "Regular, contiguous text selection.",
+            "Rectangle": "Rectangular (column) selection.",
+            "Lines": "Selection extended by whole lines.",
+            "Thin": "The mode entered automatically after typing into a rectangular selection, ensuring no "
+            "characters remain selected.",
+        },
+    ),
+    "Status": (
+        "Error/warning status codes returned by `SCI_GETSTATUS` and set by `SCI_SETSTATUS`; values 1-999 "
+        "are errors and `WarnStart` (1000) and above are warnings.",
+        {
+            "Ok": "No failures.",
+            "Failure": "Generic failure.",
+            "BadAlloc": "Memory is exhausted.",
+            "OutsideDocument": "An operation was attempted on a position that is outside the document.",
+            "WarnStart": "The threshold at and above which status codes are warnings rather than errors.",
+            "RegEx": "The regular expression is invalid; returned when the C++11 <regex> engine is selected "
+            "and given a malformed pattern.",
+        },
+    ),
+    # StylesCommon was already bound before this batch of 63 (like FoldLevel/
+    # KeyMod/MarginType/Notification above) but never documented; added here
+    # for the same reason as those.
+    "StylesCommon": (
+        "Predefined style numbers with special meaning, used with `SCI_STYLESETFORE` and friends; lexer "
+        "styles occupy 0 to `Max`, and `SCI_STYLECLEARALL` resets every style to `Default`'s attributes.",
+        {
+            "Default": "The attributes every style is reset to by `SCI_STYLECLEARALL`.",
+            "LineNumber": "Attributes of the line-number margin's text; its background colour also sets "
+            "the background of any margin not used for folding (see `SCI_SETMARGINMASKN`).",
+            "BraceLight": "Attributes used to highlight a matched brace, via `SCI_BRACEHIGHLIGHT`, and its "
+            "corresponding indentation guide via `SCI_SETHIGHLIGHTGUIDE`.",
+            "BraceBad": "Attributes used to mark an unmatched brace, via `SCI_BRACEBADLIGHT`.",
+            "ControlChar": "Font used when drawing control characters; only font/size/bold/italic/"
+            "character-set attributes apply, not colour -- see also `SCI_SETCONTROLCHARSYMBOL`.",
+            "IndentGuide": "Foreground/background colours used when drawing indentation guides.",
+            "CallTip": "Attributes for call tips when `SCI_CALLTIPUSESTYLE` is used; otherwise call tips use "
+            "`Default`. Only font face/size, foreground/background colour, and character set apply.",
+            "FoldDisplayText": "Attributes for text tags attached to folded text.",
+            "LastPredefined": "The last predefined style number (39), so client code can discover the "
+            "range of predefined styles without hardcoding it.",
+            "Max": "The highest style number that can be set (255); styles between `LastPredefined` and "
+            "this value are free for lexers/applications to use.",
+        },
+    ),
+    "Supports": (
+        "Feature flags queried with `SCI_SUPPORTSFEATURE` to check which drawing/measurement capabilities "
+        "the current platform supports.",
+        {
+            "LineDrawsFinal": "Whether drawing a line draws its final position; only false on Win32 GDI.",
+            "PixelDivisions": "Whether logical pixels are larger than physical pixels (sub-pixel positioning "
+            "is possible); currently only true for macOS Cocoa with 'retina' displays.",
+            "FractionalStrokeWidth": "Whether lines can be drawn with fractional widths like 1.5 or 0.5 "
+            "pixels.",
+            "TranslucentStroke": "Whether translucent lines, polygons, ellipses, and text can be drawn (e.g. "
+            "true for Direct2D, false for GDI).",
+            "PixelModification": "Whether individual pixels can be modified; false for character-cell "
+            "platforms like curses.",
+            "ThreadSafeMeasureWidths": "Whether text measurement can be safely performed concurrently on "
+            "multiple threads.",
+        },
+    ),
+    "TabDrawMode": (
+        "How tab characters are drawn when white space is made visible, set with `SCI_SETTABDRAWMODE`.",
+        {
+            "LongArrow": "The default mode: an arrow stretching until the tabstop.",
+            "StrikeOut": "A horizontal line stretching until the tabstop.",
+            "ControlChar": "Drawn as a control code according to the configured character representation, "
+            "without any indentation.",
+        },
+    ),
+    "Technology": (
+        "The drawing API/technology used for rendering, set with `SCI_SETTECHNOLOGY`; choices beyond "
+        "`Default` are Windows-specific DirectWrite variants.",
+        {
+            "Default": "Use the older GDI API, compatible with all versions of Windows including Vista and "
+            "XP.",
+            "DirectWrite": "Use the Direct2D and DirectWrite APIs for higher quality antialiased drawing "
+            "(Windows 7+).",
+            "DirectWriteRetain": "Request that the frame is retained after being presented, which may "
+            "prevent drawing failures on some cards and drivers.",
+            "DirectWriteDC": "Use DirectWrite to draw into a GDI DC; may work for remote access/RDP "
+            "sessions.",
+            "DirectWrite1": "Use DirectWrite in a lower-level way that manages graphics state more "
+            "explicitly.",
+        },
+    ),
+    "TypeProperty": (
+        "How to interpret the string value of a named lexer property (set via `SCI_SETPROPERTY`), as "
+        "reported by `SCI_PROPERTYTYPE` -- all property values are passed as plain strings regardless of "
+        "type. Only available for newer lexers; a companion to `SCI_PROPERTYNAMES` (lists property names) "
+        "and `SCI_DESCRIBEPROPERTY` (a human-readable description), e.g. for building a generic lexer "
+        "property editor.",
+        {
+            "Boolean": 'The property\'s string value is "0" or "1".',
+            "Integer": "The property's string value is a number.",
+            "String": "The property's string value is arbitrary text.",
+        },
+    ),
+    "UndoFlags": (
+        "Flags passed to `SCI_ADDUNDOACTION` controlling how a container-supplied undo action interacts with "
+        "coalescing of other undo actions.",
+        {
+            "MayCoalesce": "The container action may be coalesced together with surrounding insertion/"
+            "deletion actions into a single compound action.",
+        },
+    ),
+    "UndoSelectionHistoryOption": (
+        "Controls whether selection (and scroll position) state is restored when performing undo/redo, set "
+        "with `SCI_SETUNDOSELECTIONHISTORY`.",
+        {
+            "Disabled": "The default: undo selection history turned off.",
+            "Enabled": "Restore the selection for each undo and redo.",
+            "Scroll": "Also restore the vertical scroll position; has no effect unless combined with "
+            "`Enabled`.",
+        },
+    ),
+    "VisiblePolicy": (
+        "Flags for `SCI_SETVISIBLEPOLICY` controlling vertical positioning when "
+        "`SCI_ENSUREVISIBLEENFORCEPOLICY` is called; operates like the caret's vertical policy "
+        "(`SCI_SETYCARETPOLICY`).",
+        {
+            "Slop": "Defines an unwanted zone, a number of lines near the vertical margins where the target "
+            "line should not end up, keeping it within visible context.",
+            "Strict": "Enforces the slop policy strictly: the line is centred on the display if no slop "
+            "value is set, and cannot land in the unwanted zone if one is set.",
+        },
+    ),
+    "WhiteSpace": (
+        "The white-space display mode set with `SCI_SETVIEWWS`/`SCI_GETVIEWWS`, controlling whether spaces "
+        "and tabs are drawn as visible dots and arrows.",
+        {
+            "Invisible": "The normal display mode: white space is displayed as an empty background colour.",
+            "VisibleAlways": "White space characters are always drawn as dots and arrows.",
+            "VisibleAfterIndent": "Indentation white space is displayed normally, but after the first "
+            "visible character on the line, white space is shown as dots and arrows.",
+            "VisibleOnlyInIndent": "Only the white space used for indentation is displayed as dots and "
+            "arrows; white space elsewhere on the line is shown normally.",
+        },
+    ),
+    "Wrap": (
+        "The line-wrap mode set with `SCI_SETWRAPMODE` (and, partially, `SCI_SETPRINTWRAPMODE`).",
+        {
+            "None_": "Disables line wrapping.",
+            "Word": "Wraps on word or style boundaries; if a word is longer than a line it is still wrapped "
+            "before the line end.",
+            "Char": "Wraps between any characters; preferred for Asian languages where there is no white "
+            "space between words. Not supported for printing.",
+            "WhiteSpace": "Wraps on whitespace boundaries.",
+        },
+    ),
+    "WrapIndentMode": (
+        "Controls how wrapped sublines of a line are indented relative to the first subline, set with "
+        "`SCI_SETWRAPINDENTMODE`.",
+        {
+            "Fixed": "Wrapped sublines are aligned to the left of the window plus the amount set by "
+            "`SCI_SETWRAPSTARTINDENT` (the default mode).",
+            "Same": "Wrapped sublines are aligned to the first subline's indent.",
+            "Indent": "Wrapped sublines are aligned to the first subline's indent plus one more level of "
+            "indentation.",
+            "DeepIndent": "Wrapped sublines are aligned to the first subline's indent plus two more levels "
+            "of indentation.",
+        },
+    ),
+    "WrapVisualFlag": (
+        "Bit flags for `SCI_SETWRAPVISUALFLAGS` controlling which visual indicators are drawn to show a line "
+        "has wrapped.",
+        {
+            "End": "Draws a visual flag at the end of each wrapped subline.",
+            "Start": "Draws a visual flag at the start of each wrapped subline; the subline is indented by "
+            "at least 1 to make room for the flag.",
+            "Margin": "Draws a visual flag in the line-number margin.",
+        },
+    ),
+    "WrapVisualLocation": (
+        "Set with `SCI_SETWRAPVISUALFLAGSLOCATION`, controls where wrap visual flags are drawn relative to "
+        "the text versus the window border.",
+        {
+            "Default": "Visual flags are drawn near the border.",
+            "EndByText": "The end-of-subline visual flag is drawn near the text instead of the border.",
+            "StartByText": "The start-of-subline visual flag is drawn near the text instead of the border.",
+        },
+    ),
+}
+
+
 # Matches the `fun`/`get`/`set` feature lines in Scintilla.iface that
 # WidgetGen.py turns into ScintillaEdit methods, e.g.
 # "get pointer GetDocPointer=2357(,)" -> ("get", "GetDocPointer").
@@ -310,8 +1295,7 @@ SCINTILLA_DOCUMENT_SIGNAL_DOCS: Final = {
     ),
     "error_occurred": (
         "An internal error occurred while editing the document. `status` is one of Scintilla's "
-        "internal `Status` codes (e.g. out-of-memory or a malformed regular expression) -- not "
-        "currently exposed as an enum by this binding."
+        "internal `Scintilla.Status` codes (e.g. out-of-memory or a malformed regular expression)."
     ),
 }
 
@@ -567,7 +1551,7 @@ def parse_iface_docs(iface_path: Path) -> dict[str, str]:
     """
     docs: dict[str, str] = {}
     pending: list[str] = []
-    for line in iface_path.read_text().splitlines():
+    for line in iface_path.read_text(encoding="utf-8").splitlines():
         if line.startswith("# "):
             pending.append(line[2:].rstrip())
             continue
@@ -598,7 +1582,7 @@ def parse_character_source_docs(iface_path: Path) -> dict[str, str]:
     docs: dict[str, str] = {}
     prefix: str | None = None
     pending: list[str] = []
-    for line in iface_path.read_text().splitlines():
+    for line in iface_path.read_text(encoding="utf-8").splitlines():
         enu_match = CHARACTER_SOURCE_ENU_RE.match(line)
         if enu_match:
             # The preceding comment (if any) documents the enum itself, not its
@@ -631,7 +1615,7 @@ def parse_widget_method_docs(iface_path: Path) -> dict[str, str]:
     """
     docs: dict[str, str] = {}
     pending: list[str] = []
-    for line in iface_path.read_text().splitlines():
+    for line in iface_path.read_text(encoding="utf-8").splitlines():
         if line.startswith("# "):
             pending.append(line[2:].rstrip())
             continue
@@ -673,14 +1657,23 @@ def add_namespace_constants(text: str) -> str:
     return text.replace(PRIMITIVE_ALIASES, PRIMITIVE_ALIASES + "".join(lines), 1)
 
 
-def add_enum_docstrings(text: str, enum_class: str, docs: dict[str, str]) -> str:
-    """Insert each doc comment as a docstring after the member of `Scintilla.<enum_class>` it documents."""
+def add_enum_docstrings(
+    text: str,
+    enum_class: str,
+    docs: dict[str, str],
+    class_doc: str | None = None,
+) -> str:
+    """Insert `class_doc` after `Scintilla.<enum_class>`'s header, then each doc in `docs` after the member it documents."""
     out: list[str] = []
     in_enum = False
     class_line = f"    class {enum_class}(enum.IntEnum):"
     for line in text.splitlines(keepends=True):
         if line.startswith(class_line):
             in_enum = True
+            out.append(line)
+            if class_doc:
+                out.append(f'        r"""{class_doc}"""\n')
+            continue
         elif in_enum and line.startswith("    class "):
             in_enum = False
         out.append(line)
@@ -806,7 +1799,7 @@ def run_genpyi() -> None:
 def main() -> None:
     """Generate `_pyside6_scintilla.pyi`, then post-process it in place."""
     run_genpyi()
-    text = PYI_PATH.read_text()
+    text = PYI_PATH.read_text(encoding="utf-8")
     text = fix_self_import(text)
     text = normalize_send_signatures(text)
     text = add_primitive_aliases(text)
@@ -815,7 +1808,19 @@ def main() -> None:
     text = add_enum_docstrings(text, "CharacterSource", parse_character_source_docs(IFACE_PATH))
     text = add_enum_docstrings(text, "VirtualSpace", VIRTUAL_SPACE_DOCS)
     text = add_enum_docstrings(text, "Update", UPDATE_DOCS)
-    text = add_enum_docstrings(text, "ModificationFlags", MODIFICATION_FLAGS_DOCS)
+    text = add_enum_docstrings(
+        text,
+        "ModificationFlags",
+        MODIFICATION_FLAGS_DOCS,
+        class_doc=(
+            "Bitmask describing what kind of document change occurred, delivered as the `type`/"
+            "`modification_type` parameter of `ScintillaEditBase.modified`/`ScintillaDocument.modified` "
+            "(SCN_MODIFIED), and used to filter which kinds of modification get reported at all via "
+            "`SCI_SETMODEVENTMASK`/`SCI_GETMODEVENTMASK`."
+        ),
+    )
+    for enum_name, (class_doc, member_docs) in ENUM_DOCS.items():
+        text = add_enum_docstrings(text, enum_name, member_docs, class_doc=class_doc)
     text = add_class_docstring(text, "ScintillaEditBase", SCINTILLA_EDIT_BASE_CLASS_DOC)
     text = add_class_docstring(text, "ScintillaDocument", SCINTILLA_DOCUMENT_CLASS_DOC)
     text = add_signal_docstrings(text, "ScintillaDocument", SCINTILLA_DOCUMENT_SIGNAL_DOCS)
@@ -835,7 +1840,7 @@ def main() -> None:
     text = widen_sends_string_param(text)
     text = widen_const_char_ptr_params(text)
     text = resolve_sptr_uptr_forward_refs(text)
-    PYI_PATH.write_text(text)
+    PYI_PATH.write_text(text, encoding="utf-8")
 
 
 if __name__ == "__main__":

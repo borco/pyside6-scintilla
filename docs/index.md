@@ -14,13 +14,11 @@
 
 ## Status
 
-The `ScintillaEditBase`, `ScintillaEdit`, and `ScintillaDocument` bindings
-are implemented and working — see the [examples gallery](examples/index.md)
-for runnable demos. Pre-built wheels are published on
-[PyPI](https://pypi.org/project/pyside6-scintilla/) for Linux (x86_64),
-Windows (x86_64), and macOS (arm64, x86_64), Python 3.11-3.14. Linux aarch64
-wheels are tracked as
-[issue #4](https://github.com/borco/pyside6-scintilla/issues/4).
+See [GitHub Issues](https://github.com/borco/pyside6-scintilla/issues) for
+what's done and what's next, and the
+[project board](https://github.com/users/borco/projects/3) for the joint
+roadmap with [lexilla-py](https://github.com/borco/lexilla-py) (issues and
+PRs from both repos are added to it automatically).
 
 ## Installation
 
@@ -71,10 +69,3 @@ that permissive core directly to PySide6 users — see
 See the **Development** section for how the bindings are built, how to set
 up a local build, and how the vendored Scintilla source is verified against
 upstream.
-
-## Roadmap
-
-The [project board](https://github.com/users/borco/projects/3) tracks the
-joint roadmap for `pyside6-scintilla` and
-[lexilla-py](https://github.com/borco/lexilla-py); issues and PRs from both
-repos are added to it automatically.

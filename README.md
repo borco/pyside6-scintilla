@@ -14,20 +14,8 @@
 
 ## Status
 
-The `ScintillaEditBase`, `ScintillaEdit`, and `ScintillaDocument` bindings
-are implemented and working — see
-[examples/](https://github.com/borco/pyside6-scintilla/tree/master/examples)
-for runnable demos. Pre-built wheels are published on
-[PyPI](https://pypi.org/project/pyside6-scintilla/) for Linux
-(x86_64), Windows (x86_64), and macOS (arm64, x86_64), Python 3.11-3.14 —
-see [Installation](#installation). Linux aarch64 wheels are tracked as
-[issue #4](https://github.com/borco/pyside6-scintilla/issues/4).
-
-The [docs site](https://borco.github.io/pyside6-scintilla/) has a full
-"Scintilla API" navigation tree, but most pages are still placeholders
-pending conversion from the upstream `ScintillaDoc.html` — see
-[issue #2](https://github.com/borco/pyside6-scintilla/issues/2)
-for conversion progress.
+See [GitHub Issues](https://github.com/borco/pyside6-scintilla/issues) for
+what's done and what's next.
 
 ## Why this exists
 
@@ -123,9 +111,10 @@ itself releases a new version.
 | [docs/documenting.md](https://github.com/borco/pyside6-scintilla/blob/master/docs/documenting.md) | How the docs site is built, and how to add or update a page |
 | [docs/specs/](https://github.com/borco/pyside6-scintilla/tree/master/docs/specs/) | Design specifications and action plans for in-progress and planned work |
 | [docs/specs/mission.md](https://github.com/borco/pyside6-scintilla/blob/master/docs/specs/mission.md) | Project background, goals, and design decisions |
+| [docs/testpypi.md](https://github.com/borco/pyside6-scintilla/blob/master/docs/testpypi.md) | Setting up TestPyPI trusted publishing |
+| [examples/](https://github.com/borco/pyside6-scintilla/tree/master/examples) | Standalone example apps, including ones showing [lexilla-py](https://github.com/borco/lexilla-py) in use |
 | [GitHub Issues](https://github.com/borco/pyside6-scintilla/issues) | Planned and in-progress work |
 | [Project board](https://github.com/users/borco/projects/3) | Joint roadmap for `pyside6-scintilla` and [lexilla-py](https://github.com/borco/lexilla-py); issues/PRs from both repos are auto-added |
-| [docs/testpypi.md](https://github.com/borco/pyside6-scintilla/blob/master/docs/testpypi.md) | Setting up TestPyPI trusted publishing |
 
 ## Development tools
 

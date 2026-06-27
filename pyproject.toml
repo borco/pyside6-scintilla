@@ -66,6 +66,7 @@ input = "src/pyside6_scintilla/__init__.py"
 [dependency-groups]
 dev = [
     "cmake>=3.25",
+    "lexilla",
     "ninja",
     "pygments>=2.18",
     "pyright>=1.1.410",
@@ -97,6 +98,15 @@ docs = [
 # are dev deps — none of these are [build-system].requires).
 [tool.uv]
 no-build-isolation-package = ["pyside6-scintilla"]
+
+# lexilla isn't published on PyPI yet, so source it straight from GitHub --
+# used solely by examples/highlighting/lexilla_highlighting/, not by the
+# pyside6-scintilla package itself. A branch ref pins to a commit SHA in
+# uv.lock, so plain `uv sync` won't pick up new lexilla-py commits on its
+# own -- run `make resync-lexilla` (uv lock --upgrade-package lexilla && uv
+# sync) to pull the latest master.
+[tool.uv.sources]
+lexilla = { git = "https://github.com/borco/lexilla-py", branch = "master" }
 
 
 # ---------------------------------------------------------------------------

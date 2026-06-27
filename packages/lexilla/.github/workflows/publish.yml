@@ -4,6 +4,10 @@ on:
   release:
     types: [published]
   workflow_dispatch:
+  # Temporary: verify the TestPyPI tracer on this branch before merge.
+  # Remove once verified.
+  push:
+    branches: [issue/3/cibuildwheel-testpypi]
 
 jobs:
   build-sdist:

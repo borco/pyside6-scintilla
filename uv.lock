@@ -221,6 +221,11 @@ wheels = [
 ]
 
 [[package]]
+name = "lexilla"
+version = "5.5.0.0"
+source = { git = "https://github.com/borco/lexilla-py?branch=master#2e21d2e3210251fc74f46781fed144933ff31151" }
+
+[[package]]
 name = "markdown"
 version = "3.10.2"
 source = { registry = "https://pypi.org/simple" }
@@ -625,6 +630,7 @@ dependencies = [
 [package.dev-dependencies]
 dev = [
     { name = "cmake" },
+    { name = "lexilla" },
     { name = "ninja" },
     { name = "pygments" },
     { name = "pyright" },
@@ -651,6 +657,7 @@ requires-dist = [{ name = "pyside6", specifier = ">=6.10" }]
 [package.metadata.requires-dev]
 dev = [
     { name = "cmake", specifier = ">=3.25" },
+    { name = "lexilla", git = "https://github.com/borco/lexilla-py?branch=master" },
     { name = "ninja" },
     { name = "pygments", specifier = ">=2.18" },
     { name = "pyright", specifier = ">=1.1.410" },

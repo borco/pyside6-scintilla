@@ -1,6 +1,14 @@
-.PHONY: setup lint format test clean clean-setup configure build install publish stubs docs-serve
+.PHONY: setup resync-lexilla lint format test clean clean-setup configure build install publish stubs docs-serve
 
 setup:
+	uv sync
+
+# lexilla is pinned to a lexilla-py master commit SHA in uv.lock (see
+# pyproject.toml's [tool.uv.sources]) -- plain `uv sync` won't pick up new
+# lexilla-py commits on its own, even if its __version__ string hasn't
+# changed. Run this after lexilla-py changes to pull the latest master.
+resync-lexilla:
+	uv lock --upgrade-package lexilla
 	uv sync
 
 lint:

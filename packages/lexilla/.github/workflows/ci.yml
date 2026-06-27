@@ -21,6 +21,15 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
+      - name: Install Qt runtime libs for headless tests (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          # Needed for Qt6Gui to load under QT_QPA_PLATFORM=offscreen, since
+          # tests/test_pyside6_scintilla.py creates a real ScintillaEdit
+          # widget (same libs pyside6-scintilla's own CI installs).
+          sudo apt-get install -y libgl1 libegl1 libxkbcommon0
+
       - name: Install uv
         uses: astral-sh/setup-uv@v7
         with:
@@ -31,6 +40,8 @@ jobs:
         run: uv sync
 
       - name: Run tests
+        env:
+          QT_QPA_PLATFORM: offscreen
         run: uv run pytest
 
       - name: Lint

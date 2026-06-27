@@ -55,7 +55,8 @@ way that would require users to open-source their applications.
 - **shiboken6** generates the Python ↔ C++ bridge from a typesystem XML file.
 - **scikit-build-core** drives the CMake build and produces PEP 517-compliant wheels.
 - **cibuildwheel** on **GitHub Actions** builds wheels for all three platforms
-  automatically on tag push, then publishes to PyPI.
+  when a GitHub Release is published, then publishes to PyPI via trusted
+  publishing (OIDC) — first to TestPyPI as a tracer, then to the real index.
 - **uv** is used for local development environment management.
 
 ## Scope
@@ -83,7 +84,8 @@ That higher-level layer can be built on top by consumers.
 - **CI**: GitHub Actions (free, unlimited for public repos)
 - **Wheel builder**: `cibuildwheel`
 - **Source control**: Git on GitHub (Scintilla itself is on SourceForge/Mercurial
-  — use `git-cinnabar` or vendor a release tarball to avoid dealing with hg)
+  — vendored as a release tarball, see "Scintilla version strategy" below, to
+  avoid a hg toolchain dependency)
 
 ## Scintilla version strategy
 

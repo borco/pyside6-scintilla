@@ -271,8 +271,7 @@ ENUM_DOCS: Final[dict[str, tuple[str | None, dict[str, str]]]] = {
         },
     ),
     "AutoCompleteOption": (
-        "Options controlling autocompletion list display and selection behaviour, set with "
-        "`SCI_AUTOCSETOPTIONS`.",
+        "Options controlling autocompletion list display and selection behaviour, set with `SCI_AUTOCSETOPTIONS`.",
         {
             "FixedSize": "On Win32 only, uses a fixed-size list instead of one resizable by the user; also "
             "avoids a header rectangle above the list.",
@@ -301,8 +300,7 @@ ENUM_DOCS: Final[dict[str, tuple[str | None, dict[str, str]]]] = {
             "L2R": "Left-to-right is the default direction. Currently the only mode with actual bidirectional "
             "display support (experimental, Win32 DirectWrite and macOS Cocoa only); only UTF-8 documents show "
             "bidirectional behaviour.",
-            "R2L": "Right-to-left is the default direction. Reserved for future implementation; not yet "
-            "functional.",
+            "R2L": "Right-to-left is the default direction. Reserved for future implementation; not yet functional.",
         },
     ),
     "CaretPolicy": (
@@ -366,8 +364,7 @@ ENUM_DOCS: Final[dict[str, tuple[str | None, dict[str, str]]]] = {
         {"Mixed": "Displays text normally, unmodified."},
     ),
     "ChangeHistoryOption": (
-        "Bit flags enabling change-history tracking and how it is displayed, set with "
-        "`SCI_SETCHANGEHISTORY`.",
+        "Bit flags enabling change-history tracking and how it is displayed, set with `SCI_SETCHANGEHISTORY`.",
         {
             "Disabled": "Default: change history is turned off.",
             "Enabled": "Tracks changes to the document.",
@@ -384,7 +381,7 @@ ENUM_DOCS: Final[dict[str, tuple[str | None, dict[str, str]]]] = {
         {
             "Default": 'Maps to the "ISO 8859-1" (Latin-1) codec; the default character set used by styles '
             "unless changed.",
-            "Ansi": 'Not mapped to a codec by this binding\'s Qt platform layer -- falls back to the same '
+            "Ansi": "Not mapped to a codec by this binding's Qt platform layer -- falls back to the same "
             '"ISO 8859-1" codec as `Default` regardless of platform.',
             "Symbol": "Not mapped to a codec by this binding's Qt platform layer -- falls back to the same "
             '"ISO 8859-1" codec as `Default` regardless of platform.',
@@ -436,13 +433,11 @@ ENUM_DOCS: Final[dict[str, tuple[str | None, dict[str, str]]]] = {
         },
     ),
     "CursorShape": (
-        "Mouse cursor shape shown over the editor or a margin, set with "
-        "`SCI_SETCURSOR`/`SCI_SETMARGINCURSORN`.",
+        "Mouse cursor shape shown over the editor or a margin, set with `SCI_SETCURSOR`/`SCI_SETMARGINCURSORN`.",
         {
             "Normal": "The normal pointer cursor; also the value returned by `SCI_GETCURSOR` if no cursor "
             "type has been set.",
-            "Wait": "The wait cursor, shown when the mouse is over (or captured by) Scintilla and Scintilla "
-            "is busy.",
+            "Wait": "The wait cursor, shown when the mouse is over (or captured by) Scintilla and Scintilla is busy.",
             "ReverseArrow": "A reversed arrow, normally shown over margins by default.",
         },
     ),
@@ -490,8 +485,7 @@ ENUM_DOCS: Final[dict[str, tuple[str | None, dict[str, str]]]] = {
         "Identifies a visual element (selection, caret, whitespace, fold/hidden line, etc.) whose colour can "
         "be get/set with `SCI_SETELEMENTCOLOUR`/`SCI_GETELEMENTCOLOUR`.",
         {
-            "List": "Text colour in autocompletion lists; on Win32 this is currently provided by the "
-            "platform layer.",
+            "List": "Text colour in autocompletion lists; on Win32 this is currently provided by the platform layer.",
             "ListBack": "Background colour of autocompletion lists; on Win32 this is currently provided by "
             "the platform layer.",
             "ListSelected": "Text colour of the selected item in autocompletion lists; on Win32 this is "
@@ -524,8 +518,7 @@ ENUM_DOCS: Final[dict[str, tuple[str | None, dict[str, str]]]] = {
             "(`SCI_SETCARETLINELAYER`) or opaquely, with the highest priority over other background colours "
             "such as markers when drawn opaquely.",
             "WhiteSpace": "Overrides the lexer-determined foreground colour of visible whitespace globally.",
-            "WhiteSpaceBack": "Overrides the lexer-determined background colour of visible whitespace "
-            "globally.",
+            "WhiteSpaceBack": "Overrides the lexer-determined background colour of visible whitespace globally.",
             "HotSpotActive": "Text colour of an active hot spot.",
             "HotSpotActiveBack": "Background colour of an active hot spot.",
             "FoldLine": "Colour of the lines drawn in the text area to indicate folds (set via "
@@ -568,8 +561,7 @@ ENUM_DOCS: Final[dict[str, tuple[str | None, dict[str, str]]]] = {
         },
     ),
     "FoldAction": (
-        "Action to perform on a fold point, used with `SCI_FOLDLINE`, `SCI_FOLDCHILDREN`, and "
-        "`SCI_FOLDALL`.",
+        "Action to perform on a fold point, used with `SCI_FOLDLINE`, `SCI_FOLDCHILDREN`, and `SCI_FOLDALL`.",
         {
             "Toggle": "Toggles between contracted and expanded; for `SCI_FOLDALL`, the first fold header in "
             "the document is examined to decide whether to expand or contract the whole document.",
@@ -586,8 +578,7 @@ ENUM_DOCS: Final[dict[str, tuple[str | None, dict[str, str]]]] = {
         },
     ),
     "FoldFlag": (
-        "Bit flags controlling where fold-indicator lines are drawn in the text area, set with "
-        "`SCI_SETFOLDFLAGS`.",
+        "Bit flags controlling where fold-indicator lines are drawn in the text area, set with `SCI_SETFOLDFLAGS`.",
         {
             "LineBeforeExpanded": "Draws a line above the fold header when it is expanded.",
             "LineBeforeContracted": "Draws a line above the fold header when it is not expanded.",
@@ -607,8 +598,7 @@ ENUM_DOCS: Final[dict[str, tuple[str | None, dict[str, str]]]] = {
         "single 32-bit value combining a level number with flag bits.",
         {
             "None_": "A default level that may occur before folding is applied.",
-            "Base": "The initial fold level assigned to a line, allowing unsigned arithmetic on levels "
-            "below it.",
+            "Base": "The initial fold level assigned to a line, allowing unsigned arithmetic on levels below it.",
             "NumberMask": "Mask (0xFFF) isolating the level-number portion from the flag bits; the level "
             "number itself ranges from 0 to this mask.",
             "WhiteFlag": "Indicates the line is blank, so it should be treated as part of the preceding "
@@ -648,8 +638,7 @@ ENUM_DOCS: Final[dict[str, tuple[str | None, dict[str, str]]]] = {
         "Font boldness/weight, set with `SCI_STYLESETWEIGHT`; any value from 1 (very light) to 999 (very "
         "heavy) is accepted, though fonts typically only support 2-4 distinct weights.",
         {
-            "Normal": "Standard weight (400); selected by `SCI_STYLESETBOLD` when its boolean argument is "
-            "false.",
+            "Normal": "Standard weight (400); selected by `SCI_STYLESETBOLD` when its boolean argument is false.",
             "SemiBold": "Semi-bold weight (600), between `Normal` and `Bold`.",
             "Bold": "Bold weight (700); selected by `SCI_STYLESETBOLD` when its boolean argument is true.",
         },
@@ -674,17 +663,14 @@ ENUM_DOCS: Final[dict[str, tuple[str | None, dict[str, str]]]] = {
             "text is styled incrementally in the background; text may briefly appear uncoloured.",
             "AfterVisible": "Text after the currently visible portion is also styled in the background "
             "during idle time.",
-            "All": "Styles text both before and after the visible portion in the background during idle "
-            "time.",
+            "All": "Styles text both before and after the visible portion in the background during idle time.",
         },
     ),
     "IndentView": (
-        "Controls how far indentation guides extend on blank/empty lines, set with "
-        "`SCI_SETINDENTATIONGUIDES`.",
+        "Controls how far indentation guides extend on blank/empty lines, set with `SCI_SETINDENTATIONGUIDES`.",
         {
             "None_": "No indentation guides are shown (turns the feature off).",
-            "Real": "Indentation guides are shown only inside real (actual) indentation white space on a "
-            "line.",
+            "Real": "Indentation guides are shown only inside real (actual) indentation white space on a line.",
             "LookForward": "Indentation guides extend beyond the actual indentation up to the level of the "
             "next non-empty line.",
             "LookBoth": "Indentation guides extend up to whichever of the next or previous non-empty line "
@@ -692,8 +678,7 @@ ENUM_DOCS: Final[dict[str, tuple[str | None, dict[str, str]]]] = {
         },
     ),
     "IndicFlag": (
-        "Flags controlling indicator colouring behaviour, set/got with "
-        "`SCI_INDICSETFLAGS`/`SCI_INDICGETFLAGS`.",
+        "Flags controlling indicator colouring behaviour, set/got with `SCI_INDICSETFLAGS`/`SCI_INDICGETFLAGS`.",
         {
             "None_": "Default: the indicator uses its configured fore colour.",
             "ValueFore": "The indicator's colour is taken from the per-character indicator value (see "
@@ -705,8 +690,7 @@ ENUM_DOCS: Final[dict[str, tuple[str | None, dict[str, str]]]] = {
         "`IndicFlag.ValueFore` is set.",
         {
             "Mask": "Mask (0xFFFFFF) used to extract the RGB colour portion from an indicator value.",
-            "Bit": "Bit (0x1000000) OR-ed into the RGB colour to mark it as a per-character indicator colour "
-            "value.",
+            "Bit": "Bit (0x1000000) OR-ed into the RGB colour to mark it as a per-character indicator colour value.",
         },
     ),
     "IndicatorNumbers": (
@@ -723,8 +707,7 @@ ENUM_DOCS: Final[dict[str, tuple[str | None, dict[str, str]]]] = {
             "reverted to its original state; there is text on disk that is missing.",
             "HistorySavedInsertion": "Indicator for text that was inserted and saved; this text is the same "
             "as on disk.",
-            "HistorySavedDeletion": "Indicator for text that was deleted and saved; this range is the same "
-            "as on disk.",
+            "HistorySavedDeletion": "Indicator for text that was deleted and saved; this range is the same as on disk.",
             "HistoryModifiedInsertion": "Indicator for text that was inserted but not yet saved.",
             "HistoryModifiedDeletion": "Indicator for text that was deleted but not yet saved.",
             "HistoryRevertedToModifiedInsertion": "Indicator for text that was deleted and saved but then "
@@ -759,11 +742,9 @@ ENUM_DOCS: Final[dict[str, tuple[str | None, dict[str, str]]]] = {
             "CompositionThin": "A 1-pixel-thick underline just above the bottom of the line, resembling "
             "non-target ranges in Asian language input composition.",
             "FullBox": "Like `StraightBox` but covers the entire character area, including the top pixel.",
-            "TextFore": "Changes the text colour to the indicator's foreground colour instead of drawing a "
-            "decoration.",
+            "TextFore": "Changes the text colour to the indicator's foreground colour instead of drawing a decoration.",
             "Point": "Draws a small triangle below the start of the indicator range.",
-            "PointCharacter": "Draws a small triangle below the centre of the first character of the "
-            "indicator range.",
+            "PointCharacter": "Draws a small triangle below the centre of the first character of the indicator range.",
             "PointTop": "Draws a small triangle above the start of the indicator range.",
             "Gradient": "A vertical gradient from the indicator colour/alpha at top fading to fully "
             "transparent at bottom.",
@@ -802,8 +783,7 @@ ENUM_DOCS: Final[dict[str, tuple[str | None, dict[str, str]]]] = {
         },
     ),
     "LineCache": (
-        "Controls which lines have their layout (wrapping/positions) cached, set with "
-        "`SCI_SETLAYOUTCACHE`.",
+        "Controls which lines have their layout (wrapping/positions) cached, set with `SCI_SETLAYOUTCACHE`.",
         {
             "None_": "No lines are cached.",
             "Caret": "Only the line containing the caret is cached; this is the default.",
@@ -849,8 +829,7 @@ ENUM_DOCS: Final[dict[str, tuple[str | None, dict[str, str]]]] = {
             "Fore": "A symbol margin whose background colour matches `StylesCommon.Default`'s foreground.",
             "Text": "A margin showing application-defined text, set with `SCI_MARGINSETTEXT`.",
             "RText": "Like `Text`, but right-justified.",
-            "Colour": "A symbol margin whose background colour is set explicitly with "
-            "`SCI_SETMARGINBACKN`.",
+            "Colour": "A symbol margin whose background colour is set explicitly with `SCI_SETMARGINBACKN`.",
         },
     ),
     "MarkerOutline": (
@@ -886,8 +865,7 @@ ENUM_DOCS: Final[dict[str, tuple[str | None, dict[str, str]]]] = {
         "by default all 32 markers use `Circle`.",
         {
             "Background": "Changes only the background colour of the line, drawing no symbol.",
-            "FullRect": "Mirrors `Background` but changes only the margin background colour instead of the "
-            "line.",
+            "FullRect": "Mirrors `Background` but changes only the margin background colour instead of the line.",
             "Underline": "Draws an underline across the text rather than a margin symbol.",
             "Empty": "An invisible symbol, useful for tracking line movement programmatically.",
             "Available": "A convention applications can use to indicate that a marker number is free for "
@@ -1087,8 +1065,7 @@ ENUM_DOCS: Final[dict[str, tuple[str | None, dict[str, str]]]] = {
             "LineDrawsFinal": "Whether drawing a line draws its final position; only false on Win32 GDI.",
             "PixelDivisions": "Whether logical pixels are larger than physical pixels (sub-pixel positioning "
             "is possible); currently only true for macOS Cocoa with 'retina' displays.",
-            "FractionalStrokeWidth": "Whether lines can be drawn with fractional widths like 1.5 or 0.5 "
-            "pixels.",
+            "FractionalStrokeWidth": "Whether lines can be drawn with fractional widths like 1.5 or 0.5 pixels.",
             "TranslucentStroke": "Whether translucent lines, polygons, ellipses, and text can be drawn (e.g. "
             "true for Direct2D, false for GDI).",
             "PixelModification": "Whether individual pixels can be modified; false for character-cell "
@@ -1110,16 +1087,12 @@ ENUM_DOCS: Final[dict[str, tuple[str | None, dict[str, str]]]] = {
         "The drawing API/technology used for rendering, set with `SCI_SETTECHNOLOGY`; choices beyond "
         "`Default` are Windows-specific DirectWrite variants.",
         {
-            "Default": "Use the older GDI API, compatible with all versions of Windows including Vista and "
-            "XP.",
-            "DirectWrite": "Use the Direct2D and DirectWrite APIs for higher quality antialiased drawing "
-            "(Windows 7+).",
+            "Default": "Use the older GDI API, compatible with all versions of Windows including Vista and XP.",
+            "DirectWrite": "Use the Direct2D and DirectWrite APIs for higher quality antialiased drawing (Windows 7+).",
             "DirectWriteRetain": "Request that the frame is retained after being presented, which may "
             "prevent drawing failures on some cards and drivers.",
-            "DirectWriteDC": "Use DirectWrite to draw into a GDI DC; may work for remote access/RDP "
-            "sessions.",
-            "DirectWrite1": "Use DirectWrite in a lower-level way that manages graphics state more "
-            "explicitly.",
+            "DirectWriteDC": "Use DirectWrite to draw into a GDI DC; may work for remote access/RDP sessions.",
+            "DirectWrite1": "Use DirectWrite in a lower-level way that manages graphics state more explicitly.",
         },
     ),
     "TypeProperty": (
@@ -1148,8 +1121,7 @@ ENUM_DOCS: Final[dict[str, tuple[str | None, dict[str, str]]]] = {
         {
             "Disabled": "The default: undo selection history turned off.",
             "Enabled": "Restore the selection for each undo and redo.",
-            "Scroll": "Also restore the vertical scroll position; has no effect unless combined with "
-            "`Enabled`.",
+            "Scroll": "Also restore the vertical scroll position; has no effect unless combined with `Enabled`.",
         },
     ),
     "VisiblePolicy": (
@@ -1193,8 +1165,7 @@ ENUM_DOCS: Final[dict[str, tuple[str | None, dict[str, str]]]] = {
             "Fixed": "Wrapped sublines are aligned to the left of the window plus the amount set by "
             "`SCI_SETWRAPSTARTINDENT` (the default mode).",
             "Same": "Wrapped sublines are aligned to the first subline's indent.",
-            "Indent": "Wrapped sublines are aligned to the first subline's indent plus one more level of "
-            "indentation.",
+            "Indent": "Wrapped sublines are aligned to the first subline's indent plus one more level of indentation.",
             "DeepIndent": "Wrapped sublines are aligned to the first subline's indent plus two more levels "
             "of indentation.",
         },

@@ -11,9 +11,14 @@ separate, Qt-free C++ library that creates `ILexer5` lexer objects by name
 This project ([lexilla-py](https://github.com/borco/lexilla-py), PyPI package
 `lexilla`) is a permissively-licensed Python binding for that library. It is
 a sibling to [pyside6-scintilla](https://github.com/borco/pyside6-scintilla)
-(same author) — a PySide6 binding for `ScintillaEditBase` — but is
-intentionally independent of it: Lexilla has no Qt dependency, and the lexer
-objects it creates work with any Scintilla binding, not only a PySide6 one.
+(same author) — a PySide6 binding for `ScintillaEditBase` — but is kept as a
+separate package: in practice, pyside6-scintilla is the only realistic
+consumer (no other software is expected to implement `ILexer5`, and Python
+code wanting lexer/syntax-highlighting support has Pygments or tree-sitter
+as better-fitting alternatives to Lexilla). The separation isn't about
+serving a diverse ecosystem of consumers — it's so this package's release
+cadence and vendored-Lexilla version can be kept in sync with upstream
+Lexilla releases independently of pyside6-scintilla's own release cycle.
 
 ## What this is NOT
 
@@ -35,7 +40,7 @@ overkill here. [nanobind](https://nanobind.readthedocs.io/) is header-only,
 has no Qt/PySide6 toolchain dependency, and is a good fit for binding a small
 set of free functions and one abstract interface class.
 
-### Cross-binding integration: raw pointer, with an optional convenience extra
+### Cross-binding integration: raw pointer, plus convenience glue
 
 `CreateLexer` returns an `ILexer5*`. The Scintilla side expects that same
 pointer value via `SCI_SETILEXER` (an `sptr_t` message parameter). The
@@ -47,10 +52,9 @@ Python `int` (`uintptr_t`) — callers pass it to whatever binding's
 editor.send(SCI_SETILEXER, 0, lexer.pointer)
 ```
 
-For ergonomics, the optional `lexilla[pyside6-scintilla]` extra adds
-convenience glue that knows about pyside6-scintilla's API directly (e.g. a
-`lexer.set_on(editor)` helper) — this is the only place the two packages are
-allowed to depend on each other.
+For ergonomics, convenience glue that knows about pyside6-scintilla's API
+directly (e.g. a `lexer.set_on(editor)` helper) is also provided — this is
+the only place the two packages are allowed to depend on each other.
 
 ### Scope: minimal first, full API later
 

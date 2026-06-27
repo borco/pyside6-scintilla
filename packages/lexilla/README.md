@@ -25,8 +25,11 @@ published to PyPI yet. See
 Lexilla creates the lexer objects (`ILexer5`) that a Scintilla editor widget
 attaches via `SCI_SETILEXER` — it's a separate, Qt-free C++ library from
 Scintilla itself since Scintilla 5.0. This project exposes that library
-directly to Python, so any Scintilla binding can create and configure lexers,
-not just one tied to a specific Qt/GTK/wx binding — see
+directly to Python. In practice,
+[pyside6-scintilla](https://github.com/borco/pyside6-scintilla) is its only
+consumer; it's kept as a separate package so this binding's release cadence
+and vendored Lexilla version can track upstream Lexilla releases
+independently of pyside6-scintilla's own release cycle — see
 [docs/specs/mission.md](docs/specs/mission.md) for the full background.
 
 ## Goals
@@ -36,8 +39,9 @@ not just one tied to a specific Qt/GTK/wx binding — see
 - **MIT licensed** — usable in open-source or closed-source projects freely
 - A **faithful, low-level binding** of Lexilla's `CreateLexer`/`ILexer5` C++
   API — not a redesign of it
-- **Binding-agnostic** — no dependency on any particular Scintilla binding;
-  the lexer pointer it creates works with any of them via `SCI_SETILEXER`
+- **Vendored and versioned independently of pyside6-scintilla** — exposes
+  the lexer as a raw pointer (`SCI_SETILEXER`-compatible), so this package
+  can track upstream Lexilla releases on its own schedule
 - Available as **pre-built wheels** for Linux (x86_64, aarch64), Windows
   (x86_64), and macOS (arm64, x86_64)
 - **Not affiliated** with the Scintilla/Lexilla project
@@ -48,12 +52,6 @@ Not yet published. Once it is:
 
 ```bash
 pip install lexilla
-```
-
-For convenience glue with [pyside6-scintilla](https://github.com/borco/pyside6-scintilla):
-
-```bash
-pip install lexilla[pyside6-scintilla]
 ```
 
 ## Versioning

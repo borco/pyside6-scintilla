@@ -8,10 +8,11 @@ Read `docs/specs/mission.md` for full background. Key facts:
 A permissively-licensed (MIT) Python binding for
 [Lexilla](https://www.scintilla.org/Lexilla.html), the lexer library used by
 Scintilla since 5.0. Built with nanobind + CMake + scikit-build-core. Lexilla
-itself has no Qt dependency, so this package has none either — it just
-creates `ILexer5` lexer instances that can be handed to *any* Scintilla
-binding via `SCI_SETILEXER`, not only [pyside6-scintilla](https://github.com/borco/pyside6-scintilla)
-(a sibling project, same author).
+itself has no Qt dependency, so this package has none either. It is kept as
+a separate package from [pyside6-scintilla](https://github.com/borco/pyside6-scintilla)
+(a sibling project, same author) — in practice its only consumer — so this
+binding's release cadence and vendored Lexilla version can track upstream
+Lexilla releases independently of pyside6-scintilla's own release cycle.
 
 ## What this is NOT
 
@@ -53,9 +54,9 @@ Linux x86_64/aarch64, Windows x86_64, macOS arm64 + x86_64
   on case-insensitive filesystems
 - Cross-binding integration (e.g. handing a created lexer to
   pyside6-scintilla's `SCI_SETILEXER`) goes through the lexer's raw pointer
-  exposed as a plain `int` by default — zero coupling between packages. The
-  `lexilla[pyside6-scintilla]` extra adds optional convenience glue that
-  imports pyside6-scintilla directly.
+  exposed as a plain `int` by default — zero coupling between packages.
+  Convenience glue that imports pyside6-scintilla directly is also provided
+  for ergonomics.
 
 ## Python style
 

@@ -24,9 +24,11 @@ the cross-binding/wheel-publishing work are not done yet. See
 Lexilla creates the lexer objects (`ILexer5`) that a Scintilla editor widget
 attaches via `SCI_SETILEXER` — it's a separate, Qt-free C++ library from
 Scintilla itself since Scintilla 5.0. This project exposes that library
-directly to Python, so any Scintilla binding (e.g.
-[pyside6-scintilla](https://github.com/borco/pyside6-scintilla)) can use it
-without re-implementing lexer creation itself — see
+directly to Python. In practice,
+[pyside6-scintilla](https://github.com/borco/pyside6-scintilla) is its only
+consumer; it's kept as a separate package so this binding's release cadence
+and vendored Lexilla version can track upstream Lexilla releases
+independently of pyside6-scintilla's own release cycle — see
 [Project mission](specs/mission.md) for the full background.
 
 ## Development

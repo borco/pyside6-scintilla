@@ -39,13 +39,6 @@ classifiers = [
 requires-python = ">=3.11"
 dependencies = []
 
-# Optional convenience glue for handing a created lexer to pyside6-scintilla's
-# SCI_SETILEXER -- the core `lexilla` package itself has no Scintilla-binding
-# dependency, since the lexer pointer it returns works with any binding.
-[project.optional-dependencies]
-pyside6-scintilla = ["pyside6-scintilla>=5.6"]
-
-
 [project.urls]
 Homepage = "https://borco.github.io/lexilla-py/"
 Repository = "https://github.com/borco/lexilla-py"

@@ -1,0 +1,14 @@
+{
+  // MD013 (line-length) is disabled: this project doesn't enforce an 80-col
+  // markdown convention (ruff's line-length = 120 already covers Python),
+  // and several docs have long reference links/tables that wouldn't fit
+  // even at 120 without awkward rewrapping.
+  "config": {
+    "default": true,
+    "MD013": false,
+    // CHANGELOG.md will repeat headings like "Added"/"Fixed" under each
+    // version (the Keep a Changelog convention) -- only flag duplicates
+    // within the same parent section, not across the whole document.
+    "MD024": { "siblings_only": true }
+  }
+}

@@ -5,6 +5,10 @@
   // even at 120 without awkward rewrapping.
   "config": {
     "default": true,
-    "MD013": false
+    "MD013": false,
+    // CHANGELOG.md repeats headings like "Added"/"Fixed" under each version
+    // (the Keep a Changelog convention) -- only flag duplicates within the
+    // same parent section, not across the whole document.
+    "MD024": { "siblings_only": true }
   }
 }

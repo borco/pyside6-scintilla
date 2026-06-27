@@ -110,3 +110,13 @@ issue the board currently shows as "In progress" — if the board has moved on
 
 - Never run `git commit` (or `git push`) unless explicitly told to. Stage
   and present changes for review first.
+- When starting work on a tracked issue, branch off the *current* branch
+  (not always `master`, which may not hold relevant in-progress work) as
+  `issue/NN/short-description` (e.g. `issue/9/bind-named-styles`), and
+  prefix commit subject lines with `ref #NN:` (e.g. `ref #9: Bind
+  NamedStyles/NameOfStyle`), where `NN` is this repo's issue number.
+- These branches merge back with `--no-ff`, preserving their commit
+  history as a group on the parent branch. Before merging, check whether
+  the parent has moved since branching and flag it -- `--no-ff` doesn't
+  replace rebasing onto an advanced parent. Ask before rebasing; don't do
+  it automatically.

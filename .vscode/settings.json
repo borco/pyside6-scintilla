@@ -3,6 +3,7 @@
     "flake8.enabled": false,
 
     "ruff.importStrategy": "fromEnvironment",
+    "claudeCode.respectGitIgnore": false,
 
     "[python]": {
         "editor.defaultFormatter": "charliermarsh.ruff",

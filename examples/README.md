@@ -32,6 +32,16 @@ drop-in replacement for the old, now-archived `bscintillaedit` PyPI
 package's widget of the same name, meant to be copied into your own
 project.
 
+## Autocomplete
+
+### [`autocomplete`](autocomplete/)
+
+`QMainWindow` with a `ScintillaEdit` central widget showing word
+autocompletion from a static keyword list — the pyside6-scintilla equivalent
+of QScintilla's `QsciAPIs` + `setAutoCompletion*` layer, done by driving
+Scintilla's `autoCShow()` from the `charAdded` signal and reacting to
+`autoCompleteSelection`/`autoCompleteCancelled`.
+
 ## Highlighting
 
 ### [`lexilla_highlighting`](highlighting/lexilla_highlighting/)

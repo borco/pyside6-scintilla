@@ -44,6 +44,23 @@ uv run python examples/<example>/main.py
 
 </div>
 
+## Autocomplete
+
+<div class="grid cards" markdown>
+
+-   :material-form-select:{ .lg .middle } __Autocomplete from a keyword list__
+
+    ---
+
+    Word autocompletion in a `ScintillaEdit` from a static keyword list — the
+    equivalent of QScintilla's `QsciAPIs` + `setAutoCompletion*` layer, driving
+    Scintilla's `autoCShow()` from `charAdded` (plus <kbd>Ctrl</kbd>+<kbd>Space</kbd>)
+    and reacting to `autoCompleteSelection`/`autoCompleteCancelled`.
+
+    [:octicons-arrow-right-24: More](autocomplete.md)
+
+</div>
+
 ## Highlighting/Folding
 
 <div class="grid cards" markdown>

@@ -16,6 +16,3 @@ __pycache__/
 /src/pyside6_scintilla/*.so
 /src/pyside6_scintilla/*.dylib
 /src/pyside6_scintilla/*.dll
-
-# ignore continue prompts
-**/continue_prompt*

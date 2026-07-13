@@ -83,9 +83,6 @@ class MainWindow(QMainWindow):
         editor.setMouseSelectionRectangularSwitch(True)
         editor.setMultipleSelection(True)
         editor.setAdditionalSelectionTyping(True)
-        editor.setVirtualSpaceOptions(
-            Scintilla.VirtualSpace.RectangularSelection | Scintilla.VirtualSpace.UserAccessible
-        )
 
     def __setup_toolbar(self) -> None:
         toolbar = QToolBar("Main")

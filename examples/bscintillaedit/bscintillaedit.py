@@ -240,11 +240,6 @@ class BScintillaEdit(QScrollArea):
         self.editor.setMouseSelectionRectangularSwitch(enabled)
         self.editor.setMultipleSelection(enabled)
         self.editor.setAdditionalSelectionTyping(enabled)
-        self.editor.setVirtualSpaceOptions(
-            Scintilla.VirtualSpace.RectangularSelection | Scintilla.VirtualSpace.UserAccessible
-            if enabled
-            else Scintilla.VirtualSpace.None_
-        )
         self.blockEditEnabledChanged.emit(enabled)
 
     def __on_modified(self, _position: int, modificationType: int, *_args: object) -> None:

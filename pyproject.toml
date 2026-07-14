@@ -123,11 +123,11 @@ venv = ".venv"
 
 
 # ---------------------------------------------------------------------------
-# cibuildwheel — wheel builds (Windows x86_64, Linux x86_64; aarch64 follow-up)
+# cibuildwheel — wheel builds (Windows x86_64, Linux x86_64/aarch64, macOS)
 # ---------------------------------------------------------------------------
 
 [tool.cibuildwheel]
-build = "cp31{1,2,3,4}-win_amd64 cp31{1,2,3,4}-manylinux_x86_64 cp31{1,2,3,4}-macosx_arm64 cp31{1,2,3,4}-macosx_x86_64"
+build = "cp31{1,2,3,4}-win_amd64 cp31{1,2,3,4}-manylinux_x86_64 cp31{1,2,3,4}-manylinux_aarch64 cp31{1,2,3,4}-macosx_arm64 cp31{1,2,3,4}-macosx_x86_64"
 test-requires = ["pytest>=8.0", "pytest-mock>=3.14", "pytest-qt>=4.4"]
 
 # test_typing_stubs.py shells out to pyright over the source tree -- a
@@ -179,6 +179,25 @@ test-environment = { QT_QPA_PLATFORM = "offscreen" }
 # Everything else scintilla_qt depends on (notably libQt6Core5Compat.so.6)
 # gets bundled.
 repair-wheel-command = "auditwheel repair -w {dest_dir} --exclude libQt6Core.so.6 --exclude libQt6Gui.so.6 --exclude libQt6Widgets.so.6 --exclude libpyside6.abi3.so.6.11 --exclude libshiboken6.abi3.so.6.11 --exclude libicui18n.so.73 --exclude libicuuc.so.73 --exclude libicudata.so.73 {wheel}"
+
+[[tool.cibuildwheel.overrides]]
+select = "*-manylinux_aarch64"
+# aqtinstall has no "aarch64" arch under its "linux" host (that's x86_64
+# only) - Linux arm64 desktop Qt lives under the separate "linux_arm64" host,
+# arch "linux_gcc_arm64" (verified locally and in ci.yml's ubuntu-24.04-arm
+# job, which installs Qt the same way via jurplel/install-qt-action).
+# Plain aqtinstall 3.3.* (not the patched fork used below for x86_64/
+# Windows) finds Qt 6.11.1 fine for this host - the miurahr/aqtinstall#959
+# listing bug that forces the patched fork elsewhere doesn't reproduce here.
+before-all = "/opt/python/cp313-cp313/bin/pip install 'aqtinstall==3.3.*' && /opt/python/cp313-cp313/bin/python -m aqt install-qt linux_arm64 desktop 6.11.1 linux_gcc_arm64 -m qt5compat -O /opt/qt && dnf install -y mesa-libGL mesa-libEGL libxkbcommon libxkbcommon-x11 fontconfig libxslt clang && RESOURCE_DIR=$(clang -print-resource-dir) && CLANG_DIR=$(dirname $RESOURCE_DIR) && CLANG_VER=$(basename $RESOURCE_DIR) && for v in 18 19 20 21 22 23 24; do [ $v = $CLANG_VER ] || ln -sfn $CLANG_VER $CLANG_DIR/$v; done"
+environment = { CMAKE_PREFIX_PATH = "/opt/qt/6.11.1/gcc_arm64", CLANG_INSTALL_DIR = "/usr" }
+# aqtinstall's prebuilt Qt 6.11.1 arm64 binaries are built on Ubuntu 24.04
+# (glibc 2.39) and won't even run under manylinux_2_34's older glibc
+# ("GLIBC_2.35"/"GLIBCXX_3.4.30 not found", verified locally) - same floor
+# PySide6's own aarch64 wheels adopted from 6.8.1 onward (manylinux_2_31 ->
+# manylinux_2_39). No manylinux_2_39 shorthand exists in cibuildwheel yet,
+# so pin the image directly, by digest for reproducibility.
+manylinux-aarch64-image = "quay.io/pypa/manylinux_2_39_aarch64@sha256:e085d763f3d623238f2c197c53d3afdb74351ae57b6ec271637a901dbf2dcb08"
 
 [tool.cibuildwheel.macos]
 # macOS Intel (macos-13) GitHub Actions runners have very limited availability

@@ -78,8 +78,13 @@ uv build
 
 produces a wheel + sdist in `dist/`, for the current platform only.
 Multi-platform wheels are built in CI by `.github/workflows/wheels.yml` via
-[cibuildwheel](https://cibuildwheel.pypa.io/), covering `cp31{1,2,3,4}` for
-Linux x86_64/aarch64, Windows x86_64, and macOS arm64/x86_64. It's
+[cibuildwheel](https://cibuildwheel.pypa.io/), covering two builds per
+platform -- a version-specific `cp311` wheel, plus a `cp312-abi3` wheel
+that's forward-compatible with 3.13, 3.14, and beyond without a rebuild
+(nanobind's stable-ABI mode needs CPython >=3.12, so 3.11 can't join the
+abi3 wheel -- see `STABLE_ABI` in `src/lexilla/bindings/CMakeLists.txt`) --
+for Linux x86_64/aarch64, Windows x86_64, and macOS arm64/x86_64. 10 wheels
+per release instead of one per Python version per platform. It's
 `workflow_dispatch`-only for manual/ad-hoc builds, and also exposed as a
 reusable `workflow_call` job consumed by `publish.yml`.
 

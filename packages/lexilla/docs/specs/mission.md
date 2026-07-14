@@ -176,3 +176,19 @@ Same scheme as pyside6-scintilla: `<Lexilla version>.<binding revision>`
 (e.g. Lexilla `5.5.0` → package `5.5.0.0`). The binding revision increments
 for releases of this package that don't correspond to a new Lexilla version,
 and resets to `0` when Lexilla itself releases a new version.
+
+### Wheel builds: `cp311` + `cp312-abi3`, not one wheel per Python version
+
+pyside6-scintilla moved to a single `cp311-abi3` wheel per platform (its
+issue #13), since shiboken6's `FORCE_LIMITED_API` can force the stable-ABI
+floor as low as `0x030b0000` (Python 3.11). nanobind's `STABLE_ABI` mode
+can't go that low — it hard-requires CPython >=3.12 (`Py_LIMITED_API`
+fixed to `0x030c0000` in nanobind's own CMake config), so a single wheel
+covering 3.11+ isn't possible here. Since `requires-python = ">=3.11"` and
+3.11 remains in upstream support well past this decision, dropping it
+wasn't worth matching pyside6-scintilla's wheel count exactly: lexilla-py
+instead ships two builds per platform — a version-specific `cp311` wheel,
+plus a `cp312-abi3` wheel forward-compatible with 3.12, 3.13, 3.14, and
+beyond without a rebuild. 10 wheels per release instead of 20, while still
+supporting 3.11. Verified by building once against 3.12 and loading that
+same binary, unmodified, under 3.13 and 3.14.

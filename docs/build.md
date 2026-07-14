@@ -128,11 +128,16 @@ uv build
 produces a wheel + sdist in `dist/`, for the **current platform only**.
 Multi-platform wheels are built in CI by
 `.github/workflows/wheels.yml` via [cibuildwheel](https://cibuildwheel.pypa.io/),
-covering `cp31{1,2,3,4}` for Linux x86_64 (`manylinux_2_34`), Windows x86_64,
-and macOS arm64/x86_64 (the latter cross-built via Rosetta 2 on the
-`macos-latest` runner). It's `workflow_dispatch`-only for manual/ad-hoc builds,
-and also exposed as a reusable `workflow_call` job consumed by
-`publish.yml` (see [Publishing to PyPI](#publishing-to-pypi)).
+covering a single `cp311-abi3` wheel per platform -- Linux x86_64
+(`manylinux_2_34`), Linux aarch64, Windows x86_64, and macOS arm64/x86_64
+(the latter cross-built via Rosetta 2 on the `macos-latest` runner). One
+wheel per platform, not one per Python version, because the extension is
+compiled against Python's limited API (`FORCE_LIMITED_API` in
+`bindings/CMakeLists.txt`, `wheel.py-api = "cp311"` in `pyproject.toml`) --
+the same build works on 3.11+ (forward-compatible with 3.12, 3.13, 3.14,
+and beyond) without a rebuild, same as PySide6's own wheels. It's `workflow_dispatch`-only for manual/ad-hoc builds, and also
+exposed as a reusable `workflow_call` job consumed by `publish.yml` (see
+[Publishing to PyPI](#publishing-to-pypi)).
 
 ### Platform-specific bundling caveats
 

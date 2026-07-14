@@ -54,6 +54,11 @@ Issues = "https://github.com/borco/pyside6-scintilla/issues"
 cmake.build-type = "Release"
 build-dir = "build/{wheel_tag}"
 wheel.packages = ["src/pyside6_scintilla"]
+# The extension is compiled against Python's limited API (FORCE_LIMITED_API
+# in src/pyside6_scintilla/bindings/CMakeLists.txt), so one build against the
+# cp311 stable ABI floor works on 3.11+ without a rebuild -- tag the wheel
+# cp311-abi3 instead of a version-specific cp31x, same as PySide6's own wheels.
+wheel.py-api = "cp311"
 
 # Dev-only example apps; not part of the published sdist/wheel.
 sdist.exclude = ["examples"]
@@ -127,7 +132,10 @@ venv = ".venv"
 # ---------------------------------------------------------------------------
 
 [tool.cibuildwheel]
-build = "cp31{1,2,3,4}-win_amd64 cp31{1,2,3,4}-manylinux_x86_64 cp31{1,2,3,4}-manylinux_aarch64 cp31{1,2,3,4}-macosx_arm64 cp31{1,2,3,4}-macosx_x86_64"
+# One cp311-abi3 wheel per platform (see wheel.py-api above and issue #13),
+# not one per Python version -- the same build works on 3.11+ under the
+# limited API, forward-compatible with 3.12, 3.13, 3.14, and beyond.
+build = "cp311-win_amd64 cp311-manylinux_x86_64 cp311-manylinux_aarch64 cp311-macosx_arm64 cp311-macosx_x86_64"
 test-requires = ["pytest>=8.0", "pytest-mock>=3.14", "pytest-qt>=4.4"]
 
 # test_typing_stubs.py shells out to pyright over the source tree -- a

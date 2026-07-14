@@ -6,6 +6,17 @@ Changelog](https://keepachangelog.com/en/1.0.0/); entries are kept high-level
 (what shipped, breaking changes) rather than a full commit-by-commit log —
 see git history for that.
 
+## [5.6.3.6] - 2026-07-14
+
+### Changed
+
+- A single `cp311-abi3` wheel per platform instead of one per Python
+  version (`cp311`/`cp312`/`cp313`/`cp314`) -- the extension now compiles
+  against Python's limited API (shiboken6's `FORCE_LIMITED_API`), the same
+  approach PySide6's own wheels use. 5 wheels per release instead of 20.
+
+No breaking changes.
+
 ## [5.6.3.5] - 2026-07-14
 
 ### Added

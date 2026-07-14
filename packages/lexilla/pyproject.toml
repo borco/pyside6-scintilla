@@ -141,6 +141,14 @@ manylinux-x86_64-image = "manylinux_2_34"
 # installs via apt on Debian-based runners, here via dnf for the
 # manylinux_2_34/AlmaLinux base image).
 before-test = "dnf install -y mesa-libGL mesa-libEGL libxkbcommon || true"
+# pyside6-scintilla's aarch64 wheel is tagged manylinux_2_38/manylinux_2_39
+# (PySide6's own aarch64 wheels adopted that floor from 6.8.1 onward) --
+# the default aarch64 image's older glibc makes it look incompatible to
+# pip the same way manylinux_2_34 does for x86_64 above, and building from
+# sdist fails the same way too. No manylinux_2_39 shorthand exists in
+# cibuildwheel yet, so pin the image directly, by digest for
+# reproducibility (same image pyside6-scintilla's own wheels.yml uses).
+manylinux-aarch64-image = "quay.io/pypa/manylinux_2_39_aarch64@sha256:e085d763f3d623238f2c197c53d3afdb74351ae57b6ec271637a901dbf2dcb08"
 
 [tool.cibuildwheel.macos]
 archs = ["arm64", "x86_64"]

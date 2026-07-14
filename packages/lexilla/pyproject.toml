@@ -113,9 +113,6 @@ build = "cp31{1,2,3,4}-win_amd64 cp31{1,2,3,4}-manylinux_x86_64 cp31{1,2,3,4}-ma
 test-requires = ["pytest>=8.0", "pytest-qt>=4.4", "pyside6-scintilla>=5.6"]
 test-environment = { QT_QPA_PLATFORM = "offscreen" }
 test-command = "pytest {project}/tests"
-# pyside6-scintilla has no aarch64 wheel yet (borco/pyside6-scintilla#4), so
-# the wheel still builds for manylinux_aarch64, but testing it is skipped.
-test-skip = "*-manylinux_aarch64"
 
 [tool.cibuildwheel.linux]
 # manylinux_2_34 matches pyside6-scintilla's own published wheel tag

@@ -109,13 +109,25 @@ venv = ".venv"
 # ---------------------------------------------------------------------------
 
 [tool.cibuildwheel]
-build = "cp31{1,2,3,4}-win_amd64 cp31{1,2,3,4}-manylinux_x86_64 cp31{1,2,3,4}-manylinux_aarch64 cp31{1,2,3,4}-macosx_arm64 cp31{1,2,3,4}-macosx_x86_64"
+# Two builds per platform instead of one per Python version: cp311 (a
+# regular, version-specific build -- nanobind's stable ABI needs CPython
+# >=3.12, see STABLE_ABI in src/lexilla/bindings/CMakeLists.txt) plus a
+# single cp312-abi3 build that's forward-compatible with 3.13, 3.14, etc.
+# without a rebuild (see the override below). 10 wheels per release instead
+# of 20, while still supporting 3.11 (this project's `requires-python`
+# floor).
+build = "cp311-win_amd64 cp311-manylinux_x86_64 cp311-manylinux_aarch64 cp311-macosx_arm64 cp311-macosx_x86_64 cp312-win_amd64 cp312-manylinux_x86_64 cp312-manylinux_aarch64 cp312-macosx_arm64 cp312-macosx_x86_64"
 test-requires = ["pytest>=8.0", "pytest-qt>=4.4", "pyside6-scintilla>=5.6"]
 test-environment = { QT_QPA_PLATFORM = "offscreen" }
 test-command = "pytest {project}/tests"
-# pyside6-scintilla has no aarch64 wheel yet (borco/pyside6-scintilla#4), so
-# the wheel still builds for manylinux_aarch64, but testing it is skipped.
-test-skip = "*-manylinux_aarch64"
+
+[[tool.cibuildwheel.overrides]]
+# Tags the cp312 build's wheel cp312-abi3 (scikit-build-core's
+# wheel.py-api, set here rather than in [tool.scikit-build] since it must
+# NOT apply to the cp311 build, which isn't abi3). environment merges with
+# (rather than replaces) the platform-specific environment settings below.
+select = "cp312-*"
+environment = { SKBUILD_WHEEL_PY_API = "cp312" }
 
 [tool.cibuildwheel.linux]
 # manylinux_2_34 matches pyside6-scintilla's own published wheel tag

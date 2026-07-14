@@ -6,6 +6,15 @@ Changelog](https://keepachangelog.com/en/1.0.0/); entries are kept high-level
 (what shipped, breaking changes) rather than a full commit-by-commit log —
 see git history for that.
 
+## [5.6.3.5] - 2026-07-14
+
+### Added
+
+- Linux aarch64 wheels, built via cibuildwheel's `manylinux_aarch64` target
+  (Qt installed through aqtinstall's `linux_arm64` host).
+
+No breaking changes.
+
 ## [5.6.3.4] - 2026-06-27
 
 ### Added

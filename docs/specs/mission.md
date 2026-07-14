@@ -116,3 +116,4 @@ release cycle.
 | Vendor Scintilla releases, not git-cinnabar bridge | Simpler, more reproducible, no hg toolchain dependency for contributors |
 | uv for local dev | Fast, modern, handles venvs and tool installs cleanly |
 | cibuildwheel | Industry standard for multi-platform Python native extension wheels |
+| Single `cp311-abi3` wheel per platform, not one per Python version (issue #13) | shiboken6's `FORCE_LIMITED_API` compiles the extension against Python's stable ABI (floor `0x030a0000`), so the same build works on 3.11+ without a rebuild — same pattern PySide6's own wheels use. Verified by building once against 3.11 and running the full test suite unmodified under 3.11-3.14. |

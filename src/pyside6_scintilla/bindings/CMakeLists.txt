@@ -30,6 +30,11 @@ set(GENERATED_SOURCES
     ${CMAKE_CURRENT_BINARY_DIR}/_pyside6_scintilla/_pyside6_scintilla_module_wrapper.cpp
 )
 
+# FORCE_LIMITED_API restricts the compile to Python's stable ABI
+# (-DPy_LIMITED_API=0x030a0000), matching the .abi3 suffix the shiboken6
+# toolchain already gives the extension -- without it, that suffix was
+# misleading (see issue #13): the extension compiled against the full
+# CPython API and one wheel per Python version was actually required.
 shiboken_generator_create_binding(
     EXTENSION_TARGET _pyside6_scintilla
     GENERATED_SOURCES ${GENERATED_SOURCES}
@@ -37,6 +42,7 @@ shiboken_generator_create_binding(
     TYPESYSTEM_FILE ${CMAKE_CURRENT_SOURCE_DIR}/bindings.xml
     LIBRARY_TARGET scintilla_qt
     QT_MODULES Core Gui Widgets
+    FORCE_LIMITED_API
     SHIBOKEN_EXTRA_OPTIONS
         -I${SCINTILLA_DIR}/include
         -I${SCINTILLA_DIR}/src
@@ -50,6 +56,21 @@ if(WIN32)
     # as FindTextA/FindTextW and mangles Scintilla::Message::FindText in the
     # generated wrapper sources.
     target_compile_definitions(_pyside6_scintilla PRIVATE WIN32_LEAN_AND_MEAN)
+else()
+    # GCC/Clang default to exporting every symbol, which leaks shiboken's
+    # internal (non-limited-API) converter helpers -- e.g.
+    # PythonToCppQIntList -- into the extension's dynamic symbol table and
+    # fails cibuildwheel's abi3audit step on Linux, even though the extension
+    # itself only ever needs to export its PyInit_ entry point (CPython's
+    # PyMODINIT_FUNC macro marks that one default-visibility regardless).
+    # shiboken6/PySide6's own libraries build with this same flag (see
+    # ShibokenHelpers.cmake's set_cmake_cxx_flags()); it just isn't applied
+    # automatically to downstream bindings built via
+    # shiboken_generator_create_binding().
+    set_target_properties(_pyside6_scintilla PROPERTIES
+        CXX_VISIBILITY_PRESET hidden
+        VISIBILITY_INLINES_HIDDEN ON
+    )
 endif()
 
 # ScintillaEditBaseFixed/ScintillaEditFixed (see scintilla_signal_fixes.h)

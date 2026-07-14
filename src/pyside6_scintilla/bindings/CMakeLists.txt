@@ -56,6 +56,21 @@ if(WIN32)
     # as FindTextA/FindTextW and mangles Scintilla::Message::FindText in the
     # generated wrapper sources.
     target_compile_definitions(_pyside6_scintilla PRIVATE WIN32_LEAN_AND_MEAN)
+else()
+    # GCC/Clang default to exporting every symbol, which leaks shiboken's
+    # internal (non-limited-API) converter helpers -- e.g.
+    # PythonToCppQIntList -- into the extension's dynamic symbol table and
+    # fails cibuildwheel's abi3audit step on Linux, even though the extension
+    # itself only ever needs to export its PyInit_ entry point (CPython's
+    # PyMODINIT_FUNC macro marks that one default-visibility regardless).
+    # shiboken6/PySide6's own libraries build with this same flag (see
+    # ShibokenHelpers.cmake's set_cmake_cxx_flags()); it just isn't applied
+    # automatically to downstream bindings built via
+    # shiboken_generator_create_binding().
+    set_target_properties(_pyside6_scintilla PROPERTIES
+        CXX_VISIBILITY_PRESET hidden
+        VISIBILITY_INLINES_HIDDEN ON
+    )
 endif()
 
 # ScintillaEditBaseFixed/ScintillaEditFixed (see scintilla_signal_fixes.h)

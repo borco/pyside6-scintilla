@@ -6,6 +6,22 @@ Changelog](https://keepachangelog.com/en/1.0.0/); entries are kept high-level
 (what shipped, breaking changes) rather than a full commit-by-commit log —
 see git history for that.
 
+## [5.6.3.7] - 2026-07-28
+
+### Changed
+
+- Depends on `PySide6-Essentials` instead of the `PySide6` meta-package,
+  which required `PySide6-Addons` as well -- ~175 MB (compressed) of
+  modules these bindings never import, 205 MB unpacked of it a full
+  Chromium in `Qt6WebEngineCore`. Essentials provides the whole `PySide6`
+  import namespace, including `py.typed` and the `.pyi` stubs, so nothing
+  changes for code importing `PySide6.QtCore`/`QtGui`/`QtWidgets`.
+
+Not breaking for this library's own API, but a fresh install no longer
+brings Qt WebEngine, Qt3D, QtCharts and the other add-ons along with it:
+if your code imports one of those, depend on `PySide6` or
+`PySide6-Addons` explicitly.
+
 ## [5.6.3.6] - 2026-07-14
 
 ### Changed

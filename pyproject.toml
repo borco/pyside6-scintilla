@@ -3,7 +3,11 @@ requires = [
     "scikit-build-core>=0.10",
     "shiboken6-generator",
     "shiboken6",
-    "PySide6>=6.10",
+    # Essentials, not the PySide6 meta-package: everything the build reads
+    # from the wheel -- PySide6/lib/cmake/PySide6 (find_package), the
+    # typesystems/ and glue/ for Core/Gui/Widgets, and libpyside6 itself --
+    # ships in Essentials. See [project].dependencies below (issue #14).
+    "PySide6-Essentials>=6.10",
 ]
 build-backend = "scikit_build_core.build"
 
@@ -39,8 +43,17 @@ classifiers = [
     "Topic :: Text Editors",
 ]
 requires-python = ">=3.11"
+# `PySide6` is a meta-package requiring both PySide6-Essentials and
+# PySide6-Addons; depending on it would make every install of this library
+# pull ~175 MB (compressed) of Addons -- 205 MB of it a full Chromium in
+# Qt6WebEngineCore -- that these bindings never touch. Only QtCore, QtGui and
+# QtWidgets are used (CMakeLists.txt asks for exactly those plus Core5Compat,
+# and Core5Compat is vendored into the repaired wheel, not taken from either
+# PySide6 wheel), and Essentials provides the whole `PySide6` import namespace
+# including `py.typed` and the .pyi stubs. Anyone wanting an add-on module can
+# depend on `PySide6`/`PySide6-Addons` explicitly. See issue #14.
 dependencies = [
-    "PySide6>=6.10",
+    "PySide6-Essentials>=6.10",
 ]
 
 
@@ -156,8 +169,8 @@ repair-wheel-command = "delvewheel repair -w {dest_dir} -v --ignore-existing --e
 
 [tool.cibuildwheel.linux]
 # manylinux_2_34 matches PySide6 6.11.1's own wheel tag
-# (manylinux_2_34_x86_64), so `pip install PySide6` inside the build container
-# resolves to a compatible wheel.
+# (manylinux_2_34_x86_64), so installing PySide6-Essentials inside the build
+# container resolves to a compatible wheel.
 manylinux-x86_64-image = "manylinux_2_34"
 # The manylinux image has no Qt SDK, so install one via aqtinstall (pure
 # Python, works with the container's system Python) plus the runtime

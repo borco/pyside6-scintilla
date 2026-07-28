@@ -50,8 +50,11 @@ Install from [PyPI](https://pypi.org/project/pyside6-scintilla/):
 pip install pyside6-scintilla
 ```
 
-PySide6 6.10+ is installed automatically as a dependency; the wheels bundle
-everything else `ScintillaEditBase` needs at runtime.
+`PySide6-Essentials` 6.10+ is installed automatically as a dependency; the
+wheels bundle everything else `ScintillaEditBase` needs at runtime. Essentials
+provides the whole `PySide6` import namespace — only `QtCore`, `QtGui` and
+`QtWidgets` are used here, so the ~175 MB of `PySide6-Addons` (Qt WebEngine,
+Qt3D, QtCharts …) is left out. Install `PySide6` yourself if you want them.
 <!-- /sync:installation -->
 
 To build from source instead (e.g. for development), see

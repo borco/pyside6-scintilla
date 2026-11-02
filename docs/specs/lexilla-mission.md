@@ -1,4 +1,4 @@
-# Project mission
+# lexilla: project mission
 
 ## Background
 
@@ -8,9 +8,9 @@ Scintilla 5.0, lexers were split out of Scintilla itself into Lexilla — a
 separate, Qt-free C++ library that creates `ILexer5` lexer objects by name
 (`CreateLexer`) and hands them to a Scintilla editor via `SCI_SETILEXER`.
 
-This project ([lexilla-py](https://github.com/borco/lexilla-py), PyPI package
+This project ([lexilla-py](https://github.com/borco/scintilla-py/tree/master/packages/lexilla), PyPI package
 `lexilla`) is a permissively-licensed Python binding for that library. It is
-a sibling to [pyside6-scintilla](https://github.com/borco/pyside6-scintilla)
+a sibling to [pyside6-scintilla](https://github.com/borco/scintilla-py)
 (same author) — a PySide6 binding for `ScintillaEditBase` — but is kept as a
 separate package: in practice, pyside6-scintilla is the only realistic
 consumer (no other software is expected to implement `ILexer5`, and Python
@@ -138,7 +138,7 @@ Because the generated enums are derived from whatever Lexilla version is
 currently vendored, they go stale silently at compile time (a `static_cast`
 always succeeds) but loudly at the Python boundary (nanobind raises if
 `GetIdentifier()` ever returns a value with no matching enum member) — see
-[auditing.md](../auditing.md)'s re-vendoring checklist for the regeneration
+[auditing.md](../lexilla/auditing.md)'s re-vendoring checklist for the regeneration
 step this requires.
 
 ### `ILexer5`'s declaration: vendor Scintilla's interface headers, not all of Scintilla
@@ -153,11 +153,16 @@ own vendored `include/SciLexer.h`, no extra vendoring needed for those).
 Vendoring all of Scintilla just for these interface/constant headers would reintroduce
 the dependency this project deliberately avoids (see "What this is NOT").
 Instead, only those headers are vendored, unmodified, under
-`src/scintilla_interface/include/` — see [auditing.md](../auditing.md) for
+`src/scintilla_interface/include/` — see [auditing.md](../lexilla/auditing.md) for
 the version/checksum table and the process
 for keeping them in sync with the vendored Lexilla version when it updates.
 
 ### Naming: `lexilla-py` repo, `lexilla` package, `src/lexilla_vendor/` for vendored source
+
+> [!NOTE]
+> Superseded for the repo name: lexilla-py was merged into the
+> `scintilla-py` monorepo (issue #19), as `packages/lexilla/`. The package
+> name and `src/lexilla_vendor/` are unchanged.
 
 The GitHub repo is `lexilla-py` rather than `lexilla` so that vendoring
 Lexilla's own upstream source never collides with the repo's own checkout
@@ -178,6 +183,12 @@ for releases of this package that don't correspond to a new Lexilla version,
 and resets to `0` when Lexilla itself releases a new version.
 
 ### Wheel builds: `cp311` + `cp312-abi3`, not one wheel per Python version
+
+> [!NOTE]
+> Superseded with the move into the monorepo (issue #19): lexilla now
+> requires Python 3.12 and ships a single `cp312-abi3` wheel per platform.
+> The separate `cp311` build doubled the wheel count for one Python version;
+> lexilla 5.5.0.1 remains available for 3.11.
 
 pyside6-scintilla moved to a single `cp311-abi3` wheel per platform (its
 issue #13), since shiboken6's `FORCE_LIMITED_API` can force the stable-ABI

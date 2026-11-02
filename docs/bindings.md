@@ -1,5 +1,9 @@
 # The shiboken6 bindings
 
+> [!NOTE]
+> Paths on this page are relative to `packages/pyside6-scintilla/`, except
+> repo-level ones (`docs/`, `tools/`, `.github/`, `examples/`).
+
 How `_pyside6_scintilla` is built, what shiboken generates, problems
 encountered while wrapping `ScintillaEditBase` (Phase 1), and how to update
 everything when a new Scintilla release is vendored.
@@ -309,7 +313,7 @@ in by `tools/generate_pyi.py`), e.g. `addText`: *"Sends `SCI_ADDTEXT`. No
 
 `tools/generate_scintilla_edit.py` generates `ScintillaEditFixed` from
 `Scintilla.iface`, with a small classification table (bytes vs. text vs.
-UTF-8-only messages); `make generate` regenerates it and CI checks the
+UTF-8-only messages); `make scintilla-generate` regenerates it and CI checks the
 checked-in copy is current. `ScintillaEditBaseFixed` replaces the vendored
 `send`/`sends` (removed in `bindings.xml`) with `qint64`/`quint64`-typed,
 non-virtual versions plus `sendr`: shiboken's signature support doesn't know
@@ -330,8 +334,8 @@ directly improves the local dev/IDE experience (e.g. for
 `wheel.packages` for published wheels, without adding a PySide6-importing
 step to the CMake/CI build.
 
-Regenerate it with `make stubs` (`tools/generate_pyi.py`) after rebuilding
-the extension (`make install` or `uv sync --reinstall-package
+Regenerate it with `make scintilla-stubs` (`tools/generate_pyi.py`) after rebuilding
+the extension (`make scintilla-install` or `uv sync --reinstall-package
 pyside6-scintilla`), and whenever `bindings.xml`/`bindings.h` change the
 public API surface. The script:
 
@@ -430,7 +434,7 @@ When vendoring a new release tarball:
    `<enum-type>`, or `<value-type>` entries to `bindings.xml` -- this is
    iterative: run the build, read the shiboken error naming the missing type,
    add the minimal entry, repeat.
-4. Run `make generate` (`tools/generate_scintilla_edit.py`) to regenerate
+4. Run `make scintilla-generate` (`tools/generate_scintilla_edit.py`) to regenerate
    `ScintillaEditFixed` from the new `Scintilla.iface`. Review new
    string-carrying messages (`string`/`stringresult`/`cells` parameters) in
    the diff: raw data (style bytes, images) belongs in the generator's

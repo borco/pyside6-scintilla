@@ -1,6 +1,10 @@
 # Documenting
 
-How this docs site (<https://borco.github.io/pyside6-scintilla/>) is built,
+> [!NOTE]
+> Paths on this page are relative to `packages/pyside6-scintilla/`, except
+> repo-level ones (`docs/`, `tools/`, `.github/`, `examples/`).
+
+How this docs site (<https://borco.github.io/scintilla-py/>) is built,
 and how to add or update a page.
 
 ## Overview
@@ -28,7 +32,7 @@ base path applies locally too).
 4. Before committing, run `uv run --group docs mkdocs build --strict` --
    this fails on broken internal links/anchors and missing nav entries,
    which is most of what goes wrong.
-5. If the page touches content shared with [`README.md`](https://github.com/borco/pyside6-scintilla/blob/master/README.md) (currently the
+5. If the page touches content shared with [`README.md`](https://github.com/borco/scintilla-py/blob/master/packages/pyside6-scintilla/README.md) (currently the
    header badges, install snippet, and usage example on [`docs/index.md`](index.md)),
    keep the `<!-- sync:NAME -->`/`<!-- /sync:NAME -->` blocks in both files
    identical -- `tools/check_docs_sync.py` (run via `make lint` and CI)
@@ -156,11 +160,11 @@ a `::: pyside6_scintilla.<name>` block and list it in `mkdocs.yml`'s `nav:`.
 If it needs per-member docstrings that don't exist yet, see
 `tools/generate_pyi.py` (`add_enum_docstrings()`/`add_method_docstrings()` and
 the various `*_DOCS` dicts) and [`docs/bindings.md`](bindings.md)'s "Type stubs" section --
-after changing it, regenerate with `make stubs` and re-check `docs/reference/`.
+after changing it, regenerate with `make scintilla-stubs` and re-check `docs/reference/`.
 
 ## Keeping docs and code in sync
 
 - `tools/check_docs_sync.py` (via `make lint`) checks the `<!-- sync:NAME -->`
-  blocks shared between [`README.md`](https://github.com/borco/pyside6-scintilla/blob/master/README.md) and [`docs/index.md`](index.md).
+  blocks shared between [`README.md`](https://github.com/borco/scintilla-py/blob/master/packages/pyside6-scintilla/README.md) and [`docs/index.md`](index.md).
 - `mkdocs build --strict` (via `docs.yml`) fails on broken links/anchors and
   missing nav entries -- run it locally before pushing any docs change.

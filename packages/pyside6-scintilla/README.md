@@ -1,20 +1,20 @@
 <!-- sync:header -->
 # pyside6-scintilla
 
-[![CI](https://github.com/borco/pyside6-scintilla/actions/workflows/ci.yml/badge.svg)](https://github.com/borco/pyside6-scintilla/actions/workflows/ci.yml)
+[![CI](https://github.com/borco/scintilla-py/actions/workflows/ci.yml/badge.svg)](https://github.com/borco/scintilla-py/actions/workflows/ci.yml)
 [![PyPI](https://img.shields.io/pypi/v/pyside6-scintilla)](https://pypi.org/project/pyside6-scintilla/)
 [![Downloads](https://static.pepy.tech/badge/pyside6-scintilla)](https://pepy.tech/project/pyside6-scintilla)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://github.com/borco/pyside6-scintilla/blob/master/LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://github.com/borco/scintilla-py/blob/master/LICENSE)
 [![Python versions](https://img.shields.io/pypi/pyversions/pyside6-scintilla)](https://pypi.org/project/pyside6-scintilla/)
 
 *Permissively-licensed PySide6 bindings for the [Scintilla](https://www.scintilla.org/) code editor component.*
 
-[View on PyPI](https://pypi.org/project/pyside6-scintilla/) · [View on GitHub](https://github.com/borco/pyside6-scintilla)
+[View on PyPI](https://pypi.org/project/pyside6-scintilla/) · [View on GitHub](https://github.com/borco/scintilla-py)
 <!-- /sync:header -->
 
 ## Status
 
-See [GitHub Issues](https://github.com/borco/pyside6-scintilla/issues) for
+See [GitHub Issues](https://github.com/borco/scintilla-py/issues) for
 what's done and what's next.
 
 ## Why this exists
@@ -62,7 +62,7 @@ Qt3D, QtCharts …) is left out. Install `PySide6` yourself if you want them.
 <!-- /sync:installation -->
 
 To build from source instead (e.g. for development), see
-[docs/build.md](https://github.com/borco/pyside6-scintilla/blob/master/docs/build.md)
+[docs/build.md](https://github.com/borco/scintilla-py/blob/master/docs/build.md)
 for prerequisites (Qt 6.11 with `Qt6Core5Compat`, a C++17 compiler) and
 platform-specific setup.
 
@@ -89,10 +89,10 @@ app.exec()
 `setText()`, `textLength()`, `gotoLine()`) on top of `ScintillaEditBase`'s
 raw `.send()`/`.sends()` message API — the same `SCI_*` messages as the C
 interface, not a QScintilla-style high-level API. See
-[examples/simple_scintilla_edit/](https://github.com/borco/pyside6-scintilla/tree/master/examples/simple_scintilla_edit/)
+[examples/simple_scintilla_edit/](https://github.com/borco/scintilla-py/tree/master/examples/simple_scintilla_edit/)
 for a complete example (line-number margin, "Go to Line", block
 selection/editing), or
-[examples/simple_scintilla_base_edit/](https://github.com/borco/pyside6-scintilla/tree/master/examples/simple_scintilla_base_edit/)
+[examples/simple_scintilla_base_edit/](https://github.com/borco/scintilla-py/tree/master/examples/simple_scintilla_base_edit/)
 for the lower-level `send`/`sends` API.
 
 ## Versioning
@@ -105,34 +105,39 @@ itself releases a new version.
 
 ## Documentation
 
+Full docs: <https://borco.github.io/scintilla-py/>. pyside6-scintilla lives in
+the [scintilla-py](https://github.com/borco/scintilla-py) repo, next to
+[lexilla](https://github.com/borco/scintilla-py/tree/master/packages/lexilla), under
+[`packages/pyside6-scintilla/`](https://github.com/borco/scintilla-py/tree/master/packages/pyside6-scintilla).
+
 | Doc | Contents |
 | --- | --- |
-| [docs/alternatives.md](https://github.com/borco/pyside6-scintilla/blob/master/docs/alternatives.md) | How this compares to Monaco-based Qt bindings and other line-numbers + block-edit widgets |
-| [docs/auditing.md](https://github.com/borco/pyside6-scintilla/blob/master/docs/auditing.md) | How to verify the vendored Scintilla source matches upstream |
-| [docs/bindings.md](https://github.com/borco/pyside6-scintilla/blob/master/docs/bindings.md) | How the shiboken6 bindings are built, generated files, and the Scintilla-update procedure |
-| [docs/build.md](https://github.com/borco/pyside6-scintilla/blob/master/docs/build.md) | Build prerequisites, local build/rebuild, wheels, and publishing |
-| [docs/documenting.md](https://github.com/borco/pyside6-scintilla/blob/master/docs/documenting.md) | How the docs site is built, and how to add or update a page |
-| [docs/specs/](https://github.com/borco/pyside6-scintilla/tree/master/docs/specs/) | Design specifications and action plans for in-progress and planned work |
-| [docs/specs/mission.md](https://github.com/borco/pyside6-scintilla/blob/master/docs/specs/mission.md) | Project background, goals, and design decisions |
-| [docs/testpypi.md](https://github.com/borco/pyside6-scintilla/blob/master/docs/testpypi.md) | Setting up TestPyPI trusted publishing |
-| [examples/](https://github.com/borco/pyside6-scintilla/tree/master/examples) | Standalone example apps, including ones showing [lexilla-py](https://github.com/borco/lexilla-py) in use |
-| [GitHub Issues](https://github.com/borco/pyside6-scintilla/issues) | Planned and in-progress work |
-| [Project board](https://github.com/users/borco/projects/3) | Joint roadmap for `pyside6-scintilla` and [lexilla-py](https://github.com/borco/lexilla-py); issues/PRs from both repos are auto-added |
+| [docs/alternatives.md](https://github.com/borco/scintilla-py/blob/master/docs/alternatives.md) | How this compares to Monaco-based Qt bindings and other line-numbers + block-edit widgets |
+| [docs/auditing.md](https://github.com/borco/scintilla-py/blob/master/docs/auditing.md) | How to verify the vendored Scintilla source matches upstream |
+| [docs/bindings.md](https://github.com/borco/scintilla-py/blob/master/docs/bindings.md) | How the shiboken6 bindings are built, generated files, and the Scintilla-update procedure |
+| [docs/build.md](https://github.com/borco/scintilla-py/blob/master/docs/build.md) | Build prerequisites, local build/rebuild, wheels, and publishing |
+| [docs/documenting.md](https://github.com/borco/scintilla-py/blob/master/docs/documenting.md) | How the docs site is built, and how to add or update a page |
+| [docs/specs/](https://github.com/borco/scintilla-py/tree/master/docs/specs/) | Design specifications and action plans for in-progress and planned work |
+| [docs/specs/mission.md](https://github.com/borco/scintilla-py/blob/master/docs/specs/mission.md) | Project background, goals, and design decisions |
+| [docs/testpypi.md](https://github.com/borco/scintilla-py/blob/master/docs/testpypi.md) | Setting up TestPyPI trusted publishing |
+| [examples/](https://github.com/borco/scintilla-py/tree/master/examples) | Standalone example apps, including ones showing [lexilla](https://github.com/borco/scintilla-py/tree/master/packages/lexilla) in use |
+| [GitHub Issues](https://github.com/borco/scintilla-py/issues) | Planned and in-progress work |
+| [Project board](https://github.com/users/borco/projects/3) | Roadmap |
 
 ## Development tools
 
-[tools/](https://github.com/borco/pyside6-scintilla/tree/master/tools) holds
-development scripts, run with `uv run python tools/<script>.py`:
+Development scripts, run with `uv run python <path>` from the repo root (or
+via the top-level `Makefile`):
 
 | Script | Purpose |
 | --- | --- |
-| [generate_scintilla_edit.py](https://github.com/borco/pyside6-scintilla/blob/master/tools/generate_scintilla_edit.py) | Generates the typed `ScintillaEdit` class from `Scintilla.iface` |
-| [generate_pyi.py](https://github.com/borco/pyside6-scintilla/blob/master/tools/generate_pyi.py) | Regenerates the `.pyi` type stub for `_pyside6_scintilla` |
-| [check_docs_sync.py](https://github.com/borco/pyside6-scintilla/blob/master/tools/check_docs_sync.py) | Verifies shared content blocks stay in sync between `README.md` and `docs/index.md` |
-| [clean_window_corners.py](https://github.com/borco/pyside6-scintilla/blob/master/tools/clean_window_corners.py) | One-off cleanup for Windows window screenshots used in docs |
+| [generate_scintilla_edit.py](https://github.com/borco/scintilla-py/blob/master/packages/pyside6-scintilla/tools/generate_scintilla_edit.py) | Generates the typed `ScintillaEdit` class from `Scintilla.iface` (`make scintilla-generate`) |
+| [generate_pyi.py](https://github.com/borco/scintilla-py/blob/master/packages/pyside6-scintilla/tools/generate_pyi.py) | Regenerates the `.pyi` type stub for `_pyside6_scintilla` (`make scintilla-stubs`) |
+| [check_docs_sync.py](https://github.com/borco/scintilla-py/blob/master/tools/check_docs_sync.py) | Verifies shared content blocks stay in sync between each package's README and its docs page |
+| [clean_window_corners.py](https://github.com/borco/scintilla-py/blob/master/tools/clean_window_corners.py) | One-off cleanup for Windows window screenshots used in docs |
 
 ## License
 
 - `src/scintilla/` — [HPND License](https://www.scintilla.org/License.txt)
   (Scintilla, copyright Neil Hodgson)
-- Everything else — [MIT License](https://github.com/borco/pyside6-scintilla/blob/master/LICENSE)
+- Everything else — [MIT License](https://github.com/borco/scintilla-py/blob/master/LICENSE)

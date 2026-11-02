@@ -8,7 +8,7 @@ slots) and `clear()` — with the same out-of-the-box defaults (LF line
 endings, hidden symbol margin, styled line-number margin, "↩" end-of-line
 glyph).
 
-Source / docs: https://borco.github.io/pyside6-scintilla/examples/bscintillaedit/
+Source / docs: https://borco.github.io/scintilla-py/examples/bscintillaedit/
 
 Porting from the old `bscintillaedit` package
 ----------------------------------------------

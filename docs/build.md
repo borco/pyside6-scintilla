@@ -1,13 +1,27 @@
 # Building and publishing
 
+This repo is a [uv workspace](https://docs.astral.sh/uv/concepts/projects/workspaces/)
+with two packages, each released to PyPI on its own:
+
+| Package | Directory | Binding | Needs a Qt SDK to build |
+| --- | --- | --- | --- |
+| `pyside6-scintilla` | `packages/pyside6-scintilla/` | shiboken6 | yes |
+| `lexilla` | `packages/lexilla/` | nanobind | no |
+
+The dev environment (`.venv` at the repo root) builds **both** from source,
+so the prerequisites below are pyside6-scintilla's. lexilla-specific notes:
+[Lexilla build notes](lexilla/build.md).
+
 ## Prerequisites
 
-- Python 3.11+ and [uv](https://docs.astral.sh/uv/)
-- Qt 6.11.x, the PySide6/shiboken6 minor pinned in `pyproject.toml` (the
-  SDK must match the minor the extension links against; patch releases are
-  interchangeable), **including the Qt 5 Compatibility module
-  (`Qt6Core5Compat`)** -- not installed by default, add it via the Qt
-  Maintenance Tool/online installer for your kit.
+- Python 3.12+ (the workspace's floor -- lexilla needs 3.12; pyside6-scintilla
+  itself supports 3.11) and [uv](https://docs.astral.sh/uv/)
+- Qt 6.11.x, the PySide6/shiboken6 minor pinned in
+  `packages/pyside6-scintilla/pyproject.toml` (the SDK must match the minor
+  the extension links against; patch releases are interchangeable),
+  **including the Qt 5 Compatibility module (`Qt6Core5Compat`)** -- not
+  installed by default, add it via the Qt Maintenance Tool/online installer
+  for your kit.
 - A C++17 compiler:
   - **Windows**: MSVC (Visual Studio 2022). Use the same MSVC toolchain
     PySide6's wheels are built with, to avoid ABI mismatches against the
@@ -29,8 +43,8 @@
 
 ## Local development build
 
-The build is driven by `uv sync` (scikit-build-core + CMake +
-`shiboken_generator_create_binding()`). CMake needs `CMAKE_PREFIX_PATH`
+From the repo root, `uv sync` builds both packages (editable) plus the dev
+tools into `.venv`. pyside6-scintilla's CMake needs `CMAKE_PREFIX_PATH`
 pointing at your Qt 6 installation:
 
 ```powershell
@@ -58,29 +72,35 @@ uv sync
 > Restart your terminal (or VS Code) afterward -- the new value only applies
 > to terminals opened after it's set.
 
+The packages depend on each other only for development -- lexilla's glue
+module and tests use pyside6-scintilla, pyside6-scintilla's lexilla example
+uses lexilla -- and always as workspace sources (`[tool.uv.sources]` in the
+root `pyproject.toml`), never the PyPI copies.
+
 ### Forcing a rebuild
 
-`uv sync` doesn't always notice changes to `CMakeLists.txt` or the typesystem
-files -- it may print "Checked N packages" without rebuilding. Force a
-rebuild + reinstall with:
+`uv sync` doesn't always notice changes to `CMakeLists.txt`, the typesystem
+files or the binding sources -- it may print "Checked N packages" without
+rebuilding. Force a rebuild + reinstall of one package with:
 
 ```bash
-uv sync --reinstall-package pyside6-scintilla
+uv sync --reinstall-package pyside6-scintilla   # or lexilla
 ```
 
-### Faster C++/binding-only iteration
+### Faster C++/binding-only iteration (pyside6-scintilla)
 
 For changes to `CMakeLists.txt`, `bindings.xml`, or the binding glue, `uv
-sync --reinstall-package` does a clean, isolated rebuild every time. The
-`configure`/`build`/`install` Make targets are faster for repeated
-iteration: they reuse an incremental CMake build tree (`build/venv/`) and,
-via the `venv` preset's `CMAKE_INSTALL_PREFIX`, drop the rebuilt extension
-and shared libs directly into `src/pyside6_scintilla/`, where `import
+sync --reinstall-package` does a clean rebuild every time. The
+`scintilla-configure`/`-build`/`-install` Make targets are faster for repeated
+iteration: they reuse an incremental CMake build tree
+(`packages/pyside6-scintilla/build/venv/`) and, via the `venv` preset's
+`CMAKE_INSTALL_PREFIX`, drop the rebuilt extension and shared libs directly
+into `packages/pyside6-scintilla/src/pyside6_scintilla/`, where `import
 pyside6_scintilla` picks them up immediately.
 
 ```bash
-make configure   # once, to set up build/venv/
-make install      # rebuild + drop the extension into src/pyside6_scintilla/
+make scintilla-configure   # once, to set up the build tree
+make scintilla-install     # rebuild + drop the extension into src/
 ```
 
 **Windows**: the `venv` preset uses the Ninja generator, which needs
@@ -92,87 +112,80 @@ locates MSVC itself.
 ### Verifying the build
 
 ```bash
-uv run python -c "from pyside6_scintilla import Scintilla, ScintillaEditBase; print(Scintilla.Message.SetText)"
-uv run pytest
-uv run ruff check .
-uv run pyright
+make test   # both packages' tests (uv run pytest)
+make lint   # ruff, docs/header/generator sync checks, pyright
 ```
 
-or, via the `Makefile`:
-
-```bash
-make setup
-make test
-make lint
-```
+`make` lists the per-package targets (`scintilla-*`, `lexilla-*`); see the
+top-level `Makefile`.
 
 ## Continuous integration
 
 `.github/workflows/ci.yml` runs on every push and on pull requests targeting
-`master`, across `ubuntu-latest`, `windows-latest`, and `ubuntu-24.04-arm`
-(Linux x86_64/aarch64 + Windows x86_64). Each job:
+`master`, across Ubuntu 24.04 x86_64/aarch64, Windows and macOS. Each job:
 
-1. Installs Qt **6.11.1** plus the `Qt6Core5Compat` module via
+1. Sets up the toolchain with `.github/actions/setup`: Qt **6.11.1** plus
+   `Qt6Core5Compat` via
    [`jurplel/install-qt-action`](https://github.com/jurplel/install-qt-action)
-   -- matching the PySide6 6.11.1 pinned in `uv.lock`, since CI and local
-   builds must use the same Qt minor version to avoid ABI mismatches (see
-   [Prerequisites](#prerequisites) above).
-2. Points `CMAKE_PREFIX_PATH` at that Qt install, and on Linux also sets
-   `LD_LIBRARY_PATH` so `scintilla_qt.so` can find `libQt6Core5Compat.so.6` at
-   runtime (see [bindings.md](bindings.md) issue 3).
-3. Runs `uv sync`, `uv run pytest` (with `QT_QPA_PLATFORM=offscreen` for a
-   headless `pytest-qt`), and `uv run ruff check .` / `ruff format --check .`
-   / `uv run pyright` -- the same commands as
-   [Verifying the build](#verifying-the-build) above.
+   (the one place CI names the Qt version), `CMAKE_PREFIX_PATH` (and, on
+   Linux, `LD_LIBRARY_PATH` so `scintilla_qt.so` can find
+   `libQt6Core5Compat.so.6` at runtime -- see [bindings.md](bindings.md)
+   issue 3), clang on Linux, then `uv sync` (both packages).
+2. Runs both packages' tests (with `QT_QPA_PLATFORM=offscreen` for a
+   headless `pytest-qt`) and the same checks as `make lint`.
 
-CI doesn't run the example app, and only builds the dev install (not wheels)
--- see [Building wheels](#building-wheels) below for the wheel-building
-workflow.
+The Ubuntu 24.04 job also builds both wheels; the `runtime` job installs them
+on Ubuntu 26.04 with Python 3.14 and runs both test suites against them.
 
 ## Building wheels
 
 ```bash
-uv build
+uv build --package pyside6-scintilla   # or lexilla
 ```
 
 produces a wheel + sdist in `dist/`, for the **current platform only**.
-Multi-platform wheels are built in CI by
-`.github/workflows/wheels.yml` via [cibuildwheel](https://cibuildwheel.pypa.io/),
-covering a single `cp311-abi3` wheel per platform -- Linux x86_64
-(`manylinux_2_34`), Linux aarch64, Windows x86_64, and macOS arm64/x86_64
-(the latter cross-built via Rosetta 2 on the `macos-latest` runner). One
-wheel per platform, not one per Python version, because the extension is
-compiled against Python's limited API (`FORCE_LIMITED_API` in
-`bindings/CMakeLists.txt`, `wheel.py-api = "cp311"` in `pyproject.toml`) --
-the same build works on 3.11+ (forward-compatible with 3.12, 3.13, 3.14,
-and beyond) without a rebuild, same as PySide6's own wheels. It's `workflow_dispatch`-only for manual/ad-hoc builds, and also
-exposed as a reusable `workflow_call` job consumed by `publish.yml` (see
-[Publishing to PyPI](#publishing-to-pypi)).
+Multi-platform wheels are built in CI by `.github/workflows/wheels.yml` via
+[cibuildwheel](https://cibuildwheel.pypa.io/), one package at a time
+(`package-dir: packages/<name>`), each with its own `[tool.cibuildwheel]`
+config in its `pyproject.toml`:
 
-### Platform-specific bundling caveats
+- **pyside6-scintilla**: a single `cp311-abi3` wheel per platform -- Linux
+  x86_64 (`manylinux_2_34`), Linux aarch64, Windows x86_64, and macOS
+  arm64/x86_64 (the latter cross-built via Rosetta 2 on the `macos-latest`
+  runner). One wheel per platform, not one per Python version, because the
+  extension is compiled against Python's limited API (`FORCE_LIMITED_API` in
+  `bindings/CMakeLists.txt`, `wheel.py-api = "cp311"`), same as PySide6's own
+  wheels.
+- **lexilla**: a single `cp312-abi3` wheel per platform, for the same reason
+  (nanobind's stable ABI needs CPython 3.12). Its wheel tests need
+  pyside6-scintilla, so `wheels.yml` always builds pyside6-scintilla's wheels
+  first and lexilla's tests install those
+  (`packages/lexilla/tools/install_pyside6_scintilla.py`), not PyPI's.
+
+`wheels.yml` is `workflow_dispatch`-able for ad-hoc builds and is the
+reusable job `publish.yml` calls.
+
+### Platform-specific bundling caveats (pyside6-scintilla)
 
 `Qt6Core5Compat` is required by `scintilla_qt` but isn't bundled in the
 PySide6 wheel on any platform. `bindings/CMakeLists.txt` installs it
 alongside the extension for all three platforms (a flat `.dll`/`.so` on
 Windows/Linux, a framework bundle on macOS), and each platform's
-`repair-wheel-command` in `pyproject.toml`
-(`delvewheel`/`auditwheel`/`delocate`) excludes the Qt/PySide6/shiboken6
-libraries provided at runtime by the installed PySide6 package. See
-[bindings.md](bindings.md) issue 3 for the details and history.
+`repair-wheel-command` (`delvewheel`/`auditwheel`/`delocate`) excludes the
+Qt/PySide6/shiboken6 libraries provided at runtime by the installed PySide6
+package. See [bindings.md](bindings.md) issue 3 for the details and history.
 
 ## Bumping the PySide6 minor
 
-Each release is built for one PySide6 minor (issue #15): shiboken6/PySide6's
-C++ ABI changes between minors, so a wheel built against 6.11 fails to import
-with 6.12. Moving to a new minor (`6.X`) means a new release with all of
-these updated together -- there is no single source of truth yet (the
-monorepo's shared CI setup action will hold the Qt version), so check each:
+Each pyside6-scintilla release is built for one PySide6 minor (issue #15):
+shiboken6/PySide6's C++ ABI changes between minors, so a wheel built against
+6.11 fails to import with 6.12. Moving to a new minor (`6.X`) means a new
+release with all of these updated together:
 
-1. `pyproject.toml`
+1. `packages/pyside6-scintilla/pyproject.toml`
    - `[build-system].requires`: `shiboken6-generator`, `shiboken6`,
      `PySide6-Essentials` -> `>=6.X,<6.(X+1)`.
    - `[project].dependencies`: `PySide6-Essentials`, `shiboken6` -> same.
-   - `[dependency-groups].dev`: `shiboken6-generator` -> same.
    - `[tool.cibuildwheel]`: the Qt version in every `before-all` (aqtinstall)
      and `CMAKE_PREFIX_PATH` (Linux x86_64, Linux aarch64, macOS); the
      manylinux image if PySide6's own wheel tag moved; the macOS
@@ -181,14 +194,15 @@ monorepo's shared CI setup action will hold the Qt version), so check each:
      `libshiboken6.abi3.so.6.X` (the soname carries the minor -- a stale
      exclude silently bundles a second copy of PySide6's libraries) and the
      `libicu*` version the Qt SDK ships.
-2. `.github/workflows/ci.yml` and `wheels.yml`: the Qt `version:` installed
-   by `install-qt-action`.
-3. `uv lock` (then `uv sync --reinstall-package pyside6-scintilla`, run the
-   tests, and `make stubs` in case genpyi's output changed).
-4. The Qt SDK version mentioned in this file's examples, and the
-   installation note in `README.md`/`docs/index.md`.
-5. `CHANGELOG.md`: a breaking "requires PySide6 6.X" entry, and a new
-   `__version__`.
+2. The root `pyproject.toml`'s dev group: `shiboken6-generator` -> same.
+3. `.github/actions/setup/action.yml`: the Qt `version:` (the one place CI
+   names it).
+4. `uv lock` (then `uv sync --reinstall-package pyside6-scintilla`, run the
+   tests, and `make scintilla-stubs` in case genpyi's output changed).
+5. The Qt SDK version mentioned in this file's examples, and the
+   installation note in `packages/pyside6-scintilla/README.md`/`docs/index.md`.
+6. `packages/pyside6-scintilla/CHANGELOG.md`: a breaking "requires PySide6
+   6.X" entry, and a new `__version__`.
 
 Then check the built wheel in a fresh venv: it must import beside the new
 minor's newest patch release, and pip must refuse to install it beside the
@@ -196,25 +210,33 @@ previous minor.
 
 ## Publishing to PyPI
 
-1. Bump `__version__` in `src/pyside6_scintilla/__init__.py` -- this is the
-   single source of truth for the package version
-   (`[tool.scikit-build.metadata.version]` in `pyproject.toml` reads it via
-   regex). Follow Scintilla's version: `X.Y.Z.N`, where `X.Y.Z` is the
-   vendored Scintilla release and `N` increments for binding-only changes
-   against that release. See [bindings.md](bindings.md) for the Scintilla
-   update process.
-2. Push the version bump to `master`.
-3. Create a GitHub Release with a tag matching the version (e.g. `v5.6.3.0`).
-   This triggers `.github/workflows/publish.yml`, which builds the sdist and
-   all wheels (via `wheels.yml`), publishes them to TestPyPI, and then -- for
-   real releases only -- to PyPI.
+One tag, one package: pushing a tag named `<package>-<version>` publishes
+that package at that version.
 
-No PyPI API tokens are involved: both the TestPyPI and PyPI publish steps use
+1. Bump `__version__` in the package's `src/<module>/__init__.py` -- the
+   single source of truth for its version
+   (`[tool.scikit-build.metadata.version]` reads it via regex). Versions
+   follow the vendored upstream release: `X.Y.Z.N`, where `X.Y.Z` is the
+   vendored Scintilla (pyside6-scintilla) or Lexilla (lexilla) release and
+   `N` increments for binding-only changes against it. Date the package's
+   `CHANGELOG.md` section for that version (`## [X.Y.Z.N] - YYYY-MM-DD`).
+2. Push the version bump to `master`, and let CI pass.
+3. Tag and push: `git tag pyside6-scintilla-5.6.3.10 && git push origin
+   pyside6-scintilla-5.6.3.10` (or `lexilla-...`). This triggers
+   `.github/workflows/publish.yml`, which checks the tag against
+   `__version__`, builds the sdist and all wheels (via `wheels.yml`),
+   publishes them to TestPyPI, then to PyPI, and creates the GitHub Release
+   with the changelog section as its notes.
+
+Running `publish.yml` by hand (`workflow_dispatch`, choosing the package) is
+a dry run: it stops at TestPyPI.
+
+No PyPI API tokens are involved: both publish steps use
 [PyPI trusted publishing](https://docs.pypi.org/trusted-publishers/) (GitHub
-OIDC), configured per-project on test.pypi.org/pypi.org against this repo's
-`publish.yml` workflow and the `testpypi`/`pypi` GitHub environments.
+OIDC), configured per package on test.pypi.org/pypi.org against this repo,
+the `publish.yml` workflow and the `testpypi`/`pypi` GitHub environments
+(see [TestPyPI](testpypi.md)).
 
-The `pyside6-scintilla` PyPI name was claimed early with a placeholder `0.0.0`
-release (pure-Python, hatchling backend, published manually via `uv publish`)
-to prevent squatting -- the first real release is the first one published via
-`publish.yml`.
+Releases before the monorepo were tagged `v5.6.3.N` (pyside6-scintilla, in
+this repo) and `lexilla-5.5.0.N` (lexilla, imported from lexilla-py, where
+they were `v5.5.0.N`).

@@ -1,6 +1,10 @@
 # Auditing the vendored Scintilla source
 
 > [!NOTE]
+> Paths on this page are relative to `packages/pyside6-scintilla/`, except
+> repo-level ones (`docs/`, `tools/`, `.github/`, `examples/`).
+
+> [!NOTE]
 > `src/scintilla/` is vendored unmodified from Scintilla's official release. If
 > you'd like to confirm that for yourself, here's one way -- use whatever
 > approach you're comfortable with.

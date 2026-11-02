@@ -14,7 +14,7 @@ end-of-line glyph) as the old widget — only the import line changes.
 The demo `main.py` shows `BScintillaEdit` used as a `QMainWindow`'s central
 widget, with toolbar toggles for each property and menus for picking the
 end-of-line representation glyph and colour. See
-[`examples/bscintillaedit/README.md`](https://github.com/borco/pyside6-scintilla/tree/master/examples/bscintillaedit)
+[`examples/bscintillaedit/README.md`](https://github.com/borco/scintilla-py/tree/master/examples/bscintillaedit)
 for the full API reference, porting steps, and efficient editor-sync
 patterns.
 
@@ -28,7 +28,7 @@ uv run python examples/bscintillaedit/main.py
 
 ## Source
 
-[`examples/bscintillaedit/`](https://github.com/borco/pyside6-scintilla/tree/master/examples/bscintillaedit)
+[`examples/bscintillaedit/`](https://github.com/borco/scintilla-py/tree/master/examples/bscintillaedit)
 
 ## Screenshots
 

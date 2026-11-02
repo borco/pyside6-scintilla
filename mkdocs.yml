@@ -1,8 +1,8 @@
-site_name: pyside6-scintilla
-site_description: Permissively-licensed PySide6 bindings for the Scintilla code editor component
-site_url: https://borco.github.io/pyside6-scintilla/
-repo_url: https://github.com/borco/pyside6-scintilla
-repo_name: borco/pyside6-scintilla
+site_name: scintilla-py
+site_description: Permissively-licensed Python bindings for Scintilla (pyside6-scintilla) and Lexilla (lexilla)
+site_url: https://borco.github.io/scintilla-py/
+repo_url: https://github.com/borco/scintilla-py
+repo_name: borco/scintilla-py
 edit_uri: edit/master/docs/
 
 extra:
@@ -22,10 +22,10 @@ plugins:
   - mkdocstrings:
       handlers:
         python:
-          paths: [src]
+          paths: [packages/pyside6-scintilla/src, packages/lexilla/src]
           options:
             # The .pyi stub has no docstrings on individual members (see
-            # tools/generate_pyi.py) - show them anyway, since the signature
+            # packages/pyside6-scintilla/tools/generate_pyi.py) - show them anyway, since the signature
             # itself is the documentation for most of this binding's API.
             show_if_no_docstring: true
             # Source shown would be the generated .pyi stub (`def foo(...) -> T: ...`),
@@ -83,11 +83,22 @@ markdown_extensions:
   - pymdownx.emoji:
       emoji_index: !!python/name:material.extensions.emoji.twemoji
       emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  # docs/changelog/*.md include each package's CHANGELOG.md (paths relative
+  # to the repo root); check_paths makes a moved changelog a build error.
+  - pymdownx.snippets:
+      base_path: [.]
+      check_paths: true
 
 nav:
   - Home: index.md
+  - Lexilla:
+      - lexilla/index.md
+      - Bindings architecture: lexilla/bindings.md
+      - Build instructions: lexilla/build.md
+      - Verifying vendored Lexilla: lexilla/auditing.md
   - Development:
       - Project mission: specs/mission.md
+      - lexilla's mission: specs/lexilla-mission.md
       - Alternatives & landscape: alternatives.md
       - Bindings architecture: bindings.md
       - Build instructions: build.md
@@ -177,4 +188,10 @@ nav:
       - ScintillaDocument: reference/scintilla-document.md
       - Scintilla.Message: reference/message.md
       - Colours: reference/colours.md
-  - PyPI: https://pypi.org/project/pyside6-scintilla/
+  - Changelog:
+      - changelog/index.md
+      - pyside6-scintilla: changelog/pyside6-scintilla.md
+      - lexilla: changelog/lexilla.md
+  - PyPI:
+      - pyside6-scintilla: https://pypi.org/project/pyside6-scintilla/
+      - lexilla: https://pypi.org/project/lexilla/

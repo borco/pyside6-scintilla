@@ -70,9 +70,9 @@ dependencies = [
 
 
 [project.urls]
-Homepage = "https://borco.github.io/pyside6-scintilla/"
-Repository = "https://github.com/borco/pyside6-scintilla"
-Issues = "https://github.com/borco/pyside6-scintilla/issues"
+Homepage = "https://borco.github.io/scintilla-py/"
+Repository = "https://github.com/borco/scintilla-py"
+Issues = "https://github.com/borco/scintilla-py/issues"
 
 
 [tool.scikit-build]

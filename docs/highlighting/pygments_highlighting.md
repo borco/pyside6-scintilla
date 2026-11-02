@@ -54,7 +54,7 @@ Pygments is a dev-only dependency of this repo, used solely for this example
 
 ## Source
 
-[`examples/highlighting/pygments_highlighting/`](https://github.com/borco/pyside6-scintilla/tree/master/examples/highlighting/pygments_highlighting)
+[`examples/highlighting/pygments_highlighting/`](https://github.com/borco/scintilla-py/tree/master/examples/highlighting/pygments_highlighting)
 
 ## Screenshots
 

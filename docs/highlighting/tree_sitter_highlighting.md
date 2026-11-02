@@ -82,7 +82,7 @@ repo, used solely for this example — they are not dependencies of the
 
 ## Source
 
-[`examples/highlighting/tree_sitter_highlighting/`](https://github.com/borco/pyside6-scintilla/tree/master/examples/highlighting/tree_sitter_highlighting)
+[`examples/highlighting/tree_sitter_highlighting/`](https://github.com/borco/scintilla-py/tree/master/examples/highlighting/tree_sitter_highlighting)
 
 ## Screenshots
 

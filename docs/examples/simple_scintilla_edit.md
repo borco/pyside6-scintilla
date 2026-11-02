@@ -24,7 +24,7 @@ uv run python examples/simple_scintilla_edit/main.py
 
 ## Source
 
-[`examples/simple_scintilla_edit/`](https://github.com/borco/pyside6-scintilla/tree/master/examples/simple_scintilla_edit)
+[`examples/simple_scintilla_edit/`](https://github.com/borco/scintilla-py/tree/master/examples/simple_scintilla_edit)
 
 ## Screenshots
 

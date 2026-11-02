@@ -1,24 +1,34 @@
 <!-- sync:header -->
 # pyside6-scintilla
 
-[![CI](https://github.com/borco/pyside6-scintilla/actions/workflows/ci.yml/badge.svg)](https://github.com/borco/pyside6-scintilla/actions/workflows/ci.yml)
+[![CI](https://github.com/borco/scintilla-py/actions/workflows/ci.yml/badge.svg)](https://github.com/borco/scintilla-py/actions/workflows/ci.yml)
 [![PyPI](https://img.shields.io/pypi/v/pyside6-scintilla)](https://pypi.org/project/pyside6-scintilla/)
 [![Downloads](https://static.pepy.tech/badge/pyside6-scintilla)](https://pepy.tech/project/pyside6-scintilla)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://github.com/borco/pyside6-scintilla/blob/master/LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://github.com/borco/scintilla-py/blob/master/LICENSE)
 [![Python versions](https://img.shields.io/pypi/pyversions/pyside6-scintilla)](https://pypi.org/project/pyside6-scintilla/)
 
 *Permissively-licensed PySide6 bindings for the [Scintilla](https://www.scintilla.org/) code editor component.*
 
-[View on PyPI](https://pypi.org/project/pyside6-scintilla/) · [View on GitHub](https://github.com/borco/pyside6-scintilla)
+[View on PyPI](https://pypi.org/project/pyside6-scintilla/) · [View on GitHub](https://github.com/borco/scintilla-py)
 <!-- /sync:header -->
+
+## Packages
+
+This site documents the two packages of the
+[scintilla-py](https://github.com/borco/scintilla-py) repo, each released to
+PyPI on its own:
+
+| Package | What it is |
+| --- | --- |
+| [`pyside6-scintilla`](https://pypi.org/project/pyside6-scintilla/) | PySide6 bindings for the Scintilla editor widget -- this page and most of the site. |
+| [`lexilla`](https://pypi.org/project/lexilla/) | Bindings for Lexilla, Scintilla's lexer library (syntax highlighting for ~125 languages), usable with `pyside6-scintilla` -- see [Lexilla](lexilla/index.md). |
 
 ## Status
 
-See [GitHub Issues](https://github.com/borco/pyside6-scintilla/issues) for
+See [GitHub Issues](https://github.com/borco/scintilla-py/issues) for
 what's done and what's next, and the
-[project board](https://github.com/users/borco/projects/3) for the joint
-roadmap with [lexilla-py](https://github.com/borco/lexilla-py) (issues and
-PRs from both repos are added to it automatically).
+[project board](https://github.com/users/borco/projects/3) for the roadmap.
+Each package's changes are in the [Changelog](changelog/index.md).
 
 ## Installation
 

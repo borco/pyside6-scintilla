@@ -1,19 +1,19 @@
 <!-- sync:header -->
-# lexilla-py: Python bindings for Lexilla
+# lexilla: Python bindings for Lexilla
 
-[![CI](https://github.com/borco/lexilla-py/actions/workflows/ci.yml/badge.svg)](https://github.com/borco/lexilla-py/actions/workflows/ci.yml)
+[![CI](https://github.com/borco/scintilla-py/actions/workflows/ci.yml/badge.svg)](https://github.com/borco/scintilla-py/actions/workflows/ci.yml)
 [![PyPI](https://img.shields.io/pypi/v/lexilla)](https://pypi.org/project/lexilla/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://github.com/borco/lexilla-py/blob/master/LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://github.com/borco/scintilla-py/blob/master/packages/lexilla/LICENSE)
 [![Python versions](https://img.shields.io/pypi/pyversions/lexilla)](https://pypi.org/project/lexilla/)
 
 *Permissively-licensed Python bindings for [Lexilla](https://www.scintilla.org/Lexilla.html), the lexer library for Scintilla.*
 
-[View on PyPI](https://pypi.org/project/lexilla/) · [View on GitHub](https://github.com/borco/lexilla-py)
+[View on PyPI](https://pypi.org/project/lexilla/) · [View on GitHub](https://github.com/borco/scintilla-py/tree/master/packages/lexilla)
 <!-- /sync:header -->
 
 ## Status
 
-See [GitHub Issues](https://github.com/borco/lexilla-py/issues) for what's
+See [GitHub Issues](https://github.com/borco/scintilla-py/issues) for what's
 done and what's next.
 
 ## Why this exists
@@ -22,7 +22,7 @@ Lexilla creates the lexer objects (`ILexer5`) that a Scintilla editor widget
 attaches via `SCI_SETILEXER` — it's a separate, Qt-free C++ library from
 Scintilla itself since Scintilla 5.0. This project exposes that library
 directly to Python. In practice,
-[pyside6-scintilla](https://github.com/borco/pyside6-scintilla) is its only
+[pyside6-scintilla](https://github.com/borco/scintilla-py) is its only
 consumer, wired up via the `set_lexer()` convenience function (see Usage
 below) rather than raw `SCI_SETILEXER` pointer plumbing; it's kept as a
 separate package so this binding's release cadence and vendored Lexilla
@@ -71,7 +71,7 @@ set_lexer(editor, lexer)
 
 `set_lexer()` hands a created lexer to a `pyside6-scintilla` `ScintillaEdit`
 via `SCI_SETILEXER`, transferring ownership to it — see
-[lexilla_highlighting](https://github.com/borco/pyside6-scintilla/tree/master/examples/highlighting/lexilla_highlighting/)
+[lexilla_highlighting](https://github.com/borco/scintilla-py/tree/master/examples/highlighting/lexilla_highlighting/)
 for a complete example.
 
 ## Versioning
@@ -83,21 +83,23 @@ and resets to `0` when Lexilla itself releases a new version.
 
 ## Documentation
 
+Full docs: <https://borco.github.io/scintilla-py/lexilla/>. lexilla lives in
+the [scintilla-py](https://github.com/borco/scintilla-py) repo, next to pyside6-scintilla, under
+[`packages/lexilla/`](https://github.com/borco/scintilla-py/tree/master/packages/lexilla).
+
 | Doc | Contents |
 | --- | --- |
-| [docs/auditing.md](docs/auditing.md) | How to verify the vendored Lexilla source matches upstream |
-| [docs/bindings.md](docs/bindings.md) | How the nanobind bindings are built, and how they're expected to grow |
-| [docs/build.md](docs/build.md) | Build prerequisites, local build/rebuild, wheels, and publishing |
-| [docs/documenting.md](docs/documenting.md) | How the docs site is built (stub) |
-| [docs/specs/](docs/specs/) | Design specifications and action plans for in-progress and planned work |
-| [docs/specs/mission.md](docs/specs/mission.md) | Project background, goals, and design decisions |
-| [docs/testpypi.md](docs/testpypi.md) | Setting up TestPyPI trusted publishing |
-| [examples/](examples/) | No examples of its own — see [pyside6-scintilla/examples/](https://github.com/borco/pyside6-scintilla/tree/master/examples) |
-| [GitHub Issues](https://github.com/borco/lexilla-py/issues) | Ordered list of upcoming work |
-| [Project board](https://github.com/users/borco/projects/3) | Joint roadmap for `lexilla-py` and [pyside6-scintilla](https://github.com/borco/pyside6-scintilla); issues/PRs from both repos are auto-added |
+| [docs/lexilla/auditing.md](https://github.com/borco/scintilla-py/blob/master/docs/lexilla/auditing.md) | How to verify the vendored Lexilla source matches upstream |
+| [docs/lexilla/bindings.md](https://github.com/borco/scintilla-py/blob/master/docs/lexilla/bindings.md) | How the nanobind bindings are built, and how they're expected to grow |
+| [docs/lexilla/build.md](https://github.com/borco/scintilla-py/blob/master/docs/lexilla/build.md) | lexilla-specific build notes (no Qt SDK, wheels, generated files) |
+| [docs/build.md](https://github.com/borco/scintilla-py/blob/master/docs/build.md) | Building the workspace, CI, wheels, and publishing |
+| [docs/specs/lexilla-mission.md](https://github.com/borco/scintilla-py/blob/master/docs/specs/lexilla-mission.md) | Project background, goals, and design decisions |
+| [examples/](https://github.com/borco/scintilla-py/tree/master/examples) | Example apps, including [lexilla_highlighting](https://github.com/borco/scintilla-py/tree/master/examples/highlighting/lexilla_highlighting) |
+| [GitHub Issues](https://github.com/borco/scintilla-py/issues) | Planned and in-progress work |
+| [Project board](https://github.com/users/borco/projects/3) | Roadmap |
 
 ## License
 
 - `src/lexilla_vendor/` — [HPND License](https://www.scintilla.org/License.txt)
   (Lexilla, copyright Neil Hodgson)
-- Everything else — [MIT License](https://github.com/borco/lexilla-py/blob/master/LICENSE)
+- Everything else — [MIT License](https://github.com/borco/scintilla-py/blob/master/packages/lexilla/LICENSE)

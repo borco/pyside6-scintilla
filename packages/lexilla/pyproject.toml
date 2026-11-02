@@ -39,8 +39,8 @@ requires-python = ">=3.12"
 dependencies = []
 
 [project.urls]
-Homepage = "https://borco.github.io/lexilla-py/"
-Repository = "https://github.com/borco/lexilla-py"
+Homepage = "https://borco.github.io/scintilla-py/lexilla/"
+Repository = "https://github.com/borco/scintilla-py/tree/master/packages/lexilla"
 Issues = "https://github.com/borco/lexilla-py/issues"
 
 

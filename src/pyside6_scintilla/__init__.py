@@ -114,7 +114,7 @@ class ScintillaEdit(_ScintillaEditFixed):
             super().marginSetText(line, text)
 
 
-__version__ = "5.6.3.7"
+__version__ = "5.6.3.8"
 
 __all__ = [
     "Scintilla",

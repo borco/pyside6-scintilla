@@ -43,7 +43,7 @@ make test   # both packages' tests
 make lint   # ruff, docs/header/generator sync checks, pyright
 ```
 
-See [docs/build.md](docs/build.md) for prerequisites, CI, wheels and the
+See [docs/development/build.md](docs/development/build.md) for prerequisites, CI, wheels and the
 release process, and the [project board](https://github.com/users/borco/projects/3)
 and [issues](https://github.com/borco/scintilla-py/issues) for the roadmap.
 

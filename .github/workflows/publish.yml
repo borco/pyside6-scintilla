@@ -10,7 +10,7 @@ name: Publish
 # on the ref being a tag), exercising build, OIDC and upload without touching
 # pypi.org. Both publish jobs use PyPI trusted publishing, configured per
 # package on test.pypi.org/pypi.org for this repo, this workflow file and the
-# `testpypi`/`pypi` environments (see docs/build.md).
+# `testpypi`/`pypi` environments (see docs/development/build.md).
 on:
   push:
     tags:

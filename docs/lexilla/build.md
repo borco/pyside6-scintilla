@@ -1,7 +1,7 @@
 # Lexilla build notes
 
 lexilla is built, tested and published with the rest of the workspace -- see
-[Building and publishing](../build.md) for the dev environment, CI, wheels
+[Building and publishing](../development/build.md) for the dev environment, CI, wheels
 and the release process. This page covers what's specific to lexilla. Paths
 are relative to `packages/lexilla/`.
 

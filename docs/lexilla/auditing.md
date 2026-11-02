@@ -50,7 +50,7 @@ Lexilla's own vendored `include/SciLexer.h`, no extra vendoring needed).
 
 Rather than depend on the whole Scintilla tree (which would reintroduce the
 "this package has no Scintilla/Qt dependency" coupling the project
-deliberately avoids -- see [lexilla's mission](../specs/lexilla-mission.md)),
+deliberately avoids -- see [lexilla's mission](design-decisions.md)),
 only these three headers are copied, unmodified, into
 `src/scintilla_interface/include/` (with Scintilla's `License.txt` and
 `version.txt`). They are pure interface/constant declarations (no
@@ -60,7 +60,7 @@ implementation, no Qt).
 
 Since the move into the monorepo, the copy is the **Scintilla release the
 repo vendors** for pyside6-scintilla (`packages/pyside6-scintilla/src/scintilla/`,
-currently 5.6.3 -- see [Verifying vendored Scintilla](../auditing.md) for its
+currently 5.6.3 -- see [Verifying vendored Scintilla](../pyside6-scintilla/auditing.md) for its
 tarball and checksum), byte for byte. `tools/sync_scintilla_headers.py`
 copies it, and its `--check` mode (in `make lint` and CI) fails if the copy
 drifts. lexilla keeps a copy at all, rather than including the vendored tree,

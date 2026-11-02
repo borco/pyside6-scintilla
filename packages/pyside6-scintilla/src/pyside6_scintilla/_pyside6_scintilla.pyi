@@ -3069,7 +3069,7 @@ class ScintillaEditBase(PySide6.QtWidgets.QAbstractScrollArea):
     notify                   : typing.ClassVar[Signal] = ... # notify(Scintilla::NotificationData*)
     r"""Delivers every Scintilla notification, before the typed signals above are emitted for it.
 
-        See the `NotificationData` lifetime caveat in docs/bindings.md -- prefer a typed signal where one exists."""
+        See the `NotificationData` lifetime caveat in docs/pyside6-scintilla/bindings.md -- prefer a typed signal where one exists."""
     notifyChange             : typing.ClassVar[Signal] = ... # notifyChange()
     r"""The document was modified; emitted alongside `command` for compatibility."""
     painted                  : typing.ClassVar[Signal] = ... # painted()

@@ -5,7 +5,7 @@
      Declares which of the C++ types visible through bindings.h get Python
      wrappers generated. shiboken errors out (naming the missing type) if a
      wrapped member references something not declared here; see
-     docs/bindings.md for that iterative process.
+     docs/pyside6-scintilla/bindings.md for that iterative process.
 
      The <enum-type> list below covers every `enum class` in
      ScintillaTypes.h (plus Message from ScintillaMessages.h), not just the

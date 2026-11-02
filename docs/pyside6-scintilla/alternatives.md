@@ -6,7 +6,7 @@ often asked about: **line numbers** and **block (rectangular/column) edit**.
 
 This is a snapshot (June 2026) for orientation, not a commitment to match
 feature-for-feature with anything listed here — see
-[Project mission](specs/mission.md) for this project's actual scope.
+[Project mission](../development/mission.md) for this project's actual scope.
 
 ## TL;DR
 
@@ -20,7 +20,7 @@ feature-for-feature with anything listed here — see
 | Line numbers | Built in (`SCI_SETMARGINWIDTHN`, etc.) | Built in (Monaco default) |
 | Block/column edit | Built in (`SCI_SETMOUSESELECTIONRECTANGULARSWITCH`, multiple selection + virtual space) | Alt+Shift+drag column selection + multi-cursor (Monaco default) |
 | LSP / IntelliSense | Not provided — bring your own | Built-in LSP client (e.g. `pylsp`) |
-| Platforms | Linux, Windows, macOS (per [`docs/specs/mission.md`](specs/mission.md)) | macOS and Linux only (per `qtmonaco` README, no Windows) |
+| Platforms | Linux, Windows, macOS (per [`docs/specs/mission.md`](../development/mission.md)) | macOS and Linux only (per `qtmonaco` README, no Windows) |
 | License | MIT (binding) + HPND (Scintilla) | BSD-3-Clause (binding) + MIT (Monaco), but pulls in Qt WebEngine (Chromium, BSD-ish but huge) |
 
 ## Monaco-based bindings (`qtmonaco`, `monaco-qt`)
@@ -80,12 +80,12 @@ license, it's the Chromium dependency pulled in via Qt WebEngine.
 
 ## `pyside6-scintilla` (recap)
 
-See [Project mission](specs/mission.md) for the full background. In short: a
+See [Project mission](../development/mission.md) for the full background. In short: a
 native `QWidget` binding of Scintilla (HPND), MIT-licensed, no extra runtime
 beyond Qt + Scintilla itself, with both a raw message API
 (`ScintillaEditBase`) and a typed per-message API (`ScintillaEdit`). Line
 numbers and block/column edit are both native Scintilla features, already
-demonstrated in the [examples gallery](examples/index.md).
+demonstrated in the [examples gallery](../examples/index.md).
 
 ## Other widgets offering line numbers + block edit
 
@@ -146,7 +146,7 @@ To approximate it with plain Qt you'd need to build it yourself:
 - Handle the ragged-right-edge case (lines shorter than the rectangle) —
   Scintilla's answer to this is "virtual space"
   (`SC_MARGIN_*`/`SCI_SETVIRTUALSPACEOPTIONS`,  see
-  [Multiple Selection and Virtual Space](scintilla/selection-search/multiple-selection-and-virtual-space.md)),
+  [Multiple Selection and Virtual Space](../api/scintilla/selection-search/multiple-selection-and-virtual-space.md)),
   which has no Qt equivalent and would need to be reimplemented.
 
 This is exactly the kind of feature where reaching for an editor component

@@ -28,7 +28,7 @@ below) rather than raw `SCI_SETILEXER` pointer plumbing; it's kept as a
 separate package so this binding's release cadence and vendored Lexilla
 version can track upstream Lexilla releases independently of
 pyside6-scintilla's own release cycle — see
-[docs/specs/mission.md](docs/specs/mission.md) for the full background.
+[docs/lexilla/design-decisions.md](docs/lexilla/design-decisions.md) for the full background.
 
 ## Goals
 
@@ -92,8 +92,8 @@ the [scintilla-py](https://github.com/borco/scintilla-py) repo, next to pyside6-
 | [docs/lexilla/auditing.md](https://github.com/borco/scintilla-py/blob/master/docs/lexilla/auditing.md) | How to verify the vendored Lexilla source matches upstream |
 | [docs/lexilla/bindings.md](https://github.com/borco/scintilla-py/blob/master/docs/lexilla/bindings.md) | How the nanobind bindings are built, and how they're expected to grow |
 | [docs/lexilla/build.md](https://github.com/borco/scintilla-py/blob/master/docs/lexilla/build.md) | lexilla-specific build notes (no Qt SDK, wheels, generated files) |
-| [docs/build.md](https://github.com/borco/scintilla-py/blob/master/docs/build.md) | Building the workspace, CI, wheels, and publishing |
-| [docs/specs/lexilla-mission.md](https://github.com/borco/scintilla-py/blob/master/docs/specs/lexilla-mission.md) | Project background, goals, and design decisions |
+| [docs/development/build.md](https://github.com/borco/scintilla-py/blob/master/docs/development/build.md) | Building the workspace, CI, wheels, and publishing |
+| [docs/lexilla/design-decisions.md](https://github.com/borco/scintilla-py/blob/master/docs/lexilla/design-decisions.md) | Project background, goals, and design decisions |
 | [examples/](https://github.com/borco/scintilla-py/tree/master/examples) | Example apps, including [lexilla_highlighting](https://github.com/borco/scintilla-py/tree/master/examples/highlighting/lexilla_highlighting) |
 | [GitHub Issues](https://github.com/borco/scintilla-py/issues) | Planned and in-progress work |
 | [Project board](https://github.com/users/borco/projects/3) | Roadmap |

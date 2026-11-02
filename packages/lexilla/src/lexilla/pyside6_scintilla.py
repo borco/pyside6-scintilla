@@ -3,7 +3,7 @@
 Requires pyside6-scintilla to be installed -- importing this module pulls it
 in directly. The core ``lexilla`` package has no such dependency; this is the
 only place the two packages are allowed to depend on each other (see
-``docs/specs/mission.md``'s "Cross-binding integration" decision).
+``docs/lexilla/design-decisions.md``'s "Cross-binding integration" decision).
 """
 
 from pyside6_scintilla import ScintillaEdit

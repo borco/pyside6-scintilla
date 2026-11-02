@@ -9,7 +9,7 @@ The package-specific code generators live in each package's own `tools/`
 
 Verifies that each package's README (its PyPI page) and its docs-site page
 share identical `<!-- sync:NAME -->` blocks (badges, install snippet, usage
-example): `packages/pyside6-scintilla/README.md` with `docs/index.md`, and
+example): `packages/pyside6-scintilla/README.md` with `docs/pyside6-scintilla/index.md`, and
 `packages/lexilla/README.md` with `docs/lexilla/index.md`. Run via
 `make lint` and in CI.
 

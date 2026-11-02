@@ -1,46 +1,22 @@
-# lexilla: project mission
+# lexilla design decisions
 
-## Background
+The decisions behind lexilla's technical approach. The project's overall
+purpose -- including why lexilla is a separate package from pyside6-scintilla
+-- is in the [mission](../development/mission.md). Paths are relative to
+`packages/lexilla/` unless they start at the repo root.
 
-[Lexilla](https://www.scintilla.org/Lexilla.html) is the lexer library used
-by the [Scintilla](https://www.scintilla.org/) code editor component. Since
-Scintilla 5.0, lexers were split out of Scintilla itself into Lexilla — a
-separate, Qt-free C++ library that creates `ILexer5` lexer objects by name
-(`CreateLexer`) and hands them to a Scintilla editor via `SCI_SETILEXER`.
-
-This project ([lexilla-py](https://github.com/borco/scintilla-py/tree/master/packages/lexilla), PyPI package
-`lexilla`) is a permissively-licensed Python binding for that library. It is
-a sibling to [pyside6-scintilla](https://github.com/borco/scintilla-py)
-(same author) — a PySide6 binding for `ScintillaEditBase` — but is kept as a
-separate package: in practice, pyside6-scintilla is the only realistic
-consumer (no other software is expected to implement `ILexer5`, and Python
-code wanting lexer/syntax-highlighting support has Pygments or tree-sitter
-as better-fitting alternatives to Lexilla). The separation isn't about
-serving a diverse ecosystem of consumers — it's so this package's release
-cadence and vendored-Lexilla version can be kept in sync with upstream
-Lexilla releases independently of pyside6-scintilla's own release cycle.
-
-## What this is NOT
-
-- Not a Scintilla binding itself — it pairs with one
-- Not affiliated with the Scintilla/Lexilla project
-- Not a redesign of Lexilla's API — exposes `CreateLexer`/`ILexer5` as-is,
-  not a higher-level reimagining of it
-
-## Key decisions
-
-### Binding technology: nanobind
+## Binding technology: nanobind
 
 Lexilla's public surface is plain C++ (`CreateLexer`, a handful of free
 functions, and the `ILexer5` abstract interface) with no Qt types involved.
-[shiboken6](https://doc.qt.io/qtforpython/shiboken6/) — used by
-pyside6-scintilla — is built around Qt's object model (parent/child
-ownership, signals/slots, `QObject` metatype) and would be substantial
-overkill here. [nanobind](https://nanobind.readthedocs.io/) is header-only,
-has no Qt/PySide6 toolchain dependency, and is a good fit for binding a small
-set of free functions and one abstract interface class.
+shiboken6 -- used by pyside6-scintilla -- is built around Qt's object model
+and would drag in the Qt toolchain and the PySide6 version pin for no
+benefit. [nanobind](https://nanobind.readthedocs.io/) has no Qt/PySide6
+dependency and fits a small set of free functions plus one abstract interface
+class. See [How the packages are built](../development/architecture.md) for
+the full comparison.
 
-### Cross-binding integration: raw pointer, plus convenience glue
+## Cross-binding integration: raw pointer, plus convenience glue
 
 `CreateLexer` returns an `ILexer5*`. The Scintilla side expects that same
 pointer value via `SCI_SETILEXER` (an `sptr_t` message parameter). The
@@ -56,7 +32,7 @@ For ergonomics, convenience glue that knows about pyside6-scintilla's API
 directly (e.g. a `set_lexer(editor, lexer)` helper) is also provided — this is
 the only place the two packages are allowed to depend on each other.
 
-### Scope: minimal first, full API later
+## Scope: minimal first, full API later
 
 The first usable version covers `CreateLexer(name)`, lexer discovery
 (`GetLexerCount`, `GetLexerName`), and the core `ILexer4`/`ILexer5` property
@@ -73,7 +49,7 @@ implementation usefully, or whether exposing `IDocument` at all is worth it
 The deprecated `CreateLexerLibrary` path and
 the full property/word-list introspection API are also deferred.
 
-### No bare ints/strings for "magic" values: typed enums for property types, language identifiers, and lexer names
+## No bare ints/strings for "magic" values: typed enums for property types, language identifiers, and lexer names
 
 `Lexer.property_type()`, `Lexer.identifier`, and `create_lexer(name)` all
 deal in values that are really enumerations dressed up as a bare `int` or
@@ -93,9 +69,8 @@ loudly. The fix, applied consistently to all three:
 - `PropertyType` (`SC_TYPE_*`) is a small, hand-written `nb::enum_` in
   `_binding.cpp` — only 3 values, no codegen needed.
 - `LanguageIdentifier` (`SCLEX_*`, ~142 values) is **generated**, not
-  hand-typed, by `tools/generate_language_enums.py` (a top-level `tools/`,
-  matching the sibling pyside6-scintilla project's convention for its own
-  generator scripts), mirroring Lexilla's *own* convention for its large
+  hand-typed, by `tools/generate_language_enums.py` (in the package's `tools/`,
+  like pyside6-scintilla's generators), mirroring Lexilla's *own* convention for its large
   generated lists (`src/lexilla_vendor/src/Lexilla.cxx`'s
   `//++Autogenerated -- run scripts/LexillaGen.py to regenerate` markers):
   a one-off script, run manually, output spliced into `_binding.cpp` and
@@ -141,65 +116,57 @@ always succeeds) but loudly at the Python boundary (nanobind raises if
 [auditing.md](../lexilla/auditing.md)'s re-vendoring checklist for the regeneration
 step this requires.
 
-### `ILexer5`'s declaration: vendor Scintilla's interface headers, not all of Scintilla
+## `ILexer5`'s declaration: a copy of Scintilla's interface headers, not all of Scintilla
 
 `ILexer5` (along with `ILexer4`, `IDocument`, and the `Sci_Position`/
 `Sci_PositionU` types) is declared in Scintilla's `ILexer.h`/`Sci_Position.h`,
-not in Lexilla's own tarball — `Lexilla.h` assumes the caller has already
+not in Lexilla's own tarball -- `Lexilla.h` assumes the caller has already
 included `ILexer.h`. The individual lexer implementations also need a
-handful of fold-level flag constants from Scintilla's `Scintilla.h` to
-compile (the per-language `SCE_*` style constants already live in Lexilla's
-own vendored `include/SciLexer.h`, no extra vendoring needed for those).
-Vendoring all of Scintilla just for these interface/constant headers would reintroduce
-the dependency this project deliberately avoids (see "What this is NOT").
-Instead, only those headers are vendored, unmodified, under
-`src/scintilla_interface/include/` — see [auditing.md](../lexilla/auditing.md) for
-the version/checksum table and the process
-for keeping them in sync with the vendored Lexilla version when it updates.
+handful of fold-level flag constants from Scintilla's `Scintilla.h` (the
+per-language `SCE_*` style constants already live in Lexilla's own vendored
+`include/SciLexer.h`). Depending on all of Scintilla for these would
+reintroduce the Scintilla/Qt coupling lexilla deliberately avoids, so only
+those headers are kept, unmodified, under `src/scintilla_interface/include/`.
 
-### Naming: `lexilla-py` repo, `lexilla` package, `src/lexilla_vendor/` for vendored source
+Since the move into the monorepo they are a byte-identical copy of the
+Scintilla release pyside6-scintilla vendors, kept in sync by
+`tools/sync_scintilla_headers.py` (checked in CI), so the two packages can't
+disagree about `ILexer5`'s layout within a commit. lexilla keeps a copy at all
+-- rather than including pyside6-scintilla's tree -- because its sdist must
+build on its own. (Before the move, lexilla-py vendored them from the
+Scintilla release matching its Lexilla version, 5.5.0.) See
+[Verifying vendored Lexilla](auditing.md).
 
-> [!NOTE]
-> Superseded for the repo name: lexilla-py was merged into the
-> `scintilla-py` monorepo (issue #19), as `packages/lexilla/`. The package
-> name and `src/lexilla_vendor/` are unchanged.
+## Naming: `lexilla` package, `src/lexilla_vendor/` for vendored source
 
-The GitHub repo is `lexilla-py` rather than `lexilla` so that vendoring
-Lexilla's own upstream source never collides with the repo's own checkout
-directory name on case-insensitive filesystems (Windows, default macOS).
-Within the repo, the same concern applies one level down: pyside6-scintilla
-vendors Scintilla under `src/scintilla/`, sitting next to the binding
-package `src/pyside6_scintilla/` — distinct names, no collision. Lexilla's
-own package would naturally be `src/lexilla/`, identical to a same-named
-vendor directory, so the vendored source instead lives at
-`src/lexilla_vendor/`. The PyPI package and Python import name are both
-plain `lexilla` — that namespace doesn't have the same collision risk.
+The PyPI package and Python import name are both plain `lexilla`. Within the
+package, the vendored upstream source lives at `src/lexilla_vendor/`, not
+`src/lexilla/`: Lexilla's own source directory and the Python package
+directory would otherwise have the same name, colliding on case-insensitive
+filesystems (Windows, default macOS). pyside6-scintilla has no such clash
+(`src/scintilla/` next to `src/pyside6_scintilla/`).
 
-### Versioning
+(The standalone repo was named `lexilla-py` rather than `lexilla` for the
+same reason, one level up; since issue #19 the package lives in the
+`scintilla-py` monorepo as `packages/lexilla/`.)
 
-Same scheme as pyside6-scintilla: `<Lexilla version>.<binding revision>`
+## Versioning
+
+The same scheme as pyside6-scintilla: `<Lexilla version>.<binding revision>`
 (e.g. Lexilla `5.5.0` → package `5.5.0.0`). The binding revision increments
 for releases of this package that don't correspond to a new Lexilla version,
 and resets to `0` when Lexilla itself releases a new version.
 
-### Wheel builds: `cp311` + `cp312-abi3`, not one wheel per Python version
+## Wheel builds: one `cp312-abi3` wheel per platform
 
-> [!NOTE]
-> Superseded with the move into the monorepo (issue #19): lexilla now
-> requires Python 3.12 and ships a single `cp312-abi3` wheel per platform.
-> The separate `cp311` build doubled the wheel count for one Python version;
-> lexilla 5.5.0.1 remains available for 3.11.
+nanobind's `STABLE_ABI` mode compiles against Python's limited API, so one
+build works on every later Python without a rebuild -- but nanobind
+hard-requires CPython 3.12 for it (`Py_LIMITED_API` fixed to `0x030c0000`).
+lexilla therefore requires Python 3.12 and ships a single `cp312-abi3` wheel
+per platform, like pyside6-scintilla's single `cp311-abi3` wheel (shiboken6's
+`FORCE_LIMITED_API` can go down to 3.11).
 
-pyside6-scintilla moved to a single `cp311-abi3` wheel per platform (its
-issue #13), since shiboken6's `FORCE_LIMITED_API` can force the stable-ABI
-floor as low as `0x030b0000` (Python 3.11). nanobind's `STABLE_ABI` mode
-can't go that low — it hard-requires CPython >=3.12 (`Py_LIMITED_API`
-fixed to `0x030c0000` in nanobind's own CMake config), so a single wheel
-covering 3.11+ isn't possible here. Since `requires-python = ">=3.11"` and
-3.11 remains in upstream support well past this decision, dropping it
-wasn't worth matching pyside6-scintilla's wheel count exactly: lexilla-py
-instead ships two builds per platform — a version-specific `cp311` wheel,
-plus a `cp312-abi3` wheel forward-compatible with 3.12, 3.13, 3.14, and
-beyond without a rebuild. 10 wheels per release instead of 20, while still
-supporting 3.11. Verified by building once against 3.12 and loading that
-same binary, unmodified, under 3.13 and 3.14.
+Before the monorepo, lexilla-py kept Python 3.11 with a second,
+version-specific `cp311` wheel per platform, doubling the wheel count for one
+Python version; that was dropped with the move (issue #19). lexilla 5.5.0.1
+remains available for 3.11.

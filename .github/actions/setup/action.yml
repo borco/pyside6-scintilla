@@ -2,7 +2,7 @@ name: Set up the workspace
 description: >-
   The Qt SDK and C++ toolchain pyside6-scintilla builds against, uv, and (with `sync`) the
   workspace built from source -- both packages, plus the dev tools. The caller checks out first.
-  The Qt SDK version lives here, the one place CI names it (see docs/build.md, "Bumping the
+  The Qt SDK version lives here, the one place CI names it (see docs/pyside6-scintilla/build.md, "Bumping the
   PySide6 minor" -- [tool.cibuildwheel] in packages/pyside6-scintilla/pyproject.toml names it
   too, for the wheel builds).
 
@@ -35,7 +35,7 @@ runs:
       run: |
         echo "CMAKE_PREFIX_PATH=$QT_ROOT_DIR" >> "$GITHUB_ENV"
         if [ "${{ runner.os }}" = "Linux" ]; then
-          # Qt6Core5Compat isn't bundled with the PySide6 wheel (see docs/bindings.md
+          # Qt6Core5Compat isn't bundled with the PySide6 wheel (see docs/pyside6-scintilla/bindings.md
           # issue 3), so scintilla_qt's dependency on it must resolve to the
           # aqtinstall'd Qt at runtime.
           echo "LD_LIBRARY_PATH=$QT_ROOT_DIR/lib" >> "$GITHUB_ENV"

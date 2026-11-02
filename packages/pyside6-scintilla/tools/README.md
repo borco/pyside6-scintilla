@@ -8,7 +8,7 @@ directory with `uv run python tools/<script>.py` (or via the top-level `Makefile
 Generates `src/pyside6_scintilla/bindings/scintilla_edit_fixed.{h,cpp}`, the
 typed method-per-message class exposed as `ScintillaEdit`, from
 `src/scintilla/include/Scintilla.iface` -- text as `str`, raw data as bytes
-(see "Text vs bytes" in [`docs/bindings.md`](../../../docs/bindings.md)). Run via
+(see "Text vs bytes" in [`docs/pyside6-scintilla/bindings.md`](../../../docs/pyside6-scintilla/bindings.md)). Run via
 `make generate` after vendoring a new Scintilla release; `--check` (run by
 `make lint` and CI) fails if the checked-in output is stale.
 
@@ -19,5 +19,5 @@ that gives Pylance/mypy/ruff full signatures and autocomplete for
 `Scintilla.*` and `ScintillaEditBase`. Run after `make install` /
 `uv sync --reinstall-package pyside6-scintilla` whenever `bindings.xml`/
 `bindings.h` change the public API (see `make stubs` and
-[`docs/bindings.md`](../../../docs/bindings.md)).
+[`docs/pyside6-scintilla/bindings.md`](../../../docs/pyside6-scintilla/bindings.md)).
 

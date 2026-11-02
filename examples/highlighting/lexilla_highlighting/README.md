@@ -4,7 +4,7 @@ A minimal `QMainWindow` with a `ScintillaEdit` central widget, showing real
 C++ syntax highlighting driven by a
 [lexilla](https://github.com/borco/scintilla-py/tree/master/packages/lexilla)-created `"cpp"` lexer — the
 cross-binding pointer path described in lexilla's
-[docs/specs/mission.md](https://github.com/borco/scintilla-py/blob/master/docs/specs/lexilla-mission.md#cross-binding-integration-raw-pointer-with-an-optional-convenience-extra)
+[docs/development/mission.md](https://github.com/borco/scintilla-py/blob/master/docs/lexilla/design-decisions.md#cross-binding-integration-raw-pointer-with-an-optional-convenience-extra)
 "Cross-binding integration" decision:
 
 ```python

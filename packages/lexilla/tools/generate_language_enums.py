@@ -3,7 +3,7 @@
 
 One-off, manually-run generator -- NOT part of the normal build (see
 `make generate-language-enums`). Re-run after re-vendoring
-src/lexilla_vendor/ (see docs/auditing.md's re-vendoring checklist).
+src/lexilla_vendor/ (see docs/lexilla/auditing.md's re-vendoring checklist).
 
 Sources:
 - src/lexilla_vendor/scripts/LexillaData.py (vendored, unmodified) for the

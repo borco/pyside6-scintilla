@@ -1,8 +1,11 @@
 # CLAUDE.md
 
 This file grounds Claude sessions working on this repository. Read
-`docs/specs/mission.md` (pyside6-scintilla) and `docs/specs/lexilla-mission.md`
-(lexilla) for full background. Key facts:
+`docs/development/mission.md` for full background,
+`docs/development/architecture.md` for how the two packages are built and why
+they differ, and each package's design decisions
+(`docs/pyside6-scintilla/design-decisions.md`, `docs/lexilla/design-decisions.md`).
+Key facts:
 
 ## What this is
 
@@ -82,10 +85,10 @@ Linux x86_64/aarch64, Windows x86_64, macOS arm64 + x86_64
 - Versioning: each package follows its vendored upstream -- Scintilla 5.5.x
   → pyside6-scintilla 5.5.x.N, Lexilla 5.5.x → lexilla 5.5.x.N
 - Releases are tagged per package: `pyside6-scintilla-<version>`,
-  `lexilla-<version>` (pushing the tag publishes; see docs/build.md). Older
+  `lexilla-<version>` (pushing the tag publishes; see docs/development/build.md). Older
   pyside6-scintilla releases are tagged `v5.6.3.N`.
 - pyside6-scintilla is pinned to one PySide6 minor per release (the binding
-  ABI isn't stable across minors); see docs/build.md, "Bumping the PySide6
+  ABI isn't stable across minors); see docs/pyside6-scintilla/build.md, "Bumping the PySide6
   minor"
 - All new code under MIT license; vendored Scintilla/Lexilla code retains
   the HPND license
@@ -151,9 +154,12 @@ Repo-wide:
 
 - `.github/workflows/` — CI (build + publish), `.github/actions/setup/` —
   shared toolchain setup (the one place CI names the Qt version)
-- `docs/specs/` — design specifications, action plans, and both packages'
-  mission/decision logs
-- `docs/build.md` — building, CI, wheels, publishing
+- `docs/` — the docs site: `index.md` (home), `pyside6-scintilla/` and
+  `lexilla/` (each package's overview, design decisions, bindings, build
+  notes, auditing), `development/` (mission, how the packages are built,
+  building/CI/publishing), `api/` (Scintilla's message API, Lexilla's API),
+  `reference/` (the Python API), `changelog/`
+- `docs/specs/` — design specifications and action plans
 
 ## Roadmap
 

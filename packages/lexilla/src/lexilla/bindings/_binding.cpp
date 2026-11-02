@@ -178,7 +178,7 @@ enum class LanguageIdentifier {
 
 // Wraps a single ILexer5* returned by CreateLexer(). Owns it (and calls
 // Release() on destruction) until detach() hands ownership to a Scintilla
-// editor via SCI_SETILEXER -- see docs/specs/mission.md's "Cross-binding
+// editor via SCI_SETILEXER -- see docs/lexilla/design-decisions.md's "Cross-binding
 // integration" decision.
 class Lexer {
 public:

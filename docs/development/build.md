@@ -10,7 +10,7 @@ with two packages, each released to PyPI on its own:
 
 The dev environment (`.venv` at the repo root) builds **both** from source,
 so the prerequisites below are pyside6-scintilla's. lexilla-specific notes:
-[Lexilla build notes](lexilla/build.md).
+[lexilla build notes](../lexilla/build.md), and [How the packages are built](architecture.md) for why the two differ.
 
 ## Prerequisites
 
@@ -87,27 +87,8 @@ rebuilding. Force a rebuild + reinstall of one package with:
 uv sync --reinstall-package pyside6-scintilla   # or lexilla
 ```
 
-### Faster C++/binding-only iteration (pyside6-scintilla)
-
-For changes to `CMakeLists.txt`, `bindings.xml`, or the binding glue, `uv
-sync --reinstall-package` does a clean rebuild every time. The
-`scintilla-configure`/`-build`/`-install` Make targets are faster for repeated
-iteration: they reuse an incremental CMake build tree
-(`packages/pyside6-scintilla/build/venv/`) and, via the `venv` preset's
-`CMAKE_INSTALL_PREFIX`, drop the rebuilt extension and shared libs directly
-into `packages/pyside6-scintilla/src/pyside6_scintilla/`, where `import
-pyside6_scintilla` picks them up immediately.
-
-```bash
-make scintilla-configure   # once, to set up the build tree
-make scintilla-install     # rebuild + drop the extension into src/
-```
-
-**Windows**: the `venv` preset uses the Ninja generator, which needs
-`cl.exe` on `PATH` -- run these from an **x64 Native Tools Command Prompt
-for VS 2022** (or call `vcvarsall.bat x64` first). `uv sync` doesn't need
-this, since scikit-build-core uses the Visual Studio generator, which
-locates MSVC itself.
+For faster C++/binding-only iteration on pyside6-scintilla, see its
+[build notes](../pyside6-scintilla/build.md#faster-cbinding-only-iteration).
 
 ### Verifying the build
 
@@ -129,7 +110,7 @@ top-level `Makefile`.
    [`jurplel/install-qt-action`](https://github.com/jurplel/install-qt-action)
    (the one place CI names the Qt version), `CMAKE_PREFIX_PATH` (and, on
    Linux, `LD_LIBRARY_PATH` so `scintilla_qt.so` can find
-   `libQt6Core5Compat.so.6` at runtime -- see [bindings.md](bindings.md)
+   `libQt6Core5Compat.so.6` at runtime -- see [Bindings architecture](../pyside6-scintilla/bindings.md)
    issue 3), clang on Linux, then `uv sync` (both packages).
 2. Runs both packages' tests (with `QT_QPA_PLATFORM=offscreen` for a
    headless `pytest-qt`) and the same checks as `make lint`.
@@ -165,48 +146,8 @@ config in its `pyproject.toml`:
 `wheels.yml` is `workflow_dispatch`-able for ad-hoc builds and is the
 reusable job `publish.yml` calls.
 
-### Platform-specific bundling caveats (pyside6-scintilla)
-
-`Qt6Core5Compat` is required by `scintilla_qt` but isn't bundled in the
-PySide6 wheel on any platform. `bindings/CMakeLists.txt` installs it
-alongside the extension for all three platforms (a flat `.dll`/`.so` on
-Windows/Linux, a framework bundle on macOS), and each platform's
-`repair-wheel-command` (`delvewheel`/`auditwheel`/`delocate`) excludes the
-Qt/PySide6/shiboken6 libraries provided at runtime by the installed PySide6
-package. See [bindings.md](bindings.md) issue 3 for the details and history.
-
-## Bumping the PySide6 minor
-
-Each pyside6-scintilla release is built for one PySide6 minor (issue #15):
-shiboken6/PySide6's C++ ABI changes between minors, so a wheel built against
-6.11 fails to import with 6.12. Moving to a new minor (`6.X`) means a new
-release with all of these updated together:
-
-1. `packages/pyside6-scintilla/pyproject.toml`
-   - `[build-system].requires`: `shiboken6-generator`, `shiboken6`,
-     `PySide6-Essentials` -> `>=6.X,<6.(X+1)`.
-   - `[project].dependencies`: `PySide6-Essentials`, `shiboken6` -> same.
-   - `[tool.cibuildwheel]`: the Qt version in every `before-all` (aqtinstall)
-     and `CMAKE_PREFIX_PATH` (Linux x86_64, Linux aarch64, macOS); the
-     manylinux image if PySide6's own wheel tag moved; the macOS
-     `MACOSX_DEPLOYMENT_TARGET` if PySide6's macOS wheel tag moved; and the
-     Linux auditwheel excludes `libpyside6.abi3.so.6.X` /
-     `libshiboken6.abi3.so.6.X` (the soname carries the minor -- a stale
-     exclude silently bundles a second copy of PySide6's libraries) and the
-     `libicu*` version the Qt SDK ships.
-2. The root `pyproject.toml`'s dev group: `shiboken6-generator` -> same.
-3. `.github/actions/setup/action.yml`: the Qt `version:` (the one place CI
-   names it).
-4. `uv lock` (then `uv sync --reinstall-package pyside6-scintilla`, run the
-   tests, and `make scintilla-stubs` in case genpyi's output changed).
-5. The Qt SDK version mentioned in this file's examples, and the
-   installation note in `packages/pyside6-scintilla/README.md`/`docs/index.md`.
-6. `packages/pyside6-scintilla/CHANGELOG.md`: a breaking "requires PySide6
-   6.X" entry, and a new `__version__`.
-
-Then check the built wheel in a fresh venv: it must import beside the new
-minor's newest patch release, and pip must refuse to install it beside the
-previous minor.
+Bundling caveats for pyside6-scintilla's wheels, and the checklist for moving
+it to a new PySide6 minor, are in its [build notes](../pyside6-scintilla/build.md).
 
 ## Publishing to PyPI
 

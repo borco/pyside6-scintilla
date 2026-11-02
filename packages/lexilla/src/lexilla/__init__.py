@@ -4,7 +4,7 @@ Re-exports the public API of the compiled ``_lexilla`` extension module,
 built with nanobind: ``create_lexer``, ``get_lexer_count``,
 ``get_lexer_name``, and the ``Lexer`` class wrapping ``ILexer5``. Hand a
 created lexer's ``.pointer`` (or the value from ``.detach()``) to any
-Scintilla binding's ``SCI_SETILEXER`` -- see ``docs/specs/mission.md``.
+Scintilla binding's ``SCI_SETILEXER`` -- see ``docs/lexilla/design-decisions.md``.
 """
 
 from ._languages import Language

@@ -62,7 +62,7 @@ Qt3D, QtCharts …) is left out. Install `PySide6` yourself if you want them.
 <!-- /sync:installation -->
 
 To build from source instead (e.g. for development), see
-[docs/build.md](https://github.com/borco/scintilla-py/blob/master/docs/build.md)
+[docs/development/build.md](https://github.com/borco/scintilla-py/blob/master/docs/development/build.md)
 for prerequisites (Qt 6.11 with `Qt6Core5Compat`, a C++17 compiler) and
 platform-specific setup.
 
@@ -112,14 +112,14 @@ the [scintilla-py](https://github.com/borco/scintilla-py) repo, next to
 
 | Doc | Contents |
 | --- | --- |
-| [docs/alternatives.md](https://github.com/borco/scintilla-py/blob/master/docs/alternatives.md) | How this compares to Monaco-based Qt bindings and other line-numbers + block-edit widgets |
-| [docs/auditing.md](https://github.com/borco/scintilla-py/blob/master/docs/auditing.md) | How to verify the vendored Scintilla source matches upstream |
-| [docs/bindings.md](https://github.com/borco/scintilla-py/blob/master/docs/bindings.md) | How the shiboken6 bindings are built, generated files, and the Scintilla-update procedure |
-| [docs/build.md](https://github.com/borco/scintilla-py/blob/master/docs/build.md) | Build prerequisites, local build/rebuild, wheels, and publishing |
-| [docs/documenting.md](https://github.com/borco/scintilla-py/blob/master/docs/documenting.md) | How the docs site is built, and how to add or update a page |
+| [docs/pyside6-scintilla/alternatives.md](https://github.com/borco/scintilla-py/blob/master/docs/pyside6-scintilla/alternatives.md) | How this compares to Monaco-based Qt bindings and other line-numbers + block-edit widgets |
+| [docs/pyside6-scintilla/auditing.md](https://github.com/borco/scintilla-py/blob/master/docs/pyside6-scintilla/auditing.md) | How to verify the vendored Scintilla source matches upstream |
+| [docs/pyside6-scintilla/bindings.md](https://github.com/borco/scintilla-py/blob/master/docs/pyside6-scintilla/bindings.md) | How the shiboken6 bindings are built, generated files, and the Scintilla-update procedure |
+| [docs/development/build.md](https://github.com/borco/scintilla-py/blob/master/docs/development/build.md) | Build prerequisites, local build/rebuild, wheels, and publishing |
+| [docs/development/documenting.md](https://github.com/borco/scintilla-py/blob/master/docs/development/documenting.md) | How the docs site is built, and how to add or update a page |
 | [docs/specs/](https://github.com/borco/scintilla-py/tree/master/docs/specs/) | Design specifications and action plans for in-progress and planned work |
-| [docs/specs/mission.md](https://github.com/borco/scintilla-py/blob/master/docs/specs/mission.md) | Project background, goals, and design decisions |
-| [docs/testpypi.md](https://github.com/borco/scintilla-py/blob/master/docs/testpypi.md) | Setting up TestPyPI trusted publishing |
+| [docs/development/mission.md](https://github.com/borco/scintilla-py/blob/master/docs/development/mission.md) | Project background, goals, and design decisions |
+| [docs/development/testpypi.md](https://github.com/borco/scintilla-py/blob/master/docs/development/testpypi.md) | Setting up TestPyPI trusted publishing |
 | [examples/](https://github.com/borco/scintilla-py/tree/master/examples) | Standalone example apps, including ones showing [lexilla](https://github.com/borco/scintilla-py/tree/master/packages/lexilla) in use |
 | [GitHub Issues](https://github.com/borco/scintilla-py/issues) | Planned and in-progress work |
 | [Project board](https://github.com/users/borco/projects/3) | Roadmap |

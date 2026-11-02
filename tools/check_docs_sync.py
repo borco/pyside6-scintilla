@@ -15,7 +15,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 PAIRS = [
-    (ROOT / "packages" / "pyside6-scintilla" / "README.md", ROOT / "docs" / "index.md"),
+    (ROOT / "packages" / "pyside6-scintilla" / "README.md", ROOT / "docs" / "pyside6-scintilla" / "index.md"),
     (ROOT / "packages" / "lexilla" / "README.md", ROOT / "docs" / "lexilla" / "index.md"),
 ]
 

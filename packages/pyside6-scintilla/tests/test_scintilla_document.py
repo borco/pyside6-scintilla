@@ -59,7 +59,7 @@ def test_modified_signal_fires_on_edit(qtbot: QtBot) -> None:
 def test_dropped_get_doc_wrapper_stops_receiving_signals(qtbot: QtBot) -> None:
     """Dropping the only Python reference to a get_doc() result silences its
     signals, even though the underlying document (and the editor using it)
-    is unaffected -- see the get_doc() lifetime caveat in docs/bindings.md."""
+    is unaffected -- see the get_doc() lifetime caveat in docs/pyside6-scintilla/bindings.md."""
     editor = ScintillaEdit()
     qtbot.addWidget(editor)
 

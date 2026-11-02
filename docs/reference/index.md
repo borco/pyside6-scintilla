@@ -1,17 +1,15 @@
-# API reference
+# Reference
 
-`pyside6_scintilla`'s public API: the `ScintillaEditBase`/`ScintillaEdit`
-widgets, `ScintillaDocument`, and the `Scintilla.Message` enum used by
-`send`/`sends`.
+The Python API of each package, generated from its type stubs and
+docstrings.
 
-- [**ScintillaEditBase**](scintilla-edit-base.md) -- the raw widget, exposing
-  only `send`/`sends` (and Scintilla's notification signals) for the full
-  `SCI_*` message API.
-- [**ScintillaEdit**](scintilla-edit.md) -- `ScintillaEditBase` plus a typed
-  Python method for every `SCI_*` message (e.g. `setText()`, `textLength()`).
-- [**ScintillaDocument**](scintilla-document.md) -- a Scintilla document
-  buffer, for sharing one document between multiple `ScintillaEdit` widgets.
-- [**Scintilla.Message**](message.md) -- the `SCI_*` message IDs sent via
-  `send`/`sends`.
-- [**Colours**](colours.md) -- `colour_to_scintilla()`/`colour_from_scintilla()`,
-  converting between `QColor` and Scintilla's packed colour ints for `send()`.
+- [**Scintilla**](scintilla/index.md) -- `pyside6_scintilla`: the
+  `ScintillaEditBase`/`ScintillaEdit` widgets, `ScintillaDocument`, the
+  `Scintilla.Message` enum, and the colour helpers.
+- [**Lexilla**](lexilla.md) -- `lexilla`: `create_lexer()`, `Lexer`, the
+  `Language`/`LanguageIdentifier`/`PropertyType` enums, and the
+  `lexilla.pyside6_scintilla` glue.
+
+For what each Scintilla message does, see the [API](../api/scintilla/index.md)
+pages; for how Lexilla's API maps to Python, the
+[Lexilla API](../api/lexilla/index.md).

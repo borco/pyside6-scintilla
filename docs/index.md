@@ -1,88 +1,57 @@
-<!-- sync:header -->
-# pyside6-scintilla
+# scintilla-py
 
 [![CI](https://github.com/borco/scintilla-py/actions/workflows/ci.yml/badge.svg)](https://github.com/borco/scintilla-py/actions/workflows/ci.yml)
-[![PyPI](https://img.shields.io/pypi/v/pyside6-scintilla)](https://pypi.org/project/pyside6-scintilla/)
-[![Downloads](https://static.pepy.tech/badge/pyside6-scintilla)](https://pepy.tech/project/pyside6-scintilla)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://github.com/borco/scintilla-py/blob/master/LICENSE)
-[![Python versions](https://img.shields.io/pypi/pyversions/pyside6-scintilla)](https://pypi.org/project/pyside6-scintilla/)
 
-*Permissively-licensed PySide6 bindings for the [Scintilla](https://www.scintilla.org/) code editor component.*
+*Permissively-licensed Python bindings for the [Scintilla](https://www.scintilla.org/)
+code editor component and its lexer library, [Lexilla](https://www.scintilla.org/Lexilla.html).*
 
-[View on PyPI](https://pypi.org/project/pyside6-scintilla/) · [View on GitHub](https://github.com/borco/scintilla-py)
-<!-- /sync:header -->
+[View on GitHub](https://github.com/borco/scintilla-py)
 
-## Packages
+## The packages
 
-This site documents the two packages of the
-[scintilla-py](https://github.com/borco/scintilla-py) repo, each released to
-PyPI on its own:
+Two packages, built in one repo and released to PyPI separately:
 
-| Package | What it is |
-| --- | --- |
-| [`pyside6-scintilla`](https://pypi.org/project/pyside6-scintilla/) | PySide6 bindings for the Scintilla editor widget -- this page and most of the site. |
-| [`lexilla`](https://pypi.org/project/lexilla/) | Bindings for Lexilla, Scintilla's lexer library (syntax highlighting for ~125 languages), usable with `pyside6-scintilla` -- see [Lexilla](lexilla/index.md). |
-
-## Status
-
-See [GitHub Issues](https://github.com/borco/scintilla-py/issues) for
-what's done and what's next, and the
-[project board](https://github.com/users/borco/projects/3) for the roadmap.
-Each package's changes are in the [Changelog](changelog/index.md).
-
-## Installation
-
-<!-- sync:installation -->
-Install from [PyPI](https://pypi.org/project/pyside6-scintilla/):
+| Package | PyPI | What it is |
+| --- | --- | --- |
+| [**pyside6-scintilla**](pyside6-scintilla/index.md) | [![PyPI](https://img.shields.io/pypi/v/pyside6-scintilla)](https://pypi.org/project/pyside6-scintilla/) | The Scintilla editor widget for PySide6 -- a GPL-free alternative to PyQt6-QScintilla. |
+| [**lexilla**](lexilla/index.md) | [![PyPI](https://img.shields.io/pypi/v/lexilla)](https://pypi.org/project/lexilla/) | Lexilla's lexers (syntax highlighting and folding for ~125 languages), handed to a pyside6-scintilla editor. |
 
 ```bash
-pip install pyside6-scintilla
+pip install pyside6-scintilla lexilla
 ```
 
-`PySide6-Essentials` 6.11.x is installed automatically as a dependency; the
-wheels bundle everything else `ScintillaEditBase` needs at runtime. Each
-release is built for, and pinned to, one PySide6 minor (its binding libraries
-aren't ABI-compatible across minors), so on another PySide6 minor pip picks
-the release built for it, or refuses the install, rather than installing a
-wheel that fails to import. Essentials
-provides the whole `PySide6` import namespace — only `QtCore`, `QtGui` and
-`QtWidgets` are used here, so the ~175 MB of `PySide6-Addons` (Qt WebEngine,
-Qt3D, QtCharts …) is left out. Install `PySide6` yourself if you want them.
-<!-- /sync:installation -->
-
-## Usage
-
-<!-- sync:usage-example -->
 ```python
 from PySide6.QtWidgets import QApplication
+from lexilla import Language, create_lexer
+from lexilla.pyside6_scintilla import set_lexer
 from pyside6_scintilla import ScintillaEdit
 
 app = QApplication([])
 editor = ScintillaEdit()
-editor.setText("hello, world")
+lexer = create_lexer(Language.CPP)
+assert lexer is not None
+set_lexer(editor, lexer)
+editor.setText("int main() { return 0; }")
 editor.show()
 app.exec()
 ```
-<!-- /sync:usage-example -->
 
-`ScintillaEdit` exposes a typed method per Scintilla message (e.g.
-`setText()`, `textLength()`, `gotoLine()`) on top of `ScintillaEditBase`'s
-raw `.send()`/`.sends()` message API — the same `SCI_*` messages as the C
-interface, not a QScintilla-style high-level API. See the
-[examples gallery](examples/index.md) for complete examples of both.
+Each package's page has the details; the [examples gallery](examples/index.md)
+has complete apps, and [Reference](reference/index.md) the Python API.
 
 ## Why this exists
 
-The standard way to use Scintilla from Python + Qt is
-[QScintilla](https://riverbankcomputing.com/software/qscintilla/) — but it's
-a PyQt6 binding with no PySide6 equivalent, and it's GPLv3 or commercially
-licensed. Scintilla itself is licensed under the permissive
-[HPND license](https://www.scintilla.org/License.txt). This project exposes
-that permissive core directly to PySide6 users — see
-[Project mission](specs/mission.md) for the full background.
+The usual way to use Scintilla from Python with Qt is QScintilla -- a PyQt6
+binding, GPLv3 or commercially licensed. Scintilla and Lexilla themselves are
+permissively licensed (HPND). These packages expose them directly to PySide6
+users under MIT -- see the [mission](development/mission.md) for the full
+background, and [How the packages are built](development/architecture.md) for
+why they're two packages with two different binding stacks.
 
-## Development
+## Status
 
-See the **Development** section for how the bindings are built, how to set
-up a local build, and how the vendored Scintilla source is verified against
-upstream.
+See [GitHub Issues](https://github.com/borco/scintilla-py/issues) for what's
+done and what's next, the
+[project board](https://github.com/users/borco/projects/3) for the roadmap,
+and the [Changelog](changelog/index.md) for each package's releases.

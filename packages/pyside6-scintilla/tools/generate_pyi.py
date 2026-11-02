@@ -4,7 +4,7 @@
 Pylance/mypy/ruff full signatures and autocomplete for `Scintilla.*` and
 `ScintillaEditBase`. Running it directly on the built extension fails for two
 reasons that don't affect PySide6's own `pyside6-genpyi` (see "Type stubs" in
-docs/bindings.md):
+docs/pyside6-scintilla/bindings.md):
 
 1. genpyi re-imports the extension from a bare path, bypassing
    `pyside6_scintilla/__init__.py`'s `import PySide6.QtWidgets` DLL-path
@@ -1454,7 +1454,7 @@ SCINTILLA_EDIT_BASE_SIGNAL_DOCS: Final = {
     ),
     "notify": (
         "Delivers every Scintilla notification, before the typed signals above are emitted for it.\n\n"
-        "        See the `NotificationData` lifetime caveat in docs/bindings.md -- prefer a typed "
+        "        See the `NotificationData` lifetime caveat in docs/pyside6-scintilla/bindings.md -- prefer a typed "
         "signal where one exists."
     ),
     "notifyChange": "The document was modified; emitted alongside `command` for compatibility.",
@@ -1829,7 +1829,7 @@ def main() -> None:
     text = add_class_docstring(text, "ScintillaEditBase", SCINTILLA_EDIT_BASE_CLASS_DOC)
     text = add_class_docstring(text, "ScintillaDocument", SCINTILLA_DOCUMENT_CLASS_DOC)
     # The *Fixed classes are what __init__.py exposes, but they only redeclare
-    # the members they replace (see docs/bindings.md) -- the add_*_docstrings
+    # the members they replace (see docs/pyside6-scintilla/bindings.md) -- the add_*_docstrings
     # helpers only match lines that exist in the target class body, so reusing
     # the same dicts on both classes documents each member where it's declared.
     for document_class in ("ScintillaDocument", "ScintillaDocumentFixed"):

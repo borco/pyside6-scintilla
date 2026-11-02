@@ -14,10 +14,11 @@
 ## Status
 
 See [GitHub Issues](https://github.com/borco/scintilla-py/issues) for what's
-done and what's next, and the
-[project board](https://github.com/users/borco/projects/3) for the roadmap.
-lexilla lives in the same repo as [pyside6-scintilla](../index.md), under
-`packages/lexilla/`.
+done and what's next, the
+[project board](https://github.com/users/borco/projects/3) for the roadmap,
+and the [changelog](../changelog/lexilla.md) for releases. lexilla lives in
+the [scintilla-py](../index.md) repo, next to
+[pyside6-scintilla](../pyside6-scintilla/index.md).
 
 ## Installation
 
@@ -52,22 +53,21 @@ for a complete example.
 ## Why this exists
 
 Lexilla creates the lexer objects (`ILexer5`) that a Scintilla editor widget
-attaches via `SCI_SETILEXER` — it's a separate, Qt-free C++ library from
-Scintilla itself since Scintilla 5.0. This project exposes that library
-directly to Python. In practice,
-[pyside6-scintilla](https://github.com/borco/scintilla-py) is its only
-consumer, wired up via the `set_lexer()` convenience function (see Usage
-above) rather than raw `SCI_SETILEXER` pointer plumbing; it's kept as a
-separate package so this binding's release cadence and vendored Lexilla
-version can track upstream Lexilla releases independently of
-pyside6-scintilla's own release cycle — see
-[Project mission](../specs/lexilla-mission.md) for the full background.
+attaches via `SCI_SETILEXER` -- since Scintilla 5.0 a separate, Qt-free C++
+library. This package exposes it directly to Python; in practice its consumer
+is [pyside6-scintilla](../pyside6-scintilla/index.md), wired up via
+`set_lexer()` (see Usage above). It's a separate package so it can follow
+upstream Lexilla releases independently and stay free of Qt -- see the
+[mission](../development/mission.md) and the
+[design decisions](design-decisions.md).
 
-## Development
+## More
 
-See the pages in this section for the bindings architecture, lexilla-specific
-build notes and how the vendored Lexilla source is verified against upstream,
-and [Building and publishing](../build.md) for the workspace as a whole. See
-[GitHub Issues](https://github.com/borco/scintilla-py/issues) for the ordered
-list of upcoming work. For lexilla in use, see the
-[lexilla highlighting example](../highlighting/lexilla_highlighting.md).
+- [Bindings architecture](bindings.md) -- how the nanobind bindings are built
+  and what they expose
+- [Build notes](build.md) -- what's specific to building lexilla (the
+  workspace build is in [Building and publishing](../development/build.md))
+- [Verifying vendored Lexilla](auditing.md) -- checking the vendored source
+  against upstream, and the Scintilla interface headers
+- [API](../api/lexilla/index.md) and [Reference](../reference/lexilla.md)
+- The [lexilla highlighting example](../highlighting/lexilla_highlighting.md)

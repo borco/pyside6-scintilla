@@ -373,7 +373,7 @@ class Method:
 
         Lets someone reading Scintilla's own documentation map each message to
         this API; the general rules (text is `str`, positions are bytes) are
-        documented once, in docs/bindings.md, not repeated per method.
+        documented once, in docs/pyside6-scintilla/bindings.md, not repeated per method.
         """
         param2 = param_name(self.__feature["Param2Name"]) if self.__feature["Param2Name"] else ""
         notes = [f"Sends `{self.__message}`."]

@@ -1,9 +1,5 @@
 # Documenting
 
-> [!NOTE]
-> Paths on this page are relative to `packages/pyside6-scintilla/`, except
-> repo-level ones (`docs/`, `tools/`, `.github/`, `examples/`).
-
 How this docs site (<https://borco.github.io/scintilla-py/>) is built,
 and how to add or update a page.
 
@@ -33,24 +29,24 @@ base path applies locally too).
    this fails on broken internal links/anchors and missing nav entries,
    which is most of what goes wrong.
 5. If the page touches content shared with [`README.md`](https://github.com/borco/scintilla-py/blob/master/packages/pyside6-scintilla/README.md) (currently the
-   header badges, install snippet, and usage example on [`docs/index.md`](index.md)),
+   header badges, install snippet, and usage example on [`docs/pyside6-scintilla/index.md`](../pyside6-scintilla/index.md); likewise lexilla's README and `docs/lexilla/index.md`),
    keep the `<!-- sync:NAME -->`/`<!-- /sync:NAME -->` blocks in both files
    identical -- `tools/check_docs_sync.py` (run via `make lint` and CI)
    fails if they diverge.
 
 ## The "Scintilla API" section
 
-`docs/scintilla/**` is a page-by-page Markdown conversion of
+`docs/api/scintilla/**` is a page-by-page Markdown conversion of
 `src/scintilla/doc/ScintillaDoc.html` -- the upstream Scintilla manual,
 which ships as one very long HTML page with an in-page table of contents but
 no persistent sidebar. Splitting it into MkDocs pages, grouped by topic under
-themed sub-sections of the "Scintilla API" nav entry (e.g. "Editing"), makes
+themed sub-sections of the "API > Scintilla" nav entry (e.g. "Editing"), makes
 it navigable alongside the rest of the site.
 
 This is an ongoing, incremental effort -- new sections are converted one at a
 time as they're needed. Sections not yet converted get a "Work in progress"
 stub page (a title, a heading-link to the corresponding anchor in the local
-`docs/scintilla-original/ScintillaDoc.html` copy, and a short note) so the
+`docs/api/scintilla-original/ScintillaDoc.html` copy, and a short note) so the
 full nav structure is browsable now. Current progress:
 
 | | Pages | % |
@@ -97,8 +93,8 @@ Each converted page is produced with a pandoc-assisted conversion:
 5. **Add inline upstream-doc links**: each `h1`/`h2` heading gets a small
    `[:material-link-variant:](../../scintilla-original/ScintillaDoc.html#ANCHOR_ID
    "Upstream documentation"){ .heading-link }` appended to the heading text
-   (the `../../` is relative to `docs/scintilla/<group>/<page>.md`), pointing
-   at the corresponding anchor in `docs/scintilla-original/ScintillaDoc.html`
+   (the `../../` is relative to `docs/api/scintilla/<group>/<page>.md`), pointing
+   at the corresponding anchor in `docs/api/scintilla-original/ScintillaDoc.html`
    -- a local copy of the vendored upstream manual, kept in sync with
    `src/scintilla/doc/ScintillaDoc.html` (see "Local copy of the upstream
    docs" below). The `.heading-link` CSS class lives in
@@ -113,7 +109,7 @@ Each converted page is produced with a pandoc-assisted conversion:
 
 ## Local copy of the upstream docs
 
-`docs/scintilla-original/ScintillaDoc.html` (+ the handful of images it
+`docs/api/scintilla-original/ScintillaDoc.html` (+ the handful of images it
 references) is a byte-for-byte copy of `src/scintilla/doc/ScintillaDoc.html`,
 served as a static page on the docs site. It exists so the per-page
 "Upstream documentation" heading-links (step 5 above) and the "Work in
@@ -130,7 +126,7 @@ the way.
 
 ## The "Reference" pages
 
-`docs/reference/` is generated from
+`docs/reference/scintilla/` is generated from
 `src/pyside6_scintilla/_pyside6_scintilla.pyi` (the type stub for the
 compiled `_pyside6_scintilla` extension) via the
 [mkdocstrings](https://mkdocstrings.github.io/)/`mkdocstrings-python`
@@ -140,31 +136,31 @@ build time (`docs.yml` runs with `--no-install-project`).
 
 It's one page per class/enum (one `::: pyside6_scintilla.<name>` block each,
 with `show_root_heading: true` and `heading_level: 1`), listed in
-`mkdocs.yml`'s `nav:` under "Reference", with [`docs/reference/index.md`](reference/index.md) as a
+`mkdocs.yml`'s `nav:` under "Reference", with [`docs/reference/scintilla/index.md`](../reference/scintilla/index.md) as a
 landing page linking to each:
 
-- [`reference/scintilla-edit-base.md`](reference/scintilla-edit-base.md) -- `ScintillaEditBase` (the raw
+- [`reference/scintilla-edit-base.md`](../reference/scintilla/scintilla-edit-base.md) -- `ScintillaEditBase` (the raw
   `send`/`sends` message API plus Scintilla's notification signals), with
   hand-written docstrings for `send`/`sends`.
-- [`reference/scintilla-edit.md`](reference/scintilla-edit.md) -- `ScintillaEdit`'s ~780 typed methods, with
-  docstrings stitched from `Scintilla.iface` (see `tools/generate_pyi.py`'s
+- [`reference/scintilla-edit.md`](../reference/scintilla/scintilla-edit.md) -- `ScintillaEdit`'s ~780 typed methods, with
+  docstrings stitched from `Scintilla.iface` (see `packages/pyside6-scintilla/tools/generate_pyi.py`'s
   `parse_widget_method_docs()`).
-- [`reference/scintilla-document.md`](reference/scintilla-document.md) -- `ScintillaDocument`'s ~40 methods,
+- [`reference/scintilla-document.md`](../reference/scintilla/scintilla-document.md) -- `ScintillaDocument`'s ~40 methods,
   hand-transcribed docstrings (`SCINTILLA_DOCUMENT_DOCS`).
-- [`reference/message.md`](reference/message.md) -- `Scintilla.Message` as a glossary -- 815+ of 819
+- [`reference/message.md`](../reference/scintilla/message.md) -- `Scintilla.Message` as a glossary -- 815+ of 819
   members have a one-line docstring stitched in from
   `Scintilla.iface`/`ScintillaDoc.html`.
 
-To add another enum or class, add a new `docs/reference/<name>.md` page with
+To add another enum or class, add a new `docs/reference/scintilla/<name>.md` page with
 a `::: pyside6_scintilla.<name>` block and list it in `mkdocs.yml`'s `nav:`.
 If it needs per-member docstrings that don't exist yet, see
-`tools/generate_pyi.py` (`add_enum_docstrings()`/`add_method_docstrings()` and
-the various `*_DOCS` dicts) and [`docs/bindings.md`](bindings.md)'s "Type stubs" section --
-after changing it, regenerate with `make scintilla-stubs` and re-check `docs/reference/`.
+`packages/pyside6-scintilla/tools/generate_pyi.py` (`add_enum_docstrings()`/`add_method_docstrings()` and
+the various `*_DOCS` dicts) and [`docs/pyside6-scintilla/bindings.md`](../pyside6-scintilla/bindings.md)'s "Type stubs" section --
+after changing it, regenerate with `make scintilla-stubs` and re-check `docs/reference/scintilla/`. lexilla's reference (`docs/reference/lexilla.md`) renders its `_lexilla.pyi` stub the same way (`make lexilla-stubs`).
 
 ## Keeping docs and code in sync
 
 - `tools/check_docs_sync.py` (via `make lint`) checks the `<!-- sync:NAME -->`
-  blocks shared between [`README.md`](https://github.com/borco/scintilla-py/blob/master/packages/pyside6-scintilla/README.md) and [`docs/index.md`](index.md).
+  blocks shared between [`README.md`](https://github.com/borco/scintilla-py/blob/master/packages/pyside6-scintilla/README.md) and [`docs/pyside6-scintilla/index.md`](../pyside6-scintilla/index.md).
 - `mkdocs build --strict` (via `docs.yml`) fails on broken links/anchors and
   missing nav entries -- run it locally before pushing any docs change.

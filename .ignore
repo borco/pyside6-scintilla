@@ -16,3 +16,6 @@ __pycache__/
 /packages/pyside6-scintilla/src/pyside6_scintilla/*.so
 /packages/pyside6-scintilla/src/pyside6_scintilla/*.dylib
 /packages/pyside6-scintilla/src/pyside6_scintilla/*.dll
+/packages/lexilla/src/lexilla/*.pyd
+/packages/lexilla/src/lexilla/*.so
+/packages/lexilla/src/lexilla/*.dylib

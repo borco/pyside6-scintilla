@@ -1,0 +1,61 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Example: autocomplete",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/examples/autocomplete/main.py",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}/examples/autocomplete"
+        },
+        {
+            "name": "Example: bscintillaedit",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/examples/bscintillaedit/main.py",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}/examples/bscintillaedit"
+        },
+        {
+            "name": "Example: highlighting/lexilla_highlighting",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/examples/highlighting/lexilla_highlighting/main.py",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}/examples/highlighting/lexilla_highlighting"
+        },
+        {
+            "name": "Example: highlighting/pygments_highlighting",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/examples/highlighting/pygments_highlighting/main.py",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}/examples/highlighting/pygments_highlighting"
+        },
+        {
+            "name": "Example: highlighting/tree_sitter_highlighting",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/examples/highlighting/tree_sitter_highlighting/main.py",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}/examples/highlighting/tree_sitter_highlighting"
+        },
+        {
+            "name": "Example: simple_scintilla_base_edit",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/examples/simple_scintilla_base_edit/main.py",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}/examples/simple_scintilla_base_edit"
+        },
+        {
+            "name": "Example: simple_scintilla_edit",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/examples/simple_scintilla_edit/main.py",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}/examples/simple_scintilla_edit"
+        }
+    ]
+}

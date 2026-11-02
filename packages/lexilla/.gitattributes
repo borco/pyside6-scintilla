@@ -1,3 +1,0 @@
-# Keep vendored Lexilla source byte-identical to the upstream release
-# tarball so future version bumps diff cleanly (once vendored).
-src/lexilla_vendor/** -text

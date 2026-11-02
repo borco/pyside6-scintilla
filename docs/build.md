@@ -3,8 +3,9 @@
 ## Prerequisites
 
 - Python 3.11+ and [uv](https://docs.astral.sh/uv/)
-- Qt 6.10+ matching the PySide6/shiboken6 version resolved by `uv sync`
-  (currently 6.11.x), **including the Qt 5 Compatibility module
+- Qt 6.11.x, the PySide6/shiboken6 minor pinned in `pyproject.toml` (the
+  SDK must match the minor the extension links against; patch releases are
+  interchangeable), **including the Qt 5 Compatibility module
   (`Qt6Core5Compat`)** -- not installed by default, add it via the Qt
   Maintenance Tool/online installer for your kit.
 - A C++17 compiler:
@@ -149,6 +150,40 @@ Windows/Linux, a framework bundle on macOS), and each platform's
 (`delvewheel`/`auditwheel`/`delocate`) excludes the Qt/PySide6/shiboken6
 libraries provided at runtime by the installed PySide6 package. See
 [bindings.md](bindings.md) issue 3 for the details and history.
+
+## Bumping the PySide6 minor
+
+Each release is built for one PySide6 minor (issue #15): shiboken6/PySide6's
+C++ ABI changes between minors, so a wheel built against 6.11 fails to import
+with 6.12. Moving to a new minor (`6.X`) means a new release with all of
+these updated together -- there is no single source of truth yet (the
+monorepo's shared CI setup action will hold the Qt version), so check each:
+
+1. `pyproject.toml`
+   - `[build-system].requires`: `shiboken6-generator`, `shiboken6`,
+     `PySide6-Essentials` -> `>=6.X,<6.(X+1)`.
+   - `[project].dependencies`: `PySide6-Essentials`, `shiboken6` -> same.
+   - `[dependency-groups].dev`: `shiboken6-generator` -> same.
+   - `[tool.cibuildwheel]`: the Qt version in every `before-all` (aqtinstall)
+     and `CMAKE_PREFIX_PATH` (Linux x86_64, Linux aarch64, macOS); the
+     manylinux image if PySide6's own wheel tag moved; the macOS
+     `MACOSX_DEPLOYMENT_TARGET` if PySide6's macOS wheel tag moved; and the
+     Linux auditwheel excludes `libpyside6.abi3.so.6.X` /
+     `libshiboken6.abi3.so.6.X` (the soname carries the minor -- a stale
+     exclude silently bundles a second copy of PySide6's libraries) and the
+     `libicu*` version the Qt SDK ships.
+2. `.github/workflows/ci.yml` and `wheels.yml`: the Qt `version:` installed
+   by `install-qt-action`.
+3. `uv lock` (then `uv sync --reinstall-package pyside6-scintilla`, run the
+   tests, and `make stubs` in case genpyi's output changed).
+4. The Qt SDK version mentioned in this file's examples, and the
+   installation note in `README.md`/`docs/index.md`.
+5. `CHANGELOG.md`: a breaking "requires PySide6 6.X" entry, and a new
+   `__version__`.
+
+Then check the built wheel in a fresh venv: it must import beside the new
+minor's newest patch release, and pip must refuse to install it beside the
+previous minor.
 
 ## Publishing to PyPI
 

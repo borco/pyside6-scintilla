@@ -50,8 +50,12 @@ Install from [PyPI](https://pypi.org/project/pyside6-scintilla/):
 pip install pyside6-scintilla
 ```
 
-`PySide6-Essentials` 6.10+ is installed automatically as a dependency; the
-wheels bundle everything else `ScintillaEditBase` needs at runtime. Essentials
+`PySide6-Essentials` 6.11.x is installed automatically as a dependency; the
+wheels bundle everything else `ScintillaEditBase` needs at runtime. Each
+release is built for, and pinned to, one PySide6 minor (its binding libraries
+aren't ABI-compatible across minors), so on another PySide6 minor pip picks
+the release built for it, or refuses the install, rather than installing a
+wheel that fails to import. Essentials
 provides the whole `PySide6` import namespace — only `QtCore`, `QtGui` and
 `QtWidgets` are used here, so the ~175 MB of `PySide6-Addons` (Qt WebEngine,
 Qt3D, QtCharts …) is left out. Install `PySide6` yourself if you want them.
@@ -59,7 +63,7 @@ Qt3D, QtCharts …) is left out. Install `PySide6` yourself if you want them.
 
 To build from source instead (e.g. for development), see
 [docs/build.md](https://github.com/borco/pyside6-scintilla/blob/master/docs/build.md)
-for prerequisites (Qt 6.10+ with `Qt6Core5Compat`, a C++17 compiler) and
+for prerequisites (Qt 6.11 with `Qt6Core5Compat`, a C++17 compiler) and
 platform-specific setup.
 
 `examples/highlighting/lexilla_highlighting/` uses

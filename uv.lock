@@ -1,5 +1,5 @@
 version = 1
-revision = 3
+revision = 5
 requires-python = ">=3.11"
 
 [[package]]
@@ -615,6 +615,7 @@ name = "pyside6-scintilla"
 source = { editable = "." }
 dependencies = [
     { name = "pyside6-essentials" },
+    { name = "shiboken6" },
 ]
 
 [package.dev-dependencies]
@@ -642,7 +643,10 @@ docs = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "pyside6-essentials", specifier = ">=6.10" }]
+requires-dist = [
+    { name = "pyside6-essentials", specifier = ">=6.11,<6.12" },
+    { name = "shiboken6", specifier = ">=6.11,<6.12" },
+]
 
 [package.metadata.requires-dev]
 dev = [
@@ -656,7 +660,7 @@ dev = [
     { name = "pytest-qt", specifier = ">=4.4" },
     { name = "ruff", specifier = ">=0.8" },
     { name = "scikit-build-core", specifier = ">=0.10" },
-    { name = "shiboken6-generator" },
+    { name = "shiboken6-generator", specifier = ">=6.11,<6.12" },
     { name = "tree-sitter", specifier = ">=0.25" },
     { name = "tree-sitter-python", specifier = ">=0.25" },
 ]

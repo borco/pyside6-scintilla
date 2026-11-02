@@ -1,13 +1,17 @@
 [build-system]
 requires = [
     "scikit-build-core>=0.10",
-    "shiboken6-generator",
-    "shiboken6",
+    # All three pinned to the PySide6 minor the wheels are built for (and the
+    # Qt SDK version in wheels.yml/[tool.cibuildwheel]) -- see the runtime pin
+    # in [project].dependencies below (issue #15). Unpinned, a build would
+    # pick up whatever PySide6 is newest on PyPI, against an older Qt SDK.
+    "shiboken6-generator>=6.11,<6.12",
+    "shiboken6>=6.11,<6.12",
     # Essentials, not the PySide6 meta-package: everything the build reads
     # from the wheel -- PySide6/lib/cmake/PySide6 (find_package), the
     # typesystems/ and glue/ for Core/Gui/Widgets, and libpyside6 itself --
     # ships in Essentials. See [project].dependencies below (issue #14).
-    "PySide6-Essentials>=6.10",
+    "PySide6-Essentials>=6.11,<6.12",
 ]
 build-backend = "scikit_build_core.build"
 
@@ -52,8 +56,16 @@ requires-python = ">=3.11"
 # PySide6 wheel), and Essentials provides the whole `PySide6` import namespace
 # including `py.typed` and the .pyi stubs. Anyone wanting an add-on module can
 # depend on `PySide6`/`PySide6-Addons` explicitly. See issue #14.
+#
+# Pinned to one PySide6 minor (issue #15): the extension calls into
+# shiboken6/PySide6's C++ libraries, whose ABI isn't stable across minor
+# releases (on Linux the soname even carries it: libpyside6.abi3.so.6.11), so
+# a wheel built against 6.11 fails to import with 6.12 ("procedure could not
+# be found"). Patch releases are compatible. Each PySide6 minor needs its own
+# release of this package; pip picks the one matching the installed PySide6.
 dependencies = [
-    "PySide6-Essentials>=6.10",
+    "PySide6-Essentials>=6.11,<6.12",
+    "shiboken6>=6.11,<6.12",
 ]
 
 
@@ -93,7 +105,7 @@ dev = [
     "pytest-qt>=4.4",
     "ruff>=0.8",
     "scikit-build-core>=0.10",
-    "shiboken6-generator",
+    "shiboken6-generator>=6.11,<6.12",
     "tree-sitter>=0.25",
     "tree-sitter-python>=0.25",
 ]
@@ -111,9 +123,9 @@ docs = [
 # ---------------------------------------------------------------------------
 
 # Build without an isolated env: the CMake configure step needs to find the
-# PySide6/shiboken6 CMake packages from the *same* Python environment, which
-# only holds for .venv (PySide6 is a runtime dep, shiboken6/shiboken6-generator
-# are dev deps — none of these are [build-system].requires).
+# PySide6/shiboken6 CMake packages from the *same* Python environment as the
+# one the extension is imported from, i.e. .venv (an isolated build env would
+# resolve [build-system].requires' PySide6/shiboken6 separately).
 [tool.uv]
 no-build-isolation-package = ["pyside6-scintilla"]
 

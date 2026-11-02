@@ -19,6 +19,8 @@
     `libxml2.so.2`, which libxml2 2.14 replaced with `libxml2.so.16`, so the
     build fails with "error while loading shared libraries: libxml2.so.2".
     Build on Ubuntu 24.04 (as CI does) or in a container/manylinux image.
+    Reported upstream as
+    [PYSIDE-3504](https://qt-project.atlassian.net/browse/PYSIDE-3504).
     Only building is affected: the extension doesn't use libxml2, and the
     published wheels run fine on 26.04 (CI's `runtime` job checks this).
 - CMake 3.25+ and Ninja -- available as dev dependencies via `uv`, or from

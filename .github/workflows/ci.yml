@@ -18,6 +18,8 @@ jobs:
         # since late 2026) libxml2 no longer ships libxml2.so.2, which
         # shiboken6-generator's prebuilt `shiboken6` binary links against
         # ("error while loading shared libraries: libxml2.so.2"; 6.12.0 too).
+        # Reported upstream: https://qt-project.atlassian.net/browse/PYSIDE-3504
+        # (tracked here as #18: move back to ubuntu-latest once it's fixed).
         # Only the build needs it -- the extension doesn't link libxml2 -- so
         # the `runtime` job below checks the built wheel on 26.04 instead.
         # wheels.yml is unaffected: cibuildwheel builds Linux wheels inside

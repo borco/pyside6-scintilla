@@ -58,7 +58,9 @@ runs:
     - name: Install uv
       uses: astral-sh/setup-uv@v7
       with:
-        enable-cache: true
+        # Only when syncing: otherwise the cache directory is never created and
+        # setup-uv's post-job cache save fails the job.
+        enable-cache: ${{ inputs.sync == 'true' }}
         python-version: ${{ inputs.python-version }}
 
     - name: uv sync

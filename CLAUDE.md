@@ -1,28 +1,70 @@
 # CLAUDE.md
 
-This file grounds Claude sessions working on this repository.
-Read `docs/specs/mission.md` for full background. Key facts:
+This file grounds Claude sessions working on this repository. Read
+`docs/specs/mission.md` (pyside6-scintilla) and `docs/specs/lexilla-mission.md`
+(lexilla) for full background. Key facts:
 
 ## What this is
 
-A permissively-licensed (MIT) PySide6 binding for the Scintilla code editor
-component. Built with shiboken6 + CMake + scikit-build-core. The main motivation
-is providing a GPL-free alternative to PyQt6-QScintilla.
+`scintilla-py`: a monorepo of two permissively-licensed (MIT) Python
+bindings, released to PyPI separately:
+
+- **pyside6-scintilla** -- a PySide6 binding for the Scintilla code editor
+  component. Built with shiboken6 + CMake + scikit-build-core. The main
+  motivation is providing a GPL-free alternative to PyQt6-QScintilla.
+- **lexilla** -- a binding for [Lexilla](https://www.scintilla.org/Lexilla.html),
+  the lexer library used by Scintilla since 5.0. Built with nanobind + CMake +
+  scikit-build-core. Lexilla has no Qt dependency, so this package has none
+  either. In practice pyside6-scintilla is its only consumer; it's kept a
+  separate package so its release cadence and vendored Lexilla version can
+  track upstream Lexilla independently.
 
 ## What this is NOT
 
 - Not a port of QScintilla's high-level API
-- Not affiliated with Riverbank Computing or the QScintilla project
+- Not affiliated with Riverbank Computing, the QScintilla project, or the
+  Scintilla/Lexilla project
 - Not trying to upstream into Scintilla itself
+- lexilla isn't a redesign of Lexilla's API -- it exposes
+  `CreateLexer`/`ILexer5` as-is
+
+## Monorepo layout
+
+```text
+packages/
+  pyside6-scintilla/   PyPI pyside6-scintilla: pyproject, CMake, src/, tests/, tools/, CHANGELOG.md
+  lexilla/             PyPI lexilla: pyproject, CMake, src/, tests/, tools/, CHANGELOG.md
+examples/              one example gallery for both packages (not shipped)
+docs/                  one docs site (mkdocs.yml); lexilla's pages under docs/lexilla/
+tools/                 repo-level scripts (docs sync, header sync, changelog sections)
+.github/               CI (ci.yml), wheels (wheels.yml), publish (publish.yml), docs
+```
+
+Root `pyproject.toml` is a **virtual uv workspace** -- no `[project]` table,
+only `[tool.uv.workspace]`, the shared dev environment and the
+pytest/pyright/ruff configuration. `uv sync` at the root builds **both**
+packages from source into one `.venv` (so it needs the Qt SDK, for
+pyside6-scintilla). The packages depend on each other only for development,
+always as workspace sources -- lexilla's tests and glue run against this
+repo's pyside6-scintilla, never PyPI's. The top-level `Makefile` has
+workspace targets (`sync`, `test`, `lint`, `format`, `qa`, `docs-serve`, ...)
+and per-package ones (`scintilla-*`, `lexilla-*`).
 
 ## Stack
 
 - **Language**: C++ (binding glue) + Python (package/API)
-- **Binding generator**: shiboken6
+- **Binding generators**: shiboken6 (pyside6-scintilla), nanobind (lexilla)
 - **Build system**: CMake + scikit-build-core
-- **Package manager**: uv
+- **Package manager**: uv (workspace)
 - **CI**: GitHub Actions + cibuildwheel
-- **Scintilla**: vendored release tarball (not a live hg clone)
+- **Scintilla**: vendored release tarball (not a live hg clone), under
+  `packages/pyside6-scintilla/src/scintilla/`
+- **Lexilla**: vendored release tarball, under
+  `packages/lexilla/src/lexilla_vendor/`. The Scintilla headers lexilla needs
+  (`ILexer.h`, `Sci_Position.h`, `Scintilla.h`) are a byte-identical copy of
+  the vendored Scintilla's, in `packages/lexilla/src/scintilla_interface/`
+  (lexilla's sdist must build on its own), kept in sync by
+  `tools/sync_scintilla_headers.py`.
 
 ## Dev machines
 
@@ -35,14 +77,30 @@ Linux x86_64/aarch64, Windows x86_64, macOS arm64 + x86_64
 
 ## Conventions
 
-- Python package name on PyPI: `pyside6-scintilla`
-- Import name: `pyside6_scintilla` (underscore, as per PEP 8)
-- Versioning: follow Scintilla's version (e.g. Scintilla 5.5.x → this package 5.5.x.N)
-- All new code under MIT license; Scintilla vendored code retains HPND license
+- PyPI names: `pyside6-scintilla` (import `pyside6_scintilla`, underscore per
+  PEP 8) and `lexilla` (import `lexilla`)
+- Versioning: each package follows its vendored upstream -- Scintilla 5.5.x
+  → pyside6-scintilla 5.5.x.N, Lexilla 5.5.x → lexilla 5.5.x.N
+- Releases are tagged per package: `pyside6-scintilla-<version>`,
+  `lexilla-<version>` (pushing the tag publishes; see docs/build.md). Older
+  pyside6-scintilla releases are tagged `v5.6.3.N`.
+- pyside6-scintilla is pinned to one PySide6 minor per release (the binding
+  ABI isn't stable across minors); see docs/build.md, "Bumping the PySide6
+  minor"
+- All new code under MIT license; vendored Scintilla/Lexilla code retains
+  the HPND license
+- lexilla's vendored source lives at `src/lexilla_vendor/` (not
+  `src/lexilla/`) so it never collides with the Python package directory on
+  case-insensitive filesystems
+- Cross-binding integration (handing a lexilla lexer to pyside6-scintilla's
+  `SCI_SETILEXER`) goes through the lexer's raw pointer exposed as a plain
+  `int` by default -- zero coupling between the packages. Convenience glue
+  that imports pyside6-scintilla directly (`lexilla.pyside6_scintilla`) is
+  also provided.
 
 ## Python style
 
-For hand-written Python (anything not generated by shiboken/CMake):
+For hand-written Python (anything not generated by shiboken/nanobind/CMake):
 
 - Prefer bare `Final` over a parameterized `Final[T]` when the type is
   inferable, for module-level constants and attributes that are set once
@@ -61,7 +119,8 @@ For hand-written Python (anything not generated by shiboken/CMake):
   explaining the *why* and *what*. Keep them short; don't restate what a
   well-named identifier already says.
 - That terseness rule covers this codebase's own source, not documentation
-  aimed at the *end user* of the bindings (e.g. `tools/generate_pyi.py`'s
+  aimed at the *end user* of the bindings (e.g.
+  `packages/pyside6-scintilla/tools/generate_pyi.py`'s
   `ENUM_DOCS`/`*_DOCS` dicts, which become IDE hover docs for someone using
   `pyside6_scintilla`). For those, be as helpful as possible without being
   verbose — explain numeric values, related constants/messages, and
@@ -70,32 +129,51 @@ For hand-written Python (anything not generated by shiboken/CMake):
 
 ## Where to find things
 
+pyside6-scintilla (`packages/pyside6-scintilla/`):
+
 - `src/scintilla/` — vendored Scintilla source
-- `src/pyside6_scintilla/` — shiboken6 typesystem XML and binding glue
+- `src/pyside6_scintilla/bindings/` — shiboken6 typesystem XML and binding
+  glue; `scintilla_edit_fixed.*` is generated by
+  `tools/generate_scintilla_edit.py`
 - `src/pyside6_scintilla/__init__.py` — public Python API surface
-- `.github/workflows/` — CI (build + publish)
-- `docs/specs/mission.md` — full project background and decision log
-- `docs/specs/` — design specifications and action plans
+
+lexilla (`packages/lexilla/`):
+
+- `src/lexilla_vendor/` — vendored Lexilla source
+- `src/scintilla_interface/` — the Scintilla headers lexilla needs (synced copy)
+- `src/lexilla_core/` — CMake target building the vendored Lexilla sources
+  as a static library
+- `src/lexilla/__init__.py` — public Python API
+- `src/lexilla/bindings/` — nanobind binding glue (`_binding.cpp`,
+  `CMakeLists.txt`)
+
+Repo-wide:
+
+- `.github/workflows/` — CI (build + publish), `.github/actions/setup/` —
+  shared toolchain setup (the one place CI names the Qt version)
+- `docs/specs/` — design specifications, action plans, and both packages'
+  mission/decision logs
+- `docs/build.md` — building, CI, wheels, publishing
 
 ## Roadmap
 
-The [project board](https://github.com/users/borco/projects/3) is the joint
-roadmap for this repo and [lexilla-py](https://github.com/borco/scintilla-py/tree/master/packages/lexilla)
-(sibling project, same author). Issues/PRs from both repos are auto-added by
+The [project board](https://github.com/users/borco/projects/3) is the
+roadmap for this repo (both packages). Issues/PRs are auto-added by
 `.github/workflows/add-to-project.yml`.
 
 When asked what to work on next, check the project board's "In progress"
-lane for an item belonging to this repo (`borco/pyside6-scintilla`). If one
+lane for an item belonging to this repo (`borco/scintilla-py`). If one
 exists, work on it. If there is no item for this repo in "In progress", say
 so and stop — don't guess or pull something from Backlog instead.
 
-If this repo has a `continue-prompt.md`, its "Next up" section should point
-to the board's "In progress" lane rather than naming a specific issue (so it
-can't go stale), while its "Current state" section keeps the detailed,
-issue-specific work notes the board can't hold (blockers, decisions, file
-paths). Before trusting "Current state", confirm it still describes whatever
-issue the board currently shows as "In progress" — if the board has moved on
-(or shows nothing), treat the old notes as stale.
+If this repo has a `continue-prompt.md` (repo root, gitignored), its "Next
+up" section should point to the board's "In progress" lane rather than
+naming a specific issue (so it can't go stale), while its "Current state"
+section keeps the detailed, issue-specific work notes the board can't hold
+(blockers, decisions, file paths). Before trusting "Current state", confirm
+it still describes whatever issue the board currently shows as "In
+progress" — if the board has moved on (or shows nothing), treat the old
+notes as stale.
 
 ## Git
 
@@ -111,11 +189,3 @@ issue the board currently shows as "In progress" — if the board has moved on
   the parent has moved since branching and flag it -- `--no-ff` doesn't
   replace rebasing onto an advanced parent. Ask before rebasing; don't do
   it automatically.
-
-## Workspace
-
-- At session start, check whether running in a multi-root VSCode workspace
-  (see "Additional working directories" in the environment info, e.g. a
-  sibling `lexilla-py` checkout) — if so, work may span both repos, and
-  `continue-prompt.md` lives in the workspace root (e.g.
-  `__SCINTILLA/workspace/`, not `pyside6-scintilla/`) since it covers both.

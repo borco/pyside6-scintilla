@@ -6,6 +6,15 @@ Changelog](https://keepachangelog.com/en/1.0.0/); entries are kept high-level
 (what shipped, breaking changes) rather than a full commit-by-commit log —
 see git history for that.
 
+## [Unreleased]
+
+### Changed
+
+- The project moved into the [scintilla-py](https://github.com/borco/scintilla-py)
+  monorepo (as `packages/pyside6-scintilla/`), next to lexilla. Docs:
+  <https://borco.github.io/scintilla-py/>. Releases are now tagged
+  `pyside6-scintilla-<version>`.
+
 ## [5.6.3.9] - 2026-11-02
 
 ### Changed (breaking)

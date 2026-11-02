@@ -6,9 +6,19 @@ Changelog](https://keepachangelog.com/en/1.0.0/); entries are kept high-level
 (what shipped, breaking changes) rather than a full commit-by-commit log —
 see git history for that.
 
-## [Unreleased]
+## [5.6.3.8] - 2026-11-02
 
 ### Changed (breaking)
+
+- Requires PySide6 6.11 exactly (`PySide6-Essentials>=6.11,<6.12`, and the
+  same for `shiboken6`) (#15). The extension links against shiboken6/PySide6's
+  C++ libraries, whose ABI changes between minor releases: 5.6.3.7 and
+  earlier declared `>=6.10` with no upper bound, so they installed beside
+  PySide6 6.12 and then failed to import ("The specified procedure could not
+  be found"). Each PySide6 minor now gets its own release, so pip picks the
+  one matching your PySide6 -- once the unpinned 5.6.3.0-5.6.3.7 are yanked
+  on PyPI (otherwise pip still falls back to them). 6.12 support follows in
+  the next release.
 
 - A strict, consistent text/bytes API (#16). Text -- document text, names,
   display strings -- is `str` in and out, encoded with the document's

@@ -20,13 +20,24 @@ everything when a new Scintilla release is vendored.
   - `CMakeLists.txt` -- runs shiboken to generate the wrapper sources below,
     then compiles and links them (with `scintilla_qt` and Qt) into
     `_pyside6_scintilla.{pyd,so,dylib}`.
+  - `scintilla_edit_base_fixed.h`/`.cpp`, `scintilla_document_fixed.h`/`.cpp`
+    -- hand-written subclasses of the vendored `ScintillaEditBase`/
+    `ScintillaDocument`, fixing their signals and their str/bytes types (see
+    issues 4 and 5 below).
+  - `scintilla_edit_fixed.h`/`.cpp` -- **generated** (checked in) by
+    `tools/generate_scintilla_edit.py` from `Scintilla.iface`: the typed
+    method-per-message editor class, replacing upstream's
+    `WidgetGen.py`-generated `ScintillaEdit` (see issue 5).
+  - `scintilla_text_encoding.h`/`.cpp` -- `str` <-> document-bytes
+    conversions; not included by `bindings.h`, so shiboken never binds them.
 - `src/pyside6_scintilla/__init__.py` -- re-exports the compiled extension's
   public API as the `pyside6_scintilla` package.
 
 ## Generated files
 
 shiboken6 generates these files (under
-`build/<tag>/src/pyside6_scintilla/bindings/_pyside6_scintilla/`) from
+`build/<tag>/src/pyside6_scintilla/bindings/pyside6_scintilla/_pyside6_scintilla/`,
+one directory per component of the typesystem's dotted package name) from
 `bindings.h` + `bindings.xml`. They are build artifacts, not checked in, and
 are not hand-edited or hand-commented.
 
@@ -36,6 +47,7 @@ are not hand-edited or hand-commented.
 | `scintilla_wrapper.cpp` / `.h` | Wrapper for the `Scintilla` namespace and its enums (`Update`, `Message`, `KeyMod`, ...) | shiboken6, from `<namespace-type name="Scintilla">` |
 | `scintilla_notificationdata_wrapper.cpp` / `.h` | Wrapper for the `Scintilla::NotificationData` value type | shiboken6, from `<value-type name="NotificationData">` |
 | `scintillaeditbase_wrapper.cpp` / `.h` | Wrapper for the `ScintillaEditBase` widget's public methods/signals/slots | shiboken6, from `<object-type name="ScintillaEditBase"/>` |
+| `scintillaeditbasefixed_wrapper.cpp`, `scintillaeditfixed_wrapper.cpp`, `scintilladocument_wrapper.cpp`, `scintilladocumentfixed_wrapper.cpp` / `.h` | Wrappers for the other bound classes (the `*Fixed` ones are what `__init__.py` exposes) | shiboken6, from their `<object-type>` entries |
 | `_pyside6_scintilla_python.h` | Master header included by every wrapper `.cpp`; includes `bindings.h` plus the PySide6/shiboken headers it needs | shiboken6 |
 
 The `GENERATED_SOURCES` list in `bindings/CMakeLists.txt` only needs the
@@ -47,6 +59,11 @@ include list, separate from `bindings.h`. Anything done in `bindings.h` (e.g.
 while generating code -- it has no effect on what the generated `.cpp` files
 *compile* against. Fixes that need to apply at compile time belong in
 `bindings/CMakeLists.txt` (e.g. as `target_compile_definitions`).
+
+shiboken's generation step only depends on `bindings.h`/`bindings.xml` (its
+scan of included headers only works with Makefile generators), so
+`bindings/CMakeLists.txt` adds the hand-written/generated `*_fixed.h` headers
+as explicit dependencies -- otherwise editing one leaves stale wrappers.
 
 ## Issues encountered (Phase 1: `ScintillaEditBase`)
 
@@ -128,13 +145,14 @@ and rejected in favor of re-emission (below), to avoid baking
 Scintilla-specific `Q_DECLARE_METATYPE` registration into a generic binding
 layer.
 
-**Fix**: `bindings/scintilla_signal_fixes.h` (a hand-written, non-vendored
-header, included from `bindings.h`) declares two subclasses,
-`ScintillaEditBaseFixed`/`ScintillaEditFixed`, that connect each affected
-signal in C++ to a lambda re-emitting the same data as a plain-typed
-(`int`/`QByteArray`/`QString`) signal of the *same name* -- the same pattern
-already used by `ScintillaDocument::modified` (see
-`src/scintilla/qt/ScintillaEdit/ScintillaDocument.h`). PySide creates a
+**Fix**: `bindings/scintilla_edit_base_fixed.h` (a hand-written,
+non-vendored header, included from `bindings.h`) declares a subclass,
+`ScintillaEditBaseFixed`, that connects each affected signal in C++ to a
+lambda re-emitting the same data as a plain-typed (`int`/`QString`) signal
+of the *same name* -- the same pattern already used by
+`ScintillaDocument::modified` (see
+`src/scintilla/qt/ScintillaEdit/ScintillaDocument.h`). The generated
+`ScintillaEditFixed` derives from it, so it inherits the fix. PySide creates a
 `Signal` descriptor for each signal it finds in a class's own `QMetaObject`,
 so the subclass's redeclaration simply shadows the inherited
 broken-signature one through normal Python attribute/MRO lookup -- the same
@@ -154,7 +172,7 @@ A few non-obvious wrinkles along the way:
   alphabetically -- losing `ScintillaEditBase.h` (which internally includes
   `ScintillaTypes.h` before `ScintillaStructures.h`) left `ScintillaStructures.h`
   included before `ScintillaTypes.h` with nothing to satisfy its need for
-  `Position` first. **Fix**: keep `ScintillaEditBase`/`ScintillaEdit` fully
+  `Position` first. **Fix**: keep `ScintillaEditBase` fully
   bound (default `generate="yes"`) -- a `<modify-function remove="all"/>` on
   the broken signal overloads was tried too, on the assumption it'd avoid an
   ambiguous Python overload, but turned out to be a no-op (see the next
@@ -171,34 +189,120 @@ A few non-obvious wrinkles along the way:
   override any other inherited attribute by just redefining it.
 - **moc can't parse the vendored headers.** `ScintillaEditBaseFixed`/
   `ScintillaEditFixed` need `Q_OBJECT`, so CMake's `AUTOMOC` runs moc over
-  `scintilla_signal_fixes.h` -- but moc's lightweight parser chokes on
+  `scintilla_edit_base_fixed.h` -- but moc's lightweight parser chokes on
   `ScintillaStructures.h`'s more intricate C++ once it's transitively
   included. moc only actually needs the base class names for the generated
   metaobject, not their full definitions. **Fix**: guard the real includes
   with `#ifdef Q_MOC_RUN` / `#else`, giving moc bare forward declarations of
-  `ScintillaEditBase`/`ScintillaEdit` instead.
+  `ScintillaEditBase` instead.
 - **`EXPORT_IMPORT_API` only makes sense across a DLL boundary.** Vendored
-  `ScintillaEditBase`/`ScintillaEdit` use this macro because they live in
+  `ScintillaEditBase`/`ScintillaDocument` use this macro because they live in
   `scintilla_qt.dll` and are imported by `_pyside6_scintilla`. Applying the
-  same macro to `ScintillaEditBaseFixed`/`ScintillaEditFixed` -- which are
+  same macro to the `*Fixed` classes -- which are
   defined and compiled entirely *within* `_pyside6_scintilla`, no DLL
   boundary crossed -- resolved to `__declspec(dllimport)` on Windows and
   collided with moc's own definition of `staticMetaObject`
   (`error C2491: definition of dllimport static data member not allowed`).
   **Fix**: don't apply `EXPORT_IMPORT_API` to classes fully contained within
   one compiled module.
-- **`<modify-function>` only applies to the declaring class.** shiboken
-  ignores a `<modify-function>` rule registered against a subclass that
-  merely *inherits* the method rather than redeclaring it. `get_doc()`'s
-  `<define-ownership owner="target"/>` rule (giving Python ownership of the
-  returned `ScintillaDocument`) has to stay on `<object-type
-  name="ScintillaEdit">`, where `get_doc()` is actually declared --
-  registering it on `ScintillaEditFixed` (a subclass that just inherits it)
-  silently no-ops, and the document's signals kept firing even after its
-  Python wrapper was dropped.
+- **`<modify-function>` only applies to the declaring class** -- but a
+  `remove="all"` on a base class method also removes a subclass method with
+  the *same* signature. shiboken ignores a `<modify-function>` rule
+  registered against a subclass that merely *inherits* the method rather
+  than redeclaring it. Conversely, removing `ScintillaDocument`'s
+  `get_char_range(int,int)const` also dropped `ScintillaDocumentFixed`'s
+  same-signature replacement, so only base members whose *parameter* types
+  change are removed (C++ name hiding takes care of the rest).
 
 See `tests/test_scintilla_edit_base.py::test_modified_signal_reaches_python_slot`
 for the regression test.
+
+### 5. Text vs bytes (issue #16)
+
+Upstream's `ScintillaEdit` (generated by `src/scintilla/qt/ScintillaEdit/WidgetGen.py`,
+and stale: about 40 messages behind the vendored `Scintilla.iface`) maps every
+string parameter to `const char *` and every string result to `QByteArray`.
+Through shiboken that became an API that took `str` (always UTF-8 encoded,
+whatever the document's code page), returned bytes (`getText(n)` even padded
+with NULs), had byte-length parameters the caller had to compute in an
+encoding they never chose, and whose stub claimed `bytes` was accepted too
+(it wasn't). A wrong argument type then failed inside shiboken's error
+reporting with `NameError: name '_pyside6_scintilla' is not defined`, since
+the typesystem package was the bare module name.
+
+**Fix**: a strict, consistent contract, with no implicit conversions:
+
+| Kind | Examples | Python type |
+| --- | --- | --- |
+| Text: document text, names, display strings | `setText`/`getText`, `insertText`, `textRange`, `getLine`, `setKeyWords`, `styleSetFont`, `annotationSetText`, `ScintillaDocument.insert_string`/`get_char_range`, `modified`'s `text` | `str` in and out |
+| Raw data: style bytes, images | `setStylingEx`, `addStyledText`, `marginSetStyles`/`marginStyles`, `registerImage`, `registerRGBAImage` | bytes in (`bytes`/`bytearray`/`QByteArray`), `QByteArray` out |
+| Raw messages | `ScintillaEditBase.send`/`sends`/`sendr` | `int`; `sends` takes bytes, `sendr` returns bytes |
+| Document bytes, for byte-offset work | `getBytes()`/`getBytes(start, end)`, `ScintillaDocument.get_byte_range` | `QByteArray` out |
+
+Scintilla's own API is uniformly byte-based (every string a `char *`, every
+position a byte offset); `ScintillaEdit` translates it by **one rule**, so
+`ScintillaDoc.html` stays usable as the reference:
+
+1. `SCI_<NAME>` becomes a camelCased method (`SCI_ADDTEXT` -> `addText`;
+   getters drop `Get`: `SCI_GETLEXERLANGUAGE` -> `lexerLanguage`).
+2. `char *` text becomes `str`, in the document's encoding; raw data stays bytes.
+3. A length argument that only measures the string argument is dropped.
+4. A result buffer is returned instead of passed in.
+5. Positions and lengths stay byte counts.
+
+Every generated method's docstring names the message it sends and spells out
+how its signature differs (from `Method.doc_note()` in the generator, stitched
+in by `tools/generate_pyi.py`), e.g. `addText`: *"Sends `SCI_ADDTEXT`. No
+`length` argument: it's the byte length of the encoded `text`."*
+
+- **Encoding is the widget's job**, like Qt's text widgets:
+  `scintilla_text_encoding.cpp` converts with the document's encoding -- UTF-8
+  in Unicode mode; otherwise a DBCS code page (932/936/949/950) names the
+  codec, else the default style's character set does (Latin-1 for a
+  standalone `ScintillaDocument`, which has no styles). One lookup serves both
+  the editor and the document, so text written through one reads back the
+  same through the other. (`ScintillaQt` itself only consults the character
+  set, so a DBCS document whose default style still has the default character
+  set is handled by us but drawn as Latin-1 by Scintilla until
+  `styleSetCharacterSet` matches.) Font names and the font locale are always
+  UTF-8, as `PlatQt.cpp` decodes them.
+- **`None` is Scintilla's NULL where NULL means "clear"**
+  (`annotationSetText`, `eOLAnnotationSetText`, `marginSetText` take
+  `str | None`, as upstream's `const char *` did; an empty string sets an
+  empty, still present annotation). A `QString` parameter can't be NULL, so
+  these are overridden in `__init__.py`'s `ScintillaEdit`.
+- **Range getters clamp like Scintilla does**: `getBytes(start, end)` (and
+  `textRange`) resolve `end == -1` to the document end and clamp out-of-range
+  bounds, so the buffer matches what `Editor::GetTextRange` writes.
+- **Length parameters that only describe the string argument are dropped**
+  (`addText(text)`, `appendText`, `replaceTarget`, `searchInTarget`, ...): the
+  binding computes them from the encoded text. Getters take no buffer size;
+  `getCurLine()` returns `(text, caret)`.
+- **Positions stay byte positions** -- Scintilla's model. Where byte offsets
+  matter, read the document's stored bytes directly with `getBytes()` (as the
+  tree-sitter example does) instead of encoding `getText()` back, or use
+  `positionRelative`/`countCharacters`.
+- **`str` never loses data silently.** `SCI_SETTEXT`, `SCI_INSERTTEXT` and
+  `SCI_REPLACESEL` take NUL-terminated strings, so text containing `"\0"`
+  would be cut short; `setText`/`insertText`/`replaceSel` then fall back to a
+  length-based equivalent built on `SCI_ADDTEXT` (the generator's
+  `NUL_SAFE_FALLBACKS`), with the same caret and undo behaviour. Other
+  NUL-terminated messages carry names or display strings, where a NUL has no
+  meaning.
+- `targetAsUTF8`/`encodedFromUTF8` aren't generated: `ScintillaQt` doesn't
+  handle those messages (only the Win32/GTK/Cocoa platform layers do).
+
+`tools/generate_scintilla_edit.py` generates `ScintillaEditFixed` from
+`Scintilla.iface`, with a small classification table (bytes vs. text vs.
+UTF-8-only messages); `make generate` regenerates it and CI checks the
+checked-in copy is current. `ScintillaEditBaseFixed` replaces the vendored
+`send`/`sends` (removed in `bindings.xml`) with `qint64`/`quint64`-typed,
+non-virtual versions plus `sendr`: shiboken's signature support doesn't know
+Scintilla's `sptr_t`/`uptr_t` (an "UNRECOGNIZED" `RuntimeWarning` per method),
+and PySide converts `qintptr` to Python through a 32-bit `long` on Windows,
+truncating pointers such as `GetDocPointer`'s result. `bindings.xml`'s package
+is now the dotted `pyside6_scintilla._pyside6_scintilla`, so failed calls
+raise a proper `TypeError`. See `tests/test_text_api.py`.
 
 ## Type stubs (`_pyside6_scintilla.pyi`)
 
@@ -225,15 +329,21 @@ public API surface. The script:
    - its `find_imports()` references a `PySide6` global that only
      `PySide6.support.generate_pyi` sets up -- the generic entry point raises
      `NameError: name 'PySide6' is not defined` without it.
-2. Aliases `Scintilla.Position`/`sptr_t`/`uptr_t` to `int`. These are
+2. Drops genpyi's `pyside6_scintilla._pyside6_scintilla.` qualifier from the
+   stub's references to its own classes, and its bare `import
+   _pyside6_scintilla` self-import -- pyright resolves neither, and an
+   unresolved base class silently makes every inherited member `Unknown`
+   (pinned by `tests/test_typing_stubs.py`). It also drops `memoryview` from
+   `QByteArray` parameter types (PySide6 annotates it but rejects one at
+   runtime), and types `ScintillaDocument`'s `pdoc_` as `Shiboken.VoidPtr`.
+3. Aliases `Scintilla.Position`/`sptr_t`/`uptr_t` to `int`. These are
    primitive typedefs (`<primitive-type>` in `bindings.xml`), not nested
    types, but genpyi emits unresolvable `Scintilla.Position`-style forward
-   references for them (`ScintillaEditBase.event_command`'s signature,
-   `NotificationData`'s `# type:` comments). If a future Scintilla release
+   references for them (`NotificationData`'s `# type:` comments). If a future Scintilla release
    adds another such primitive typedef, genpyi will warn
    (`RuntimeWarning: ... UNRECOGNIZED: 'Scintilla.<name>'`) -- add it to
    `PRIMITIVE_ALIASES` in `tools/generate_pyi.py`.
-3. Stitches the `# ...` doc comments from `src/scintilla/include/Scintilla.iface`
+4. Stitches the `# ...` doc comments from `src/scintilla/include/Scintilla.iface`
    into `Scintilla.Message` enum members as docstrings (per-member hover
    docs). `val`/enum-style features generally don't have these comments, so
    this mainly benefits `Message`.
@@ -269,7 +379,7 @@ around a transient struct that Scintilla reuses across notifications.
 
 Where available, prefer `ScintillaEditBase`'s typed per-notification signals
 (`modified`, `charAdded`, `marginClicked`, etc.) instead -- e.g. `modified`'s
-`text` parameter is already a `QByteArray`, with no such caveat.
+`text` parameter is already a decoded `str`, with no such caveat.
 
 ### `ScintillaDocument` from `get_doc()`
 
@@ -300,15 +410,21 @@ When vendoring a new release tarball:
    `<enum-type>`, or `<value-type>` entries to `bindings.xml` -- this is
    iterative: run the build, read the shiboken error naming the missing type,
    add the minimal entry, repeat.
-4. Re-check whether the duplicate-`Message`-enum workaround (issue 1 above)
+4. Run `make generate` (`tools/generate_scintilla_edit.py`) to regenerate
+   `ScintillaEditFixed` from the new `Scintilla.iface`. Review new
+   string-carrying messages (`string`/`stringresult`/`cells` parameters) in
+   the diff: raw data (style bytes, images) belongs in the generator's
+   `BYTES_FEATURES`, always-UTF-8 text in `UTF8_FEATURES`; anything else is
+   document text, which is the default (see issue 5).
+5. Re-check whether the duplicate-`Message`-enum workaround (issue 1 above)
    still applies as written. If Scintilla restructures its headers, the
    `#define <Type> ... / #include / #undef` pattern in `bindings.h` may need
    to move, target a different type, or no longer be needed -- the same
    pattern applies if a *different* enum/struct gets a forward-declaration
    collision in a future release.
-5. Bump `__version__` in `src/pyside6_scintilla/__init__.py` from
+6. Bump `__version__` in `src/pyside6_scintilla/__init__.py` from
    `X.Y.Z.N` to the new Scintilla release's `X.Y.Z.0` (binding-only changes
    against the same Scintilla release increment `N`).
-6. Rebuild with `uv sync --reinstall-package pyside6-scintilla` (`uv sync`
+7. Rebuild with `uv sync --reinstall-package pyside6-scintilla` (`uv sync`
    alone doesn't always pick up CMake/typesystem changes), then
    `uv run pytest` and `uv run ruff check .`. See [`docs/build.md`](build.md).

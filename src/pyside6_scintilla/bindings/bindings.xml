@@ -14,8 +14,14 @@
      Scintilla.iface). Exposing the full set under the Scintilla namespace
      gives Python callers a typed constant for every SCI_* message
      parameter/return value, instead of having to hardcode the matching
-     SC_*/SCI_* magic int themselves (see issue #1). -->
-<typesystem package="_pyside6_scintilla">
+     SC_*/SCI_* magic int themselves (see issue #1).
+
+     The package is the extension's full dotted import path, not its bare
+     name: shiboken uses it for each class's __module__ and its signature
+     strings, which shibokensupport evaluates when reporting a failed call;
+     with a bare "_pyside6_scintilla" that raised NameError instead of the
+     intended TypeError (issue #16). -->
+<typesystem package="pyside6_scintilla._pyside6_scintilla">
     <load-typesystem name="typesystem_widgets.xml" generate="no"/>
 
     <!-- ScintillaEditBase::send/sends use the global ::sptr_t (Scintilla.h's
@@ -119,61 +125,52 @@
         </value-type>
     </namespace-type>
 
-    <!-- Several of ScintillaEditBase's signals carry
-         Scintilla::Position/ModificationFlags/FoldLevel/etc. parameters
-         that Qt's generic meta-call path can't convert when invoking a
-         Python slot (the connection silently fails, see
-         scintilla_signal_fixes.h). ScintillaEditBaseFixed below redeclares
-         each affected signal with a plain-int signature; since Qt signals
-         are exposed to Python via PySide's own metaobject introspection
-         (not via this typesystem's <modify-function>, which only affects
-         ordinary methods), the subclass's redeclaration simply shadows the
-         inherited broken one through normal Python attribute/MRO lookup,
-         so nothing needs to be (or can usefully be) removed here.
+    <!-- Not Python-visible directly: ScintillaEditBaseFixed (see
+         scintilla_edit_base_fixed.h) re-emits its broken-signature signals
+         and replaces sends(), and is what __init__.py exposes.
 
-         Still bound here (not generate="no") despite ScintillaEditBaseFixed
-         being the only Python-visible class (see __init__.py): shiboken
-         derives each generated file's required #include order from which
-         bound types use it, and ScintillaEditBase.h is what keeps
-         ScintillaTypes.h (Position et al.) included before
-         ScintillaStructures.h (NotificationData et al., which needs
-         Position) in the generated module header. Losing that via
-         generate="no" left Position undefined when compiling
+         Still bound here (not generate="no"): shiboken derives each
+         generated file's required #include order from which bound types use
+         it, and ScintillaEditBase.h is what keeps ScintillaTypes.h (Position
+         et al.) included before ScintillaStructures.h (NotificationData et
+         al., which needs Position) in the generated module header. Losing
+         that via generate="no" left Position undefined when compiling
          ScintillaStructures.h. -->
-    <object-type name="ScintillaEditBase"/>
-
-    <!-- Python-visible as ScintillaEditBase (see __init__.py); see the
-         ScintillaEditBase entry above for why this exists. -->
-    <object-type name="ScintillaEditBaseFixed"/>
-
-    <!-- shiboken handles the ScintillaDocument(QObject *parent = 0,
-         void *pdoc_ = 0) constructor's void* fine as-is (surfaced as
-         shiboken6.Shiboken.VoidPtr), so ScintillaDocument() can be
-         constructed standalone in Python - e.g. to create a document up
-         front and attach it to multiple ScintillaEdit widgets via
-         set_doc() before any of them have text. -->
-    <object-type name="ScintillaDocument"/>
-
-    <!-- Not Python-visible directly (see __init__.py), for the same reason
-         as ScintillaEditBase above: it inherits the same broken-signature
-         signals directly from the vendored ScintillaEditBase, not from
-         ScintillaEditBaseFixed. ScintillaEditFixed below redeclares them. -->
-    <object-type name="ScintillaEdit">
-        <!-- get_doc() returns a fresh heap ScintillaDocument with no Qt parent;
-             give Python ownership so it's freed when the wrapper is garbage
-             collected. Declared here rather than on ScintillaEditFixed below
-             (the class actually exposed to Python, see __init__.py): the
-             typesystem only honors modify-function for the class that
-             declares the method, not a subclass that merely inherits it,
-             so putting it on ScintillaEditFixed silently no-ops.
-             ScintillaEditFixed inherits this ownership rule from here. -->
-        <modify-function signature="get_doc()">
-            <modify-argument index="return">
-                <define-ownership owner="target"/>
-            </modify-argument>
-        </modify-function>
+    <object-type name="ScintillaEditBase">
+        <!-- Replaced by ScintillaEditBaseFixed's qintptr/bytes-typed
+             send/sends/sendr (see scintilla_edit_base_fixed.h); event_command
+             is an internal slot with the same sptr_t/uptr_t problem. -->
+        <modify-function signature="send(unsigned int,uptr_t,sptr_t)const" remove="all"/>
+        <modify-function signature="sends(unsigned int,uptr_t,const char*)const" remove="all"/>
+        <modify-function signature="event_command(Scintilla::uptr_t,Scintilla::sptr_t)" remove="all"/>
     </object-type>
 
-    <!-- Python-visible as ScintillaEdit (see __init__.py). -->
+    <!-- Python-visible as ScintillaEditBase (see __init__.py). -->
+    <object-type name="ScintillaEditBaseFixed">
+        <!-- Implementation detail shared with the generated ScintillaEditFixed
+             (protected so it can call it; sendr() is the public form). -->
+        <modify-function signature="stringResult(unsigned int,qint64,bool,qint64*)const" remove="all"/>
+    </object-type>
+
+    <!-- Not Python-visible directly: ScintillaDocumentFixed below replaces
+         the members that pass text as QByteArray (or a style as char), and is
+         what __init__.py exposes. Only the members whose parameter types
+         change are removed here: a removal also applies to a subclass member
+         with the same signature, and get_char_range/style_at (which change
+         only their return type) are hidden by ScintillaDocumentFixed anyway. -->
+    <object-type name="ScintillaDocument">
+        <modify-function signature="insert_string(int,const QByteArray&amp;)" remove="all"/>
+        <modify-function signature="set_style_for(int,char)" remove="all"/>
+    </object-type>
+
+    <!-- Python-visible as ScintillaDocument (see __init__.py). shiboken
+         handles the constructor's void* fine as-is (surfaced as
+         shiboken6.Shiboken.VoidPtr), so a document can be constructed
+         standalone, e.g. to create one up front and attach it to multiple
+         ScintillaEdit widgets via set_doc() before any of them have text. -->
+    <object-type name="ScintillaDocumentFixed"/>
+
+    <!-- Python-visible as ScintillaEdit (see __init__.py); generated by
+         tools/generate_scintilla_edit.py. -->
     <object-type name="ScintillaEditFixed"/>
 </typesystem>

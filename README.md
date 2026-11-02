@@ -122,6 +122,7 @@ development scripts, run with `uv run python tools/<script>.py`:
 
 | Script | Purpose |
 | --- | --- |
+| [generate_scintilla_edit.py](https://github.com/borco/pyside6-scintilla/blob/master/tools/generate_scintilla_edit.py) | Generates the typed `ScintillaEdit` class from `Scintilla.iface` |
 | [generate_pyi.py](https://github.com/borco/pyside6-scintilla/blob/master/tools/generate_pyi.py) | Regenerates the `.pyi` type stub for `_pyside6_scintilla` |
 | [check_docs_sync.py](https://github.com/borco/pyside6-scintilla/blob/master/tools/check_docs_sync.py) | Verifies shared content blocks stay in sync between `README.md` and `docs/index.md` |
 | [clean_window_corners.py](https://github.com/borco/pyside6-scintilla/blob/master/tools/clean_window_corners.py) | One-off cleanup for Windows window screenshots used in docs |

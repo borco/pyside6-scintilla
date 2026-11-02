@@ -18,7 +18,7 @@ def test_set_and_get_text(qtbot: QtBot) -> None:
     editor.setText("hello")
 
     assert editor.textLength() == len("hello")
-    assert editor.getText(editor.textLength()).data() == b"hello"
+    assert editor.getText() == "hello"
 
 
 def test_line_from_position_and_select_all(qtbot: QtBot) -> None:

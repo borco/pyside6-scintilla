@@ -2,6 +2,15 @@
 
 Development scripts for this repo. Run with `uv run python tools/<script>.py`.
 
+## [`generate_scintilla_edit.py`](generate_scintilla_edit.py)
+
+Generates `src/pyside6_scintilla/bindings/scintilla_edit_fixed.{h,cpp}`, the
+typed method-per-message class exposed as `ScintillaEdit`, from
+`src/scintilla/include/Scintilla.iface` -- text as `str`, raw data as bytes
+(see "Text vs bytes" in [`docs/bindings.md`](../docs/bindings.md)). Run via
+`make generate` after vendoring a new Scintilla release; `--check` (run by
+`make lint` and CI) fails if the checked-in output is stale.
+
 ## [`generate_pyi.py`](generate_pyi.py)
 
 Regenerates `src/pyside6_scintilla/_pyside6_scintilla.pyi`, the type stub

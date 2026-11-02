@@ -24,7 +24,7 @@ def test_shared_document_keeps_widgets_in_sync(qtbot: QtBot) -> None:
     editor_a.setText("hello")
 
     assert editor_b.textLength() == editor_a.textLength()
-    assert editor_b.getText(editor_b.textLength()).data() == b"hello"
+    assert editor_b.getText() == "hello"
 
 
 def test_standalone_document_shared_before_text_entered(qtbot: QtBot) -> None:
@@ -42,7 +42,7 @@ def test_standalone_document_shared_before_text_entered(qtbot: QtBot) -> None:
     editor_a.setText("shared text")
 
     assert editor_b.textLength() == editor_a.textLength()
-    assert editor_b.getText(editor_b.textLength()).data() == b"shared text"
+    assert editor_b.getText() == "shared text"
 
 
 def test_modified_signal_fires_on_edit(qtbot: QtBot) -> None:
@@ -73,4 +73,4 @@ def test_dropped_get_doc_wrapper_stops_receiving_signals(qtbot: QtBot) -> None:
     editor.setText("hello")
 
     assert fired == []
-    assert editor.getText(editor.textLength()).data() == b"hello"
+    assert editor.getText() == "hello"

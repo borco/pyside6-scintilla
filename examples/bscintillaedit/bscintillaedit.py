@@ -189,7 +189,7 @@ class BScintillaEdit(QScrollArea):
 
     def __text(self) -> str:
         """The editor's full contents."""
-        return bytes(self.editor.getText(self.editor.textLength() + 1).data()).rstrip(b"\x00").decode("utf-8")
+        return self.editor.getText()
 
     @Slot(str)
     def setText(self, text: str) -> None:

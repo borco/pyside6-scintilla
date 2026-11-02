@@ -121,3 +121,13 @@ target_compile_definitions(${LIB_NAME}
 
 # By default the prefix of the shared library is "lib" on UNIX; use no prefix everywhere.
 set_property(TARGET ${LIB_NAME} PROPERTY PREFIX "")
+
+if(UNIX AND NOT APPLE)
+    # Qt6::Gui's CMake target links OpenGL (libOpenGL/libGLX) into everything
+    # that uses it, but Scintilla doesn't call OpenGL. Without --as-needed the
+    # unused libOpenGL.so.0 becomes a hard dependency: missing on minimal
+    # systems (e.g. Ubuntu 26.04 without libopengl0), and auditwheel then
+    # grafts private libOpenGL/libGLX/libGLdispatch copies into the wheel,
+    # next to the system libGLdispatch PySide6's Qt6Gui loads.
+    target_link_options(${LIB_NAME} PRIVATE "LINKER:--as-needed")
+endif()

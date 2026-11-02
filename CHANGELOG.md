@@ -6,6 +6,16 @@ Changelog](https://keepachangelog.com/en/1.0.0/); entries are kept high-level
 (what shipped, breaking changes) rather than a full commit-by-commit log —
 see git history for that.
 
+## [Unreleased]
+
+### Fixed
+
+- Linux wheels no longer bundle private copies of `libOpenGL`, `libGLX` and
+  `libGLdispatch`. Qt's CMake target linked OpenGL into the extension
+  although it never uses it, so auditwheel grafted those libraries into the
+  wheel, next to the system ones PySide6 loads. The extension now links with
+  `--as-needed`.
+
 ## [5.6.3.8] - 2026-11-02
 
 ### Changed (breaking)

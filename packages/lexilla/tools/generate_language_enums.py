@@ -30,19 +30,19 @@ import re
 import sys
 from typing import Final
 
-REPO_ROOT: Final = pathlib.Path(__file__).resolve().parent.parent
+PACKAGE_ROOT: Final = pathlib.Path(__file__).resolve().parent.parent
 """Root of the lexilla-py checkout, two levels up from this script."""
 
-VENDOR_ROOT: Final = REPO_ROOT / "src" / "lexilla_vendor"
+VENDOR_ROOT: Final = PACKAGE_ROOT / "src" / "lexilla_vendor"
 """Root of the vendored Lexilla release tarball."""
 
 SCILEXER_H: Final = VENDOR_ROOT / "include" / "SciLexer.h"
 """Header declaring the SCLEX_* macros this script regexes for numeric values."""
 
-BINDING_CPP: Final = REPO_ROOT / "src" / "lexilla" / "bindings" / "_binding.cpp"
+BINDING_CPP: Final = PACKAGE_ROOT / "src" / "lexilla" / "bindings" / "_binding.cpp"
 """nanobind binding source the LanguageIdentifier enum/registration are spliced into."""
 
-LANGUAGES_PY: Final = REPO_ROOT / "src" / "lexilla" / "_languages.py"
+LANGUAGES_PY: Final = PACKAGE_ROOT / "src" / "lexilla" / "_languages.py"
 """Generated Language(StrEnum) module, rewritten from scratch on every run."""
 
 NO_LEXER_MACROS: Final = {"CONTAINER", "NULL", "AUTOMATIC", "XCODE"}

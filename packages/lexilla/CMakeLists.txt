@@ -15,11 +15,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Development.SABIModule is Python's stable-ABI import library
 # (python3.lib/.dll), needed for the cp312-abi3 wheel build (see
-# STABLE_ABI in src/lexilla/bindings/CMakeLists.txt). It's optional here
-# because the cp311 wheel build (Python < 3.12) has no such target --
-# nanobind detects its absence and falls back to a version-specific build.
-find_package(Python 3.11 REQUIRED COMPONENTS Interpreter Development.Module
-                                   OPTIONAL_COMPONENTS Development.SABIModule)
+# STABLE_ABI in src/lexilla/bindings/CMakeLists.txt).
+find_package(Python 3.12 REQUIRED COMPONENTS Interpreter Development.Module Development.SABIModule)
 
 # nanobind ships as a Python package, not a CMake package on disk -- ask it
 # for its own CMake config dir and add that to the search path.

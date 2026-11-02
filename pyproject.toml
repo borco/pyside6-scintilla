@@ -1,0 +1,98 @@
+# Virtual uv workspace root (no [project]): the packages live in packages/*,
+# each with its own pyproject.toml, build backend and PyPI release. This file
+# holds what they share -- the dev environment and the tool configuration.
+# See CLAUDE.md ("Monorepo layout").
+
+[tool.uv.workspace]
+members = ["packages/*"]
+
+[tool.uv.sources]
+# The packages depend on each other only for development (lexilla's glue
+# module and tests use pyside6-scintilla; pyside6-scintilla's lexilla example
+# uses lexilla): always the workspace's own source, never PyPI.
+pyside6-scintilla = { workspace = true }
+lexilla = { workspace = true }
+
+[tool.uv]
+# pyside6-scintilla builds without an isolated env: its CMake configure step
+# must find the PySide6/shiboken6 CMake packages from the *same* Python
+# environment the extension is imported from, i.e. .venv (an isolated build
+# env would resolve [build-system].requires' PySide6/shiboken6 separately).
+# lexilla (nanobind) builds isolated, as usual.
+no-build-isolation-package = ["pyside6-scintilla"]
+
+[dependency-groups]
+dev = [
+    # The workspace packages themselves, built from source (editable).
+    "lexilla",
+    "pyside6-scintilla",
+    # Build tooling (pyside6-scintilla builds in this env, see [tool.uv]).
+    "cmake>=3.25",
+    "nanobind>=2.4",
+    "ninja",
+    "scikit-build-core>=0.10",
+    "shiboken6-generator>=6.11,<6.12",
+    # Tests, lint, type checking.
+    "pyright>=1.1.410",
+    "pytest>=8.0",
+    "pytest-mock>=3.14",
+    "pytest-qt>=4.4",
+    "ruff>=0.8",
+    # examples/ (highlighting)
+    "pygments>=2.18",
+    "tree-sitter>=0.25",
+    "tree-sitter-python>=0.25",
+]
+docs = [
+    "markdown-callouts>=0.4",
+    "mkdocs>=1.6",
+    "mkdocs-exclude>=1.0",
+    "mkdocs-material>=9.5",
+    "mkdocstrings[python]>=0.27",
+]
+
+
+# ---------------------------------------------------------------------------
+# pytest -- `uv run pytest` at the root runs both packages' tests. Each
+# package also keeps its own [tool.pytest.ini_options], used when its wheel
+# is tested on its own (cibuildwheel's `pytest {package}/tests`).
+# ---------------------------------------------------------------------------
+
+[tool.pytest.ini_options]
+testpaths = ["packages/pyside6-scintilla/tests", "packages/lexilla/tests"]
+
+
+# ---------------------------------------------------------------------------
+# pyright -- the packages' public API surfaces and their tests.
+# ---------------------------------------------------------------------------
+
+[tool.pyright]
+include = [
+    "packages/pyside6-scintilla/src/pyside6_scintilla/__init__.py",
+    "packages/pyside6-scintilla/tests",
+    "packages/lexilla/src/lexilla/__init__.py",
+    "packages/lexilla/src/lexilla/pyside6_scintilla.py",
+    "packages/lexilla/tests",
+]
+venvPath = "."
+venv = ".venv"
+
+
+# ---------------------------------------------------------------------------
+# ruff -- one configuration for the whole repo (ruff uses the nearest
+# pyproject.toml *with* a [tool.ruff] table, so the packages have none).
+# ---------------------------------------------------------------------------
+
+[tool.ruff]
+line-length = 120
+# The oldest Python any package supports (pyside6-scintilla: 3.11).
+target-version = "py311"
+extend-exclude = [
+    # Vendored upstream sources, kept byte-identical to the release tarballs.
+    "packages/pyside6-scintilla/src/scintilla",
+    "packages/lexilla/src/lexilla_vendor",
+    # Generated (tools/generate_pyi.py, nanobind stubgen, generate_language_enums.py).
+    "packages/pyside6-scintilla/src/pyside6_scintilla/_pyside6_scintilla.pyi",
+    "packages/lexilla/src/lexilla/_lexilla.pyi",
+    "packages/lexilla/src/lexilla/_languages.py",
+]

@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: build (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, ubuntu-24.04-arm, windows-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install Qt runtime libs for headless tests (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          # Needed for Qt6Gui to load under QT_QPA_PLATFORM=offscreen, since
+          # tests/test_pyside6_scintilla.py creates a real ScintillaEdit
+          # widget (same libs pyside6-scintilla's own CI installs).
+          sudo apt-get install -y libgl1 libegl1 libxkbcommon0
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+          python-version: "3.13"
+
+      - name: uv sync
+        # --refresh-package lexilla: uv's build cache for a local path
+        # dependency isn't keyed off the vendored Lexilla/binding source
+        # tree, so a plain `uv sync` can silently reuse a stale cached
+        # build across cache-restored CI runs (enable-cache above) instead
+        # of recompiling -- verified by editing src/lexilla/bindings and
+        # observing `uv sync` skip the build entirely. --refresh-package
+        # forces this one package to rebuild while still using the cache
+        # for the much slower third-party deps (PySide6 etc.).
+        run: uv sync --refresh-package lexilla
+
+      - name: Run tests
+        env:
+          QT_QPA_PLATFORM: offscreen
+        run: uv run pytest
+
+      - name: Lint
+        run: |
+          uv run ruff check .
+          uv run ruff format --check .
+          uv run python tools/check_docs_sync.py
+          uv run pyright

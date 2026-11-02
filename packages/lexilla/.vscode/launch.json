@@ -1,0 +1,13 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Example: pyside6_scintilla_cpp_lexer",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/examples/pyside6_scintilla_cpp_lexer/main.py",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}

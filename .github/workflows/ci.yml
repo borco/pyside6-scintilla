@@ -14,7 +14,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, ubuntu-24.04-arm, macos-latest]
+        # ubuntu-24.04, not ubuntu-latest: from Ubuntu 26.04 (ubuntu-latest
+        # since late 2026) libxml2 no longer ships libxml2.so.2, which
+        # shiboken6-generator's prebuilt `shiboken6` binary links against
+        # ("error while loading shared libraries: libxml2.so.2"). Matches
+        # the arm runner. wheels.yml is unaffected: cibuildwheel builds Linux
+        # wheels inside manylinux containers, not on the runner itself.
+        os: [ubuntu-24.04, windows-latest, ubuntu-24.04-arm, macos-latest]
     steps:
       - uses: actions/checkout@v5
 

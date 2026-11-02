@@ -1633,6 +1633,24 @@ def with_message_notes(docs: dict[str, str]) -> dict[str, str]:
     return merged
 
 
+NOTIFICATION_TEXT_PROPERTY: Final = (
+    "        @property\n"
+    "        def text(self) -> PySide6.QtCore.QByteArray:\n"
+    '            r"""The notification\'s text as raw document bytes: `length` bytes for SCN_MODIFIED, '
+    "else NUL-terminated. Decode per the document's encoding, or use the typed signals, "
+    'which deliver `str`. (`textBytes()` is the same value.)"""\n'
+)
+
+
+def add_notification_text_property(text: str) -> str:
+    """Declare the `NotificationData.text` property that `__init__.py` defines over `textBytes()`."""
+    return text.replace(
+        "        def textBytes(self, /) -> PySide6.QtCore.QByteArray: ...\n",
+        "        def textBytes(self, /) -> PySide6.QtCore.QByteArray: ...\n" + NOTIFICATION_TEXT_PROPERTY,
+        1,
+    )
+
+
 def add_primitive_aliases(text: str) -> str:
     """Insert int aliases for Position/sptr_t/uptr_t right after `class Scintilla(...)`."""
     return text.replace(
@@ -1788,6 +1806,7 @@ def main() -> None:
     run_genpyi()
     text = PYI_PATH.read_text(encoding="utf-8")
     text = fix_self_references(text)
+    text = add_notification_text_property(text)
     text = add_primitive_aliases(text)
     text = add_namespace_constants(text)
     text = add_enum_docstrings(text, "Message", parse_iface_docs(IFACE_PATH))

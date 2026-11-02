@@ -16,6 +16,23 @@ from ._pyside6_scintilla import ScintillaEditBaseFixed as _ScintillaEditBaseFixe
 from ._pyside6_scintilla import ScintillaEditFixed as _ScintillaEditFixed
 
 
+# NotificationData.text is raw document bytes (`length` of them for
+# SCN_MODIFIED), not a NUL-terminated UTF-8 string as shiboken would read the
+# `const char *` field -- see bindings.xml. The typed signals (`modified`, ...)
+# carry the decoded str; this keeps the raw struct's field an attribute.
+# (setattr: the stub declares the property, so pyright sees a read-only attribute here.)
+setattr(  # noqa: B010
+    Scintilla.NotificationData,
+    "text",
+    property(
+        Scintilla.NotificationData.textBytes,
+        doc="The notification's text as raw document bytes (`QByteArray`): `length` bytes for "
+        "SCN_MODIFIED, else NUL-terminated. Decode per the document's encoding, or use the typed "
+        "signals, which deliver `str`.",
+    ),
+)
+
+
 class ScintillaDocument(_ScintillaDocumentFixed):
     """A Scintilla document, independent of any editor view.
 

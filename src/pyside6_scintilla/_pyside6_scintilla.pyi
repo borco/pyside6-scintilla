@@ -2586,7 +2586,6 @@ class Scintilla(Shiboken.Object):
         modificationType          = ...  # type: Scintilla.ModificationFlags
         modifiers                 = ...  # type: Scintilla.KeyMod
         position                  = ...  # type: Scintilla.Position
-        text                      = ...  # type: str
         token                     = ...  # type: int
         updated                   = ...  # type: Scintilla.Update
         wParam                    = ...  # type: Scintilla.uptr_t
@@ -2599,6 +2598,12 @@ class Scintilla(Shiboken.Object):
         def __init__(self, NotificationData: Scintilla.NotificationData, /) -> None: ...
 
         def __copy__(self, /) -> typing.Self: ...
+        @property
+        def text(self, /) -> PySide6.QtCore.QByteArray: ...
+        def textBytes(self, /) -> PySide6.QtCore.QByteArray: ...
+        @property
+        def text(self) -> PySide6.QtCore.QByteArray:
+            r"""The notification's text as raw document bytes: `length` bytes for SCN_MODIFIED, else NUL-terminated. Decode per the document's encoding, or use the typed signals, which deliver `str`. (`textBytes()` is the same value.)"""
 
     class Ordering(enum.IntEnum):
         r"""Controls how the autocompletion list passed to `SCI_AUTOCSHOW` is ordered, set with `SCI_AUTOCSETORDER` before showing the list."""

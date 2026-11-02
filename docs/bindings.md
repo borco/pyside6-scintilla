@@ -370,8 +370,13 @@ by that parent regardless of Python references, and its signals (`notify`,
 around a transient struct that Scintilla reuses across notifications.
 
 - Reading a field during the handler call is safe -- e.g. `text` (a
-  `const char *` in C++) is eagerly copied into an independent Python `str`
-  at access time, valid for as long as you like afterwards.
+  `const char *` in C++) is eagerly copied into an independent `QByteArray`
+  at access time, valid for as long as you like afterwards. It's raw document
+  bytes, `length` of them for SCN_MODIFIED (deleted text points into the
+  document buffer, with no NUL terminator) -- a `textBytes()` add-function in
+  `bindings.xml` that `__init__.py` exposes as the `text` attribute, since
+  shiboken would otherwise read the field as a NUL-terminated UTF-8 `str`
+  (wrong for other code pages, and over-reading deletions).
 - The `NotificationData` object itself must **not** be retained past the
   handler call: once later notifications overwrite the shared struct, its
   fields no longer reflect the notification it was originally delivered for

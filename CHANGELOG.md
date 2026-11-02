@@ -30,6 +30,7 @@ see git history for that.
   | `editor.TextReturner(msg, w)` | `base.sendr(msg, w)` (also on `ScintillaEditBase`) |
   | `doc.insert_string(pos, b"...")`, `doc.get_char_range(...)` returned bytes | `str` in and out; `doc.style_at()` returns an `int` |
   | `modified` signals' `text` was `QByteArray` | `str` |
+  | `NotificationData.text` (raw `notify` signal) was a UTF-8-decoded `str` | `QByteArray`: the raw `length` bytes, in the document's encoding |
   | `targetAsUTF8()`/`encodedFromUTF8()` (always empty on Qt) | removed |
 
   Positions and lengths elsewhere are still Scintilla's byte offsets. Each
@@ -51,6 +52,8 @@ see git history for that.
   `copySeparator`.
 - `macroRecord`/`command` signal parameters were truncated to 32 bits on
   Windows.
+- `NotificationData.text` raised `UnicodeDecodeError` in non-UTF-8 code pages
+  and ignored `length`.
 
 ## [5.6.3.7] - 2026-07-28
 

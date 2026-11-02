@@ -122,6 +122,24 @@
                  definition in ScintillaMessages.h), causing shiboken to emit
                  duplicate enum converters/type indices for Scintilla::Message. -->
             <modify-field name="message" remove="true"/>
+            <!-- `text` is a `const char *` that shiboken would read as a
+                 NUL-terminated UTF-8 str. It's raw document bytes (the typed
+                 `modified` signal is the decoded form), and for SCN_MODIFIED
+                 it's `length` bytes that aren't necessarily NUL-terminated
+                 (deleted text points into the document buffer). Expose it as
+                 bytes honouring `length` instead: textBytes() here, which
+                 __init__.py re-exposes as the `text` attribute (shiboken's
+                 <property> needs a real C++ member as its getter). -->
+            <modify-field name="text" remove="true"/>
+            <add-function signature="textBytes()" return-type="QByteArray">
+                <inject-code class="target" position="beginning">
+                    const Scintilla::NotificationData &amp;nd = *%CPPSELF;
+                    QByteArray result;
+                    if (nd.text)
+                        result = nd.length > 0 ? QByteArray(nd.text, static_cast&lt;qsizetype&gt;(nd.length)) : QByteArray(nd.text);
+                    %PYARG_0 = %CONVERTTOPYTHON[QByteArray](result);
+                </inject-code>
+            </add-function>
         </value-type>
     </namespace-type>
 

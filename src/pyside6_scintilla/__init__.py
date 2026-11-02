@@ -119,7 +119,7 @@ class ScintillaEdit(_ScintillaEditFixed):
             super().marginSetText(line, text)
 
 
-__version__ = "5.6.3.8"
+__version__ = "5.6.3.9"
 
 
 def colour_to_scintilla(colour: QColor | Qt.GlobalColor | str, alpha: bool = False) -> int:

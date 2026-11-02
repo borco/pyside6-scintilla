@@ -1,12 +1,27 @@
 name: Wheels
 
+# Builds (and tests) a package's wheels with cibuildwheel, on every platform.
+# pyside6-scintilla's wheels are always built: lexilla's wheel tests install
+# them (tools/install_pyside6_scintilla.py), so a lexilla release is tested
+# against the matching pyside6-scintilla source rather than PyPI's.
 on:
-  workflow_dispatch:
   workflow_call:
+    inputs:
+      package:
+        description: The workspace package to build wheels for.
+        required: true
+        type: string
+  workflow_dispatch:
+    inputs:
+      package:
+        description: The workspace package to build wheels for.
+        required: true
+        type: choice
+        options: [pyside6-scintilla, lexilla]
 
 jobs:
-  build:
-    name: build (${{ matrix.os }})
+  pyside6-scintilla:
+    name: pyside6-scintilla (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -15,27 +30,54 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - name: Install Qt
+      # Windows builds natively against the Qt SDK the setup action installs;
+      # Linux/macOS install their own Qt inside cibuildwheel's before-all
+      # ([tool.cibuildwheel] in packages/pyside6-scintilla/pyproject.toml).
+      - name: Install Qt (Windows)
         if: runner.os == 'Windows'
-        uses: jurplel/install-qt-action@v4
+        uses: ./.github/actions/setup
         with:
-          version: "6.11.1"
-          modules: qt5compat
-          # aqtinstall 3.3.* can't locate Qt 6.11+ on Windows - the online
-          # repo dropped the combined qt6_XXXX/qt6_XXXX/Updates.xml in favor
-          # of per-arch dirs (miurahr/aqtinstall#959). Use the patched
-          # aqtinstall until a release containing PR #1000 lands on PyPI.
-          aqtsource: git+https://github.com/miurahr/aqtinstall.git@8c3695d4a4e1ceabf6a74dc6c79681656dc6b74b
-
-      - name: Set Qt env vars
-        if: runner.os == 'Windows'
-        shell: bash
-        run: echo "CMAKE_PREFIX_PATH=$QT_ROOT_DIR" >> "$GITHUB_ENV"
+          sync: "false"
 
       - name: Build wheels
         uses: pypa/cibuildwheel@v4.1.0
+        with:
+          package-dir: packages/pyside6-scintilla
+          output-dir: wheelhouse
 
       - uses: actions/upload-artifact@v7
         with:
-          name: wheels-${{ matrix.os }}
+          name: wheels-pyside6-scintilla-${{ matrix.os }}
+          path: wheelhouse/*.whl
+
+  lexilla:
+    name: lexilla (${{ matrix.os }})
+    if: inputs.package == 'lexilla'
+    needs: pyside6-scintilla
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest, ubuntu-24.04-arm, macos-latest]
+    steps:
+      - uses: actions/checkout@v5
+
+      # Inside the checkout, so cibuildwheel's Linux containers (which get a
+      # copy of the project directory) see them too, as {project}/deps.
+      - name: Download pyside6-scintilla's wheels
+        uses: actions/download-artifact@v8
+        with:
+          pattern: wheels-pyside6-scintilla-*
+          path: deps
+          merge-multiple: true
+
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v4.1.0
+        with:
+          package-dir: packages/lexilla
+          output-dir: wheelhouse
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: wheels-lexilla-${{ matrix.os }}
           path: wheelhouse/*.whl

@@ -95,22 +95,27 @@ venv = ".venv"
 # monorepo move: nanobind's stable ABI needs 3.12, and the separate cp311
 # build doubled the wheel count for one Python version.
 build = "cp312-win_amd64 cp312-manylinux_x86_64 cp312-manylinux_aarch64 cp312-macosx_arm64 cp312-macosx_x86_64"
-test-requires = ["pytest>=8.0", "pytest-qt>=4.4", "pyside6-scintilla>=5.6"]
+# The tests need pyside6-scintilla (for the lexilla.pyside6_scintilla glue):
+# the wheel built in the same CI run, which wheels.yml downloads into
+# {project}/deps -- see tools/install_pyside6_scintilla.py.
+before-test = "python {package}/tools/install_pyside6_scintilla.py {project}/deps"
+test-requires = ["pytest>=8.0", "pytest-qt>=4.4"]
 test-environment = { QT_QPA_PLATFORM = "offscreen" }
-test-command = "pytest {project}/tests"
+test-command = "pytest {package}/tests"
 
 [tool.cibuildwheel.linux]
 # manylinux_2_34 matches pyside6-scintilla's own published wheel tag
 # (manylinux_2_34_x86_64) -- the default manylinux_2_28 image's older glibc
 # makes that wheel look incompatible to pip, so `pip install
-# pyside6-scintilla` (test-requires above) falls back to building it from
+# pyside6-scintilla` (before-test) falls back to building it from
 # sdist, which needs a not-yet-released PySide6 build dependency and fails.
 manylinux-x86_64-image = "manylinux_2_34"
 # manylinux images are missing the system Qt6Gui runtime libs needed to load
 # even the offscreen platform plugin (same libs pyside6-scintilla's own CI
 # installs via apt on Debian-based runners, here via dnf for the
 # manylinux_2_34/AlmaLinux base image).
-before-test = "dnf install -y mesa-libGL mesa-libEGL libxkbcommon || true"
+# (Overrides the global before-test, so it repeats the pyside6-scintilla install.)
+before-test = "(dnf install -y mesa-libGL mesa-libEGL libxkbcommon || true) && python {package}/tools/install_pyside6_scintilla.py {project}/deps"
 # pyside6-scintilla's aarch64 wheel is tagged manylinux_2_38/manylinux_2_39
 # (PySide6's own aarch64 wheels adopted that floor from 6.8.1 onward) --
 # the default aarch64 image's older glibc makes it look incompatible to

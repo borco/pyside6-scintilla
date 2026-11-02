@@ -8,6 +8,9 @@ on:
   workflow_dispatch:
 
 jobs:
+  # Both packages, built from source in the one workspace venv, on every OS:
+  # lexilla's tests (its pyside6-scintilla glue included) always run against
+  # this repo's pyside6-scintilla, never the PyPI one.
   build:
     name: build (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
@@ -21,97 +24,50 @@ jobs:
         # Reported upstream: https://qt-project.atlassian.net/browse/PYSIDE-3504
         # (tracked here as #18: move back to ubuntu-latest once it's fixed).
         # Only the build needs it -- the extension doesn't link libxml2 -- so
-        # the `runtime` job below checks the built wheel on 26.04 instead.
+        # the `runtime` job below checks the built wheels on 26.04 instead.
         # wheels.yml is unaffected: cibuildwheel builds Linux wheels inside
         # manylinux containers, not on the runner itself.
         os: [ubuntu-24.04, windows-latest, ubuntu-24.04-arm, macos-latest]
     steps:
       - uses: actions/checkout@v5
 
-      - name: Install Qt
-        uses: jurplel/install-qt-action@v4
-        with:
-          version: "6.11.1"
-          modules: qt5compat
-          # aqtinstall 3.3.* can't locate Qt 6.11+ on Windows - the online
-          # repo dropped the combined qt6_XXXX/qt6_XXXX/Updates.xml in favor
-          # of per-arch dirs (miurahr/aqtinstall#959). Use the patched
-          # aqtinstall until a release containing PR #1000 lands on PyPI.
-          aqtsource: ${{ runner.os == 'Windows' && 'git+https://github.com/miurahr/aqtinstall.git@8c3695d4a4e1ceabf6a74dc6c79681656dc6b74b' || '' }}
-
-      - name: Set Qt env vars
-        shell: bash
-        run: |
-          echo "CMAKE_PREFIX_PATH=$QT_ROOT_DIR" >> "$GITHUB_ENV"
-          if [ "${{ runner.os }}" = "Linux" ]; then
-            # Qt6Core5Compat isn't bundled with the PySide6 wheel (see
-            # docs/bindings.md issue 3), so scintilla_qt's dependency on it
-            # must resolve to the aqtinstall'd Qt at runtime.
-            echo "LD_LIBRARY_PATH=$QT_ROOT_DIR/lib" >> "$GITHUB_ENV"
-          fi
-
-      - name: Install build/runtime dependencies (Linux)
-        if: runner.os == 'Linux'
-        shell: bash
-        run: |
-          sudo apt-get update
-          # clang/libclang-dev: shiboken6-generator's bundled libclang can't
-          # locate its builtin headers (stddef.h etc.) without an external
-          # CLANG_INSTALL_DIR - MSVC's headers don't need this.
-          # libgl1/libegl1/libxkbcommon0: needed for Qt6Gui to load under
-          # QT_QPA_PLATFORM=offscreen for the test suite.
-          sudo apt-get install -y clang libclang-dev libgl1 libegl1 libxkbcommon0
-          RESOURCE_DIR=$(clang -print-resource-dir)
-          echo "Clang resource dir: $RESOURCE_DIR"
-          echo "CLANG_INSTALL_DIR=$(dirname "$(dirname "$(dirname "$RESOURCE_DIR")")")" >> "$GITHUB_ENV"
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v7
-        with:
-          enable-cache: true
-          python-version: "3.13"
-
-      - name: uv sync
-        # --refresh-package pyside6-scintilla: uv's build cache for a local
-        # path dependency isn't keyed off the C++ binding source tree, so a
-        # plain `uv sync` can silently reuse a stale cached build across
-        # cache-restored CI runs (enable-cache above) instead of recompiling
-        # -- verified by editing src/pyside6_scintilla/bindings and
-        # observing `uv sync` skip the build entirely (borco/pyside6-scintilla#11).
-        # --refresh-package forces this one package to rebuild while still
-        # using the cache for the much slower third-party deps (PySide6 etc.).
-        run: uv sync --refresh-package pyside6-scintilla
+      - uses: ./.github/actions/setup
 
       - name: Run tests
         env:
           QT_QPA_PLATFORM: offscreen
         run: uv run pytest
 
+      # The same checks as `make lint` (spelled out: windows-latest has no make).
       - name: Lint
         run: |
           uv run ruff check .
           uv run ruff format --check .
           uv run python tools/check_docs_sync.py
-          uv run python tools/generate_scintilla_edit.py --check
+          uv run python tools/sync_scintilla_headers.py --check
+          uv run python packages/pyside6-scintilla/tools/generate_scintilla_edit.py --check
           uv run pyright
 
-      # For the `runtime` job: a wheel from this same build (no isolation, so
-      # it reuses .venv and the build directory -- about a minute).
-      - name: Build wheel (for the runtime job)
+      # For the `runtime` job: wheels from this same build. pyside6-scintilla
+      # builds without isolation, reusing .venv and its build directory
+      # (about a minute); lexilla builds isolated, as usual.
+      - name: Build wheels (for the runtime job)
         if: matrix.os == 'ubuntu-24.04'
-        run: uv build --wheel --no-build-isolation --out-dir dist
+        run: |
+          uv build --wheel --no-build-isolation --package pyside6-scintilla --out-dir dist
+          uv build --wheel --package lexilla --out-dir dist
 
-      - name: Upload wheel
+      - name: Upload wheels
         if: matrix.os == 'ubuntu-24.04'
         uses: actions/upload-artifact@v4
         with:
-          name: wheel-linux-x86_64
+          name: wheels-linux-x86_64
           path: dist/*.whl
 
   # The build can't run on Ubuntu 26.04 (see the matrix comment above), but
-  # users install wheels there: check that the wheel built on 24.04 installs
-  # and passes the test suite on 26.04, with a newer Python, against the
-  # PySide6 wheels from PyPI -- what `pip install pyside6-scintilla` does.
+  # users install wheels there: check that the wheels built on 24.04 install
+  # and pass both test suites on 26.04, with a newer Python, against the
+  # PySide6 wheels from PyPI -- what `pip install` does.
   runtime:
     name: runtime (ubuntu-26.04)
     needs: build
@@ -121,15 +77,15 @@ jobs:
 
       - uses: actions/download-artifact@v4
         with:
-          name: wheel-linux-x86_64
+          name: wheels-linux-x86_64
           path: dist
 
       - name: Install runtime dependencies
         # libgl1/libegl1/libxkbcommon0: needed for PySide6's Qt6Gui to load
         # under QT_QPA_PLATFORM=offscreen, as in the build job. Deliberately
         # *not* libopengl0 (libOpenGL.so.0, absent on 26.04): our libraries
-        # don't depend on it (see the WrapOpenGL note in CMakeLists.txt), and
-        # this job checks that.
+        # don't depend on it (see the WrapOpenGL note in
+        # packages/pyside6-scintilla/CMakeLists.txt), and this job checks that.
         run: |
           sudo apt-get update
           sudo apt-get install -y libgl1 libegl1 libxkbcommon0
@@ -139,16 +95,19 @@ jobs:
         with:
           python-version: "3.14"
 
-      - name: Install the wheel
+      - name: Install the wheels
         run: |
           uv venv
           uv pip install dist/*.whl pytest pytest-mock pytest-qt
 
       # test_typing_stubs.py runs pyright over the source tree, a static check
       # the build job already covers (same exclusion as cibuildwheel's
-      # test-command). Run from the checkout, but the src/ layout means the
-      # tests import the installed wheel, not the source tree.
-      - name: Run tests against the installed wheel
+      # test-command). Run from the checkout, but the src/ layouts mean the
+      # tests import the installed wheels, not the source trees.
+      - name: Run tests against the installed wheels
         env:
           QT_QPA_PLATFORM: offscreen
-        run: .venv/bin/python -m pytest tests --ignore=tests/test_typing_stubs.py
+        run: >-
+          .venv/bin/python -m pytest
+          packages/pyside6-scintilla/tests packages/lexilla/tests
+          --ignore=packages/pyside6-scintilla/tests/test_typing_stubs.py

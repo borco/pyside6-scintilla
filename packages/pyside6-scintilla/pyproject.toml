@@ -130,7 +130,7 @@ test-requires = ["pytest>=8.0", "pytest-mock>=3.14", "pytest-qt>=4.4"]
 # static-analysis check of the repo, not a runtime test of the built wheel,
 # and pyright isn't in test-requires. uv run pytest / CI's lint job already
 # cover it; skip it here so it doesn't run once per wheel.
-test-command = "pytest {project}/tests --ignore={project}/tests/test_typing_stubs.py"
+test-command = "pytest {package}/tests --ignore={package}/tests/test_typing_stubs.py"
 
 [tool.cibuildwheel.windows]
 test-environment = { QT_QPA_PLATFORM = "offscreen" }

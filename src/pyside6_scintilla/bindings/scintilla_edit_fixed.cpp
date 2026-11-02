@@ -4,6 +4,7 @@
 
 #include <QPaintDevice>
 
+#include "scintilla_colour.h"
 #include "scintilla_text_encoding.h"
 
 ScintillaEditFixed::ScintillaEditFixed(QWidget *parent) : ScintillaEditBaseFixed(parent) {}
@@ -308,28 +309,28 @@ void ScintillaEditFixed::markerDefine(qint64 markerNumber, qint64 markerSymbol) 
 	send(SCI_MARKERDEFINE, markerNumber, markerSymbol);
 }
 
-void ScintillaEditFixed::markerSetFore(qint64 markerNumber, qint64 fore) {
-	send(SCI_MARKERSETFORE, markerNumber, fore);
+void ScintillaEditFixed::markerSetFore(qint64 markerNumber, const QColor &fore) {
+	send(SCI_MARKERSETFORE, markerNumber, colourToScintilla(fore, false));
 }
 
-void ScintillaEditFixed::markerSetBack(qint64 markerNumber, qint64 back) {
-	send(SCI_MARKERSETBACK, markerNumber, back);
+void ScintillaEditFixed::markerSetBack(qint64 markerNumber, const QColor &back) {
+	send(SCI_MARKERSETBACK, markerNumber, colourToScintilla(back, false));
 }
 
-void ScintillaEditFixed::markerSetBackSelected(qint64 markerNumber, qint64 back) {
-	send(SCI_MARKERSETBACKSELECTED, markerNumber, back);
+void ScintillaEditFixed::markerSetBackSelected(qint64 markerNumber, const QColor &back) {
+	send(SCI_MARKERSETBACKSELECTED, markerNumber, colourToScintilla(back, false));
 }
 
-void ScintillaEditFixed::markerSetForeTranslucent(qint64 markerNumber, qint64 fore) {
-	send(SCI_MARKERSETFORETRANSLUCENT, markerNumber, fore);
+void ScintillaEditFixed::markerSetForeTranslucent(qint64 markerNumber, const QColor &fore) {
+	send(SCI_MARKERSETFORETRANSLUCENT, markerNumber, colourToScintilla(fore, true));
 }
 
-void ScintillaEditFixed::markerSetBackTranslucent(qint64 markerNumber, qint64 back) {
-	send(SCI_MARKERSETBACKTRANSLUCENT, markerNumber, back);
+void ScintillaEditFixed::markerSetBackTranslucent(qint64 markerNumber, const QColor &back) {
+	send(SCI_MARKERSETBACKTRANSLUCENT, markerNumber, colourToScintilla(back, true));
 }
 
-void ScintillaEditFixed::markerSetBackSelectedTranslucent(qint64 markerNumber, qint64 back) {
-	send(SCI_MARKERSETBACKSELECTEDTRANSLUCENT, markerNumber, back);
+void ScintillaEditFixed::markerSetBackSelectedTranslucent(qint64 markerNumber, const QColor &back) {
+	send(SCI_MARKERSETBACKSELECTEDTRANSLUCENT, markerNumber, colourToScintilla(back, true));
 }
 
 void ScintillaEditFixed::markerSetStrokeWidth(qint64 markerNumber, qint64 hundredths) {
@@ -424,12 +425,12 @@ qint64 ScintillaEditFixed::marginCursorN(qint64 margin) const {
 	return send(SCI_GETMARGINCURSORN, margin, 0);
 }
 
-void ScintillaEditFixed::setMarginBackN(qint64 margin, qint64 back) {
-	send(SCI_SETMARGINBACKN, margin, back);
+void ScintillaEditFixed::setMarginBackN(qint64 margin, const QColor &back) {
+	send(SCI_SETMARGINBACKN, margin, colourToScintilla(back, false));
 }
 
-qint64 ScintillaEditFixed::marginBackN(qint64 margin) const {
-	return send(SCI_GETMARGINBACKN, margin, 0);
+QColor ScintillaEditFixed::marginBackN(qint64 margin) const {
+	return colourFromScintilla(send(SCI_GETMARGINBACKN, margin, 0), false);
 }
 
 void ScintillaEditFixed::setMargins(qint64 margins) {
@@ -444,12 +445,12 @@ void ScintillaEditFixed::styleClearAll() {
 	send(SCI_STYLECLEARALL, 0, 0);
 }
 
-void ScintillaEditFixed::styleSetFore(qint64 style, qint64 fore) {
-	send(SCI_STYLESETFORE, style, fore);
+void ScintillaEditFixed::styleSetFore(qint64 style, const QColor &fore) {
+	send(SCI_STYLESETFORE, style, colourToScintilla(fore, false));
 }
 
-void ScintillaEditFixed::styleSetBack(qint64 style, qint64 back) {
-	send(SCI_STYLESETBACK, style, back);
+void ScintillaEditFixed::styleSetBack(qint64 style, const QColor &back) {
+	send(SCI_STYLESETBACK, style, colourToScintilla(back, false));
 }
 
 void ScintillaEditFixed::styleSetBold(qint64 style, bool bold) {
@@ -481,12 +482,12 @@ void ScintillaEditFixed::styleSetUnderline(qint64 style, bool underline) {
 	send(SCI_STYLESETUNDERLINE, style, underline);
 }
 
-qint64 ScintillaEditFixed::styleFore(qint64 style) const {
-	return send(SCI_STYLEGETFORE, style, 0);
+QColor ScintillaEditFixed::styleFore(qint64 style) const {
+	return colourFromScintilla(send(SCI_STYLEGETFORE, style, 0), false);
 }
 
-qint64 ScintillaEditFixed::styleBack(qint64 style) const {
-	return send(SCI_STYLEGETBACK, style, 0);
+QColor ScintillaEditFixed::styleBack(qint64 style) const {
+	return colourFromScintilla(send(SCI_STYLEGETBACK, style, 0), false);
 }
 
 bool ScintillaEditFixed::styleBold(qint64 style) const {
@@ -586,12 +587,12 @@ QString ScintillaEditFixed::styleInvisibleRepresentation(qint64 style) const {
 	return stringFromDocument(*this, stringResult(SCI_STYLEGETINVISIBLEREPRESENTATION, style, false));
 }
 
-void ScintillaEditFixed::setElementColour(qint64 element, qint64 colourElement) {
-	send(SCI_SETELEMENTCOLOUR, element, colourElement);
+void ScintillaEditFixed::setElementColour(qint64 element, const QColor &colourElement) {
+	send(SCI_SETELEMENTCOLOUR, element, colourToScintilla(colourElement, true));
 }
 
-qint64 ScintillaEditFixed::elementColour(qint64 element) const {
-	return send(SCI_GETELEMENTCOLOUR, element, 0);
+QColor ScintillaEditFixed::elementColour(qint64 element) const {
+	return colourFromScintilla(send(SCI_GETELEMENTCOLOUR, element, 0), true);
 }
 
 void ScintillaEditFixed::resetElementColour(qint64 element) {
@@ -606,16 +607,16 @@ bool ScintillaEditFixed::elementAllowsTranslucent(qint64 element) const {
 	return send(SCI_GETELEMENTALLOWSTRANSLUCENT, element, 0) != 0;
 }
 
-qint64 ScintillaEditFixed::elementBaseColour(qint64 element) const {
-	return send(SCI_GETELEMENTBASECOLOUR, element, 0);
+QColor ScintillaEditFixed::elementBaseColour(qint64 element) const {
+	return colourFromScintilla(send(SCI_GETELEMENTBASECOLOUR, element, 0), true);
 }
 
-void ScintillaEditFixed::setSelFore(bool useSetting, qint64 fore) {
-	send(SCI_SETSELFORE, useSetting, fore);
+void ScintillaEditFixed::setSelFore(bool useSetting, const QColor &fore) {
+	send(SCI_SETSELFORE, useSetting, colourToScintilla(fore, false));
 }
 
-void ScintillaEditFixed::setSelBack(bool useSetting, qint64 back) {
-	send(SCI_SETSELBACK, useSetting, back);
+void ScintillaEditFixed::setSelBack(bool useSetting, const QColor &back) {
+	send(SCI_SETSELBACK, useSetting, colourToScintilla(back, false));
 }
 
 qint64 ScintillaEditFixed::selAlpha() const {
@@ -658,8 +659,8 @@ void ScintillaEditFixed::setCaretLineHighlightSubLine(bool subLine) {
 	send(SCI_SETCARETLINEHIGHLIGHTSUBLINE, subLine, 0);
 }
 
-void ScintillaEditFixed::setCaretFore(qint64 fore) {
-	send(SCI_SETCARETFORE, fore, 0);
+void ScintillaEditFixed::setCaretFore(const QColor &fore) {
+	send(SCI_SETCARETFORE, colourToScintilla(fore, false), 0);
 }
 
 void ScintillaEditFixed::assignCmdKey(qint64 keyDefinition, qint64 sciCommand) {
@@ -784,12 +785,12 @@ qint64 ScintillaEditFixed::indicStyle(qint64 indicator) const {
 	return send(SCI_INDICGETSTYLE, indicator, 0);
 }
 
-void ScintillaEditFixed::indicSetFore(qint64 indicator, qint64 fore) {
-	send(SCI_INDICSETFORE, indicator, fore);
+void ScintillaEditFixed::indicSetFore(qint64 indicator, const QColor &fore) {
+	send(SCI_INDICSETFORE, indicator, colourToScintilla(fore, false));
 }
 
-qint64 ScintillaEditFixed::indicFore(qint64 indicator) const {
-	return send(SCI_INDICGETFORE, indicator, 0);
+QColor ScintillaEditFixed::indicFore(qint64 indicator) const {
+	return colourFromScintilla(send(SCI_INDICGETFORE, indicator, 0), false);
 }
 
 void ScintillaEditFixed::indicSetUnder(qint64 indicator, bool under) {
@@ -808,12 +809,12 @@ qint64 ScintillaEditFixed::indicHoverStyle(qint64 indicator) const {
 	return send(SCI_INDICGETHOVERSTYLE, indicator, 0);
 }
 
-void ScintillaEditFixed::indicSetHoverFore(qint64 indicator, qint64 fore) {
-	send(SCI_INDICSETHOVERFORE, indicator, fore);
+void ScintillaEditFixed::indicSetHoverFore(qint64 indicator, const QColor &fore) {
+	send(SCI_INDICSETHOVERFORE, indicator, colourToScintilla(fore, false));
 }
 
-qint64 ScintillaEditFixed::indicHoverFore(qint64 indicator) const {
-	return send(SCI_INDICGETHOVERFORE, indicator, 0);
+QColor ScintillaEditFixed::indicHoverFore(qint64 indicator) const {
+	return colourFromScintilla(send(SCI_INDICGETHOVERFORE, indicator, 0), false);
 }
 
 void ScintillaEditFixed::indicSetFlags(qint64 indicator, qint64 flags) {
@@ -832,12 +833,12 @@ qint64 ScintillaEditFixed::indicStrokeWidth(qint64 indicator) const {
 	return send(SCI_INDICGETSTROKEWIDTH, indicator, 0);
 }
 
-void ScintillaEditFixed::setWhitespaceFore(bool useSetting, qint64 fore) {
-	send(SCI_SETWHITESPACEFORE, useSetting, fore);
+void ScintillaEditFixed::setWhitespaceFore(bool useSetting, const QColor &fore) {
+	send(SCI_SETWHITESPACEFORE, useSetting, colourToScintilla(fore, false));
 }
 
-void ScintillaEditFixed::setWhitespaceBack(bool useSetting, qint64 back) {
-	send(SCI_SETWHITESPACEBACK, useSetting, back);
+void ScintillaEditFixed::setWhitespaceBack(bool useSetting, const QColor &back) {
+	send(SCI_SETWHITESPACEBACK, useSetting, colourToScintilla(back, false));
 }
 
 void ScintillaEditFixed::setWhitespaceSize(qint64 size) {
@@ -868,12 +869,12 @@ void ScintillaEditFixed::setCaretLineVisible(bool show) {
 	send(SCI_SETCARETLINEVISIBLE, show, 0);
 }
 
-qint64 ScintillaEditFixed::caretLineBack() const {
-	return send(SCI_GETCARETLINEBACK, 0, 0);
+QColor ScintillaEditFixed::caretLineBack() const {
+	return colourFromScintilla(send(SCI_GETCARETLINEBACK, 0, 0), false);
 }
 
-void ScintillaEditFixed::setCaretLineBack(qint64 back) {
-	send(SCI_SETCARETLINEBACK, back, 0);
+void ScintillaEditFixed::setCaretLineBack(const QColor &back) {
+	send(SCI_SETCARETLINEBACK, colourToScintilla(back, false), 0);
 }
 
 qint64 ScintillaEditFixed::caretLineFrame() const {
@@ -1105,8 +1106,8 @@ qint64 ScintillaEditFixed::codePage() const {
 	return send(SCI_GETCODEPAGE, 0, 0);
 }
 
-qint64 ScintillaEditFixed::caretFore() const {
-	return send(SCI_GETCARETFORE, 0, 0);
+QColor ScintillaEditFixed::caretFore() const {
+	return colourFromScintilla(send(SCI_GETCARETFORE, 0, 0), false);
 }
 
 bool ScintillaEditFixed::readOnly() const {
@@ -1466,16 +1467,16 @@ void ScintillaEditFixed::callTipSetHlt(qint64 highlightStart, qint64 highlightEn
 	send(SCI_CALLTIPSETHLT, highlightStart, highlightEnd);
 }
 
-void ScintillaEditFixed::callTipSetBack(qint64 back) {
-	send(SCI_CALLTIPSETBACK, back, 0);
+void ScintillaEditFixed::callTipSetBack(const QColor &back) {
+	send(SCI_CALLTIPSETBACK, colourToScintilla(back, false), 0);
 }
 
-void ScintillaEditFixed::callTipSetFore(qint64 fore) {
-	send(SCI_CALLTIPSETFORE, fore, 0);
+void ScintillaEditFixed::callTipSetFore(const QColor &fore) {
+	send(SCI_CALLTIPSETFORE, colourToScintilla(fore, false), 0);
 }
 
-void ScintillaEditFixed::callTipSetForeHlt(qint64 fore) {
-	send(SCI_CALLTIPSETFOREHLT, fore, 0);
+void ScintillaEditFixed::callTipSetForeHlt(const QColor &fore) {
+	send(SCI_CALLTIPSETFOREHLT, colourToScintilla(fore, false), 0);
 }
 
 void ScintillaEditFixed::callTipUseStyle(qint64 tabSize) {
@@ -1778,12 +1779,12 @@ void ScintillaEditFixed::linesSplit(qint64 pixelWidth) {
 	send(SCI_LINESSPLIT, pixelWidth, 0);
 }
 
-void ScintillaEditFixed::setFoldMarginColour(bool useSetting, qint64 back) {
-	send(SCI_SETFOLDMARGINCOLOUR, useSetting, back);
+void ScintillaEditFixed::setFoldMarginColour(bool useSetting, const QColor &back) {
+	send(SCI_SETFOLDMARGINCOLOUR, useSetting, colourToScintilla(back, false));
 }
 
-void ScintillaEditFixed::setFoldMarginHiColour(bool useSetting, qint64 fore) {
-	send(SCI_SETFOLDMARGINHICOLOUR, useSetting, fore);
+void ScintillaEditFixed::setFoldMarginHiColour(bool useSetting, const QColor &fore) {
+	send(SCI_SETFOLDMARGINHICOLOUR, useSetting, colourToScintilla(fore, false));
 }
 
 void ScintillaEditFixed::setAccessibility(qint64 accessibility) {
@@ -2106,16 +2107,16 @@ void ScintillaEditFixed::setEdgeMode(qint64 edgeMode) {
 	send(SCI_SETEDGEMODE, edgeMode, 0);
 }
 
-qint64 ScintillaEditFixed::edgeColour() const {
-	return send(SCI_GETEDGECOLOUR, 0, 0);
+QColor ScintillaEditFixed::edgeColour() const {
+	return colourFromScintilla(send(SCI_GETEDGECOLOUR, 0, 0), false);
 }
 
-void ScintillaEditFixed::setEdgeColour(qint64 edgeColour) {
-	send(SCI_SETEDGECOLOUR, edgeColour, 0);
+void ScintillaEditFixed::setEdgeColour(const QColor &edgeColour) {
+	send(SCI_SETEDGECOLOUR, colourToScintilla(edgeColour, false), 0);
 }
 
-void ScintillaEditFixed::multiEdgeAddLine(qint64 column, qint64 edgeColour) {
-	send(SCI_MULTIEDGEADDLINE, column, edgeColour);
+void ScintillaEditFixed::multiEdgeAddLine(qint64 column, const QColor &edgeColour) {
+	send(SCI_MULTIEDGEADDLINE, column, colourToScintilla(edgeColour, false));
 }
 
 void ScintillaEditFixed::multiEdgeClearAll() {
@@ -2296,20 +2297,20 @@ qint64 ScintillaEditFixed::printWrapMode() const {
 	return send(SCI_GETPRINTWRAPMODE, 0, 0);
 }
 
-void ScintillaEditFixed::setHotspotActiveFore(bool useSetting, qint64 fore) {
-	send(SCI_SETHOTSPOTACTIVEFORE, useSetting, fore);
+void ScintillaEditFixed::setHotspotActiveFore(bool useSetting, const QColor &fore) {
+	send(SCI_SETHOTSPOTACTIVEFORE, useSetting, colourToScintilla(fore, false));
 }
 
-qint64 ScintillaEditFixed::hotspotActiveFore() const {
-	return send(SCI_GETHOTSPOTACTIVEFORE, 0, 0);
+QColor ScintillaEditFixed::hotspotActiveFore() const {
+	return colourFromScintilla(send(SCI_GETHOTSPOTACTIVEFORE, 0, 0), false);
 }
 
-void ScintillaEditFixed::setHotspotActiveBack(bool useSetting, qint64 back) {
-	send(SCI_SETHOTSPOTACTIVEBACK, useSetting, back);
+void ScintillaEditFixed::setHotspotActiveBack(bool useSetting, const QColor &back) {
+	send(SCI_SETHOTSPOTACTIVEBACK, useSetting, colourToScintilla(back, false));
 }
 
-qint64 ScintillaEditFixed::hotspotActiveBack() const {
-	return send(SCI_GETHOTSPOTACTIVEBACK, 0, 0);
+QColor ScintillaEditFixed::hotspotActiveBack() const {
+	return colourFromScintilla(send(SCI_GETHOTSPOTACTIVEBACK, 0, 0), false);
 }
 
 void ScintillaEditFixed::setHotspotActiveUnderline(bool underline) {
@@ -2991,12 +2992,12 @@ qint64 ScintillaEditFixed::rectangularSelectionModifier() const {
 	return send(SCI_GETRECTANGULARSELECTIONMODIFIER, 0, 0);
 }
 
-void ScintillaEditFixed::setAdditionalSelFore(qint64 fore) {
-	send(SCI_SETADDITIONALSELFORE, fore, 0);
+void ScintillaEditFixed::setAdditionalSelFore(const QColor &fore) {
+	send(SCI_SETADDITIONALSELFORE, colourToScintilla(fore, false), 0);
 }
 
-void ScintillaEditFixed::setAdditionalSelBack(qint64 back) {
-	send(SCI_SETADDITIONALSELBACK, back, 0);
+void ScintillaEditFixed::setAdditionalSelBack(const QColor &back) {
+	send(SCI_SETADDITIONALSELBACK, colourToScintilla(back, false), 0);
 }
 
 void ScintillaEditFixed::setAdditionalSelAlpha(qint64 alpha) {
@@ -3007,12 +3008,12 @@ qint64 ScintillaEditFixed::additionalSelAlpha() const {
 	return send(SCI_GETADDITIONALSELALPHA, 0, 0);
 }
 
-void ScintillaEditFixed::setAdditionalCaretFore(qint64 fore) {
-	send(SCI_SETADDITIONALCARETFORE, fore, 0);
+void ScintillaEditFixed::setAdditionalCaretFore(const QColor &fore) {
+	send(SCI_SETADDITIONALCARETFORE, colourToScintilla(fore, false), 0);
 }
 
-qint64 ScintillaEditFixed::additionalCaretFore() const {
-	return send(SCI_GETADDITIONALCARETFORE, 0, 0);
+QColor ScintillaEditFixed::additionalCaretFore() const {
+	return colourFromScintilla(send(SCI_GETADDITIONALCARETFORE, 0, 0), false);
 }
 
 void ScintillaEditFixed::rotateSelection() {
@@ -3169,14 +3170,14 @@ qint64 ScintillaEditFixed::representationAppearance(const QString &encodedCharac
 	return send(SCI_GETREPRESENTATIONAPPEARANCE, reinterpret_cast<qint64>(encodedCharacterBytes.constData()), 0);
 }
 
-void ScintillaEditFixed::setRepresentationColour(const QString &encodedCharacter, qint64 colour) {
+void ScintillaEditFixed::setRepresentationColour(const QString &encodedCharacter, const QColor &colour) {
 	const QByteArray encodedCharacterBytes = bytesForDocument(*this, encodedCharacter);
-	send(SCI_SETREPRESENTATIONCOLOUR, reinterpret_cast<qint64>(encodedCharacterBytes.constData()), colour);
+	send(SCI_SETREPRESENTATIONCOLOUR, reinterpret_cast<qint64>(encodedCharacterBytes.constData()), colourToScintilla(colour, true));
 }
 
-qint64 ScintillaEditFixed::representationColour(const QString &encodedCharacter) const {
+QColor ScintillaEditFixed::representationColour(const QString &encodedCharacter) const {
 	const QByteArray encodedCharacterBytes = bytesForDocument(*this, encodedCharacter);
-	return send(SCI_GETREPRESENTATIONCOLOUR, reinterpret_cast<qint64>(encodedCharacterBytes.constData()), 0);
+	return colourFromScintilla(send(SCI_GETREPRESENTATIONCOLOUR, reinterpret_cast<qint64>(encodedCharacterBytes.constData()), 0), true);
 }
 
 void ScintillaEditFixed::eOLAnnotationSetText(qint64 line, const QString &text) {

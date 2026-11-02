@@ -16,7 +16,7 @@ import sys
 from dataclasses import dataclass
 from typing import Final
 
-from PySide6.QtGui import QFontDatabase
+from PySide6.QtGui import QColor, QFontDatabase
 from PySide6.QtWidgets import QApplication, QMainWindow
 from pyside6_scintilla import Scintilla, ScintillaEdit
 
@@ -88,8 +88,7 @@ class StyleSpec:
 #       print(s, lexer.name_of_style(s), lexer.description_of_style(s))
 #
 # The (red, green, blue) colors below are this example's own palette choice
-# -- not Lexilla or Scintilla values -- packed to Scintilla's 0xBBGGRR
-# format by rgb() below, at the point of use.
+# -- not Lexilla or Scintilla values -- passed to styleSetFore() as a QColor.
 STYLES_BY_NAME: Final = {
     "SCE_C_DEFAULT": StyleSpec((0x00, 0x00, 0x00)),
     "SCE_C_COMMENT": StyleSpec((0x80, 0x80, 0x80), italic=True),
@@ -137,11 +136,6 @@ int main() {
 """
 
 
-def rgb(red: int, green: int, blue: int) -> int:
-    """Pack an 8-bit RGB triple into Scintilla's 0xBBGGRR colour format."""
-    return red | (green << 8) | (blue << 16)
-
-
 class MainWindow(QMainWindow):
     def __init__(self) -> None:
         super().__init__()
@@ -175,7 +169,7 @@ class MainWindow(QMainWindow):
         for name, spec in STYLES_BY_NAME.items():
             style = style_by_name[name]
             editor.styleSetFont(style, fixed_font.family())
-            editor.styleSetFore(style, rgb(*spec.color))
+            editor.styleSetFore(style, QColor(*spec.color))
             if spec.bold:
                 editor.styleSetBold(style, True)
             if spec.italic:

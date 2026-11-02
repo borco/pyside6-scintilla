@@ -28,7 +28,7 @@ from collections.abc import Callable
 from typing import TYPE_CHECKING, Any, Final, Generic, TypeVar
 
 from PySide6.QtCore import Property, Signal, Slot
-from PySide6.QtGui import QFontDatabase
+from PySide6.QtGui import QColor, QFontDatabase
 from PySide6.QtWidgets import QFrame, QScrollArea, QWidget
 
 from pyside6_scintilla import Scintilla, ScintillaEdit
@@ -39,8 +39,8 @@ LINE_NUMBER_MARGIN: Final = 0
 SYMBOL_MARGIN: Final = 1
 """Margin index used for the (hidden) symbol/breakpoint margin."""
 
-EOL_REPRESENTATION_COLOUR: Final = 0xFFC0C0FF
-"""Default colour (ARGB) used for the "↩" end-of-line representation glyph."""
+EOL_REPRESENTATION_COLOUR: Final = QColor(255, 192, 192)
+"""Default colour (light red) used for the "↩" end-of-line representation glyph."""
 
 EOL_REPRESENTATION_APPEARANCE: Final = 0x10  # SC_REPRESENTATION_COLOUR
 """Default appearance flags used for the "↩" end-of-line representation glyph."""
@@ -118,7 +118,7 @@ class BScintillaEdit(QScrollArea):
 
         # Pre-style the line-number margin; stays hidden until lineNumbersVisible is set.
         self.editor.setMarginTypeN(LINE_NUMBER_MARGIN, Scintilla.MarginType.Number)
-        self.editor.styleSetBack(Scintilla.StylesCommon.LineNumber, 0xA0A0A0)
+        self.editor.styleSetBack(Scintilla.StylesCommon.LineNumber, QColor(0xA0, 0xA0, 0xA0))
 
         # Represent line endings as a visible "↩" glyph when lineEndVisible is on.
         self.editor.setRepresentation("\n", "↩")

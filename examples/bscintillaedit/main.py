@@ -11,7 +11,8 @@ Run with:
 import sys
 from typing import Final
 
-from PySide6.QtGui import QAction
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QAction, QColor
 from PySide6.QtWidgets import QApplication, QMainWindow, QMenu, QToolBar, QToolButton
 
 from bscintillaedit import EOL_REPRESENTATION_APPEARANCE, EOL_REPRESENTATION_COLOUR, BScintillaEdit
@@ -42,12 +43,12 @@ EOL_GLYPHS: Final = ("↩", "¶", "↵", "⏎", "␊")
 
 EOL_COLOURS: Final = (
     ("Default", EOL_REPRESENTATION_COLOUR),
-    ("Red", 0xFF0000FF),
-    ("Green", 0xFF00FF00),
-    ("Blue", 0xFFFF0000),
-    ("Gray", 0xFF808080),
+    ("Red", QColor(Qt.GlobalColor.red)),
+    ("Green", QColor(Qt.GlobalColor.green)),
+    ("Blue", QColor(Qt.GlobalColor.blue)),
+    ("Gray", QColor(0x80, 0x80, 0x80)),
 )
-"""Colours (ARGB, as packed by `setRepresentationColour`) offered in the "EOL Colour" toolbar menu.
+"""Colours offered in the "EOL Colour" toolbar menu, passed to `setRepresentationColour`.
 
 The first entry restores `BScintillaEdit`'s default end-of-line colour.
 """
@@ -146,7 +147,7 @@ class MainWindow(QMainWindow):
         self.__editor.editor.setRepresentationColour("\n", self.__eol_colour)
         self.__editor.editor.setRepresentationAppearance("\n", EOL_REPRESENTATION_APPEARANCE)
 
-    def __set_eol_colour(self, colour: int) -> None:
+    def __set_eol_colour(self, colour: QColor) -> None:
         """Change the end-of-line representation colour, keeping its current glyph."""
         self.__eol_colour = colour
         self.__editor.editor.setRepresentationColour("\n", colour)

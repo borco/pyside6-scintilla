@@ -13,3 +13,5 @@ widgets, `ScintillaDocument`, and the `Scintilla.Message` enum used by
   buffer, for sharing one document between multiple `ScintillaEdit` widgets.
 - [**Scintilla.Message**](message.md) -- the `SCI_*` message IDs sent via
   `send`/`sends`.
+- [**Colours**](colours.md) -- `colour_to_scintilla()`/`colour_from_scintilla()`,
+  converting between `QColor` and Scintilla's packed colour ints for `send()`.

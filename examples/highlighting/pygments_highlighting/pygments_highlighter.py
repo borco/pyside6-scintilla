@@ -13,7 +13,7 @@ from typing import Final
 from pygments.lexer import Lexer
 from pygments.token import Comment, Keyword, Literal, Name, Operator, String, _TokenType
 from PySide6.QtCore import QObject
-from PySide6.QtGui import QFont
+from PySide6.QtGui import QColor, QFont
 
 from pyside6_scintilla import ScintillaEdit
 
@@ -45,8 +45,7 @@ TOKEN_STYLES: Final = [
 ]
 
 
-# (red, green, blue) per style -- packed to Scintilla's 0xBBGGRR colour
-# format by rgb() below, at the point of use.
+# (red, green, blue) per style -- passed to styleSetFore() as a QColor.
 STYLE_COLORS: Final = {
     STYLE_DEFAULT: (0x00, 0x00, 0x00),
     STYLE_KEYWORD: (0x00, 0x00, 0x80),
@@ -58,11 +57,6 @@ STYLE_COLORS: Final = {
     STYLE_COMMENT: (0x80, 0x80, 0x80),
     STYLE_OPERATOR: (0x40, 0x40, 0x40),
 }
-
-
-def rgb(red: int, green: int, blue: int) -> int:
-    """Pack an 8-bit RGB triple into Scintilla's 0xBBGGRR colour format."""
-    return red | (green << 8) | (blue << 16)
 
 
 def style_for_token(token: _TokenType) -> int:
@@ -98,7 +92,7 @@ class PygmentsHighlighter(QObject):
         for style, (red, green, blue) in STYLE_COLORS.items():
             if font is not None:
                 editor.styleSetFont(style, font.family())
-            editor.styleSetFore(style, rgb(red, green, blue))
+            editor.styleSetFore(style, QColor(red, green, blue))
         editor.styleSetBold(STYLE_KEYWORD, True)
         editor.styleSetItalic(STYLE_COMMENT, True)
 

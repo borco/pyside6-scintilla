@@ -8,6 +8,30 @@ see git history for that.
 
 ## [Unreleased]
 
+### Changed (breaking)
+
+- Colours are `QColor` (#17). The 45 colour methods -- `styleSetFore`/
+  `styleFore`, `styleSetBack`, `markerSetBack`, `setElementColour`,
+  `indicSetFore`, `setCaretLineBack`, `setSelBack`, `setRepresentationColour`,
+  ... -- used to take and return Scintilla's packed `0xBBGGRR` ints
+  (`0xAABBGGRR` for the alpha ones). They now take and return `QColor`
+  (anything PySide6 converts to one: `QColor`, `Qt.GlobalColor`, a colour
+  name). Plain `colour` messages ignore alpha and read back opaque.
+
+  **Check every colour call:** an `int` is still accepted, because PySide6
+  converts it to `QColor` -- but as Qt's `0xRRGGBB` with the alpha byte
+  ignored, so old code passing Scintilla's packed ints keeps running with red
+  and blue swapped, and the `...Translucent`/element/representation colours
+  become opaque. Replace `0xBBGGRR` values with `QColor(r, g, b)` (or `QColor(r, g, b,
+  a)`). The raw `send()` still takes Scintilla's packed ints.
+
+### Added
+
+- `colour_to_scintilla()` / `colour_from_scintilla()` (#17): convert between
+  a `QColor` (or colour name such as `"#00ff00"`, or `Qt.GlobalColor`) and
+  Scintilla's packed `0xBBGGRR` / `0xAABBGGRR` ints, for code using the raw
+  `send()`. They reject an `int` argument rather than guess its byte order.
+
 ### Fixed
 
 - Linux wheels no longer bundle private copies of `libOpenGL`, `libGLX` and

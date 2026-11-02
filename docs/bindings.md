@@ -246,6 +246,7 @@ position a byte offset); `ScintillaEdit` translates it by **one rule**, so
 1. `SCI_<NAME>` becomes a camelCased method (`SCI_ADDTEXT` -> `addText`;
    getters drop `Get`: `SCI_GETLEXERLANGUAGE` -> `lexerLanguage`).
 2. `char *` text becomes `str`, in the document's encoding; raw data stays bytes.
+   Colours become `QColor` (issue #17, see below).
 3. A length argument that only measures the string argument is dropped.
 4. A result buffer is returned instead of passed in.
 5. Positions and lengths stay byte counts.
@@ -289,6 +290,20 @@ in by `tools/generate_pyi.py`), e.g. `addText`: *"Sends `SCI_ADDTEXT`. No
   `NUL_SAFE_FALLBACKS`), with the same caret and undo behaviour. Other
   NUL-terminated messages carry names or display strings, where a NUL has no
   meaning.
+- **Colours are `QColor`** (issue #17). Scintilla's `colour` messages take a
+  packed `0xBBGGRR` int and `colouralpha` ones `0xAABBGGRR` -- the opposite
+  byte order from Qt's `0xAARRGGBB`, so `QColor("red").rgb()` passed through
+  unchanged would come out blue. The 45 generated methods take and return
+  `QColor` instead (`scintilla_colour.h` converts; a plain `colour` ignores
+  alpha and reads back opaque). PySide6 still converts an `int` (and `str`,
+  `Qt.GlobalColor`) to `QColor` implicitly, in **Qt's** order: kept
+  deliberately for consistency with the rest of PySide6, though it means
+  old code passing Scintilla's packed ints now gets red and blue swapped, and
+  loses alpha (`QColor(QRgb)` ignores it). For the same reason an invalid
+  colour name becomes black there rather than an error.
+  `send()` keeps Scintilla's packed ints; `colour_to_scintilla()`/
+  `colour_from_scintilla()` (in `__init__.py`) convert for it, and reject an
+  `int` since its byte order would be ambiguous.
 - `targetAsUTF8`/`encodedFromUTF8` aren't generated: `ScintillaQt` doesn't
   handle those messages (only the Win32/GTK/Cocoa platform layers do).
 

@@ -124,10 +124,13 @@ jobs:
 
       - name: Install runtime dependencies
         # libgl1/libegl1/libxkbcommon0: needed for Qt6Gui to load under
-        # QT_QPA_PLATFORM=offscreen, as in the build job.
+        # QT_QPA_PLATFORM=offscreen, as in the build job. libopengl0
+        # (libOpenGL.so.0): PySide6's Qt6Gui needs it too; preinstalled on the
+        # 24.04 runner, but not on 26.04 -- a PySide6 system requirement
+        # (also for users), not one of this package's.
         run: |
           sudo apt-get update
-          sudo apt-get install -y libgl1 libegl1 libxkbcommon0
+          sudo apt-get install -y libgl1 libegl1 libxkbcommon0 libopengl0
 
       - name: Install uv
         uses: astral-sh/setup-uv@v7

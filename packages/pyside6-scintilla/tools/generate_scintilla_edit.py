@@ -33,10 +33,10 @@ import sys
 from pathlib import Path
 from typing import Final
 
-REPO_ROOT: Final = Path(__file__).resolve().parent.parent
-SCINTILLA_DIR: Final = REPO_ROOT / "src" / "scintilla"
+PACKAGE_ROOT: Final = Path(__file__).resolve().parent.parent
+SCINTILLA_DIR: Final = PACKAGE_ROOT / "src" / "scintilla"
 IFACE_PATH: Final = SCINTILLA_DIR / "include" / "Scintilla.iface"
-BINDINGS_DIR: Final = REPO_ROOT / "src" / "pyside6_scintilla" / "bindings"
+BINDINGS_DIR: Final = PACKAGE_ROOT / "src" / "pyside6_scintilla" / "bindings"
 HEADER_PATH: Final = BINDINGS_DIR / "scintilla_edit_fixed.h"
 SOURCE_PATH: Final = BINDINGS_DIR / "scintilla_edit_fixed.cpp"
 
@@ -509,9 +509,9 @@ def main() -> int:
             stale.append(path)
         else:
             path.write_text(text, encoding="utf-8", newline="\n")
-            print(f"wrote {path.relative_to(REPO_ROOT)}")
+            print(f"wrote {path.relative_to(PACKAGE_ROOT)}")
     if stale:
-        names = ", ".join(str(p.relative_to(REPO_ROOT)) for p in stale)
+        names = ", ".join(str(p.relative_to(PACKAGE_ROOT)) for p in stale)
         print(f"out of date: {names} -- run `make generate`", file=sys.stderr)
         return 1
     return 0

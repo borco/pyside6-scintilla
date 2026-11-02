@@ -22,7 +22,7 @@ from pathlib import Path
 # 'Type of "editor.get_doc()" is "ScintillaDocument"'.
 REVEAL_TYPE_RE = re.compile(r'^Type of ".*" is "(?P<type>[^"]*)"$')
 
-REPO_ROOT = Path(__file__).resolve().parent.parent
+PACKAGE_ROOT = Path(__file__).resolve().parent.parent
 
 CHECK_SCRIPT = textwrap.dedent("""\
     from pyside6_scintilla import ScintillaEdit
@@ -45,7 +45,7 @@ def test_get_doc_and_inherited_methods_resolve_real_types(tmp_path: Path) -> Non
         [sys.executable, "-m", "pyright", "--outputjson", str(script)],
         capture_output=True,
         text=True,
-        cwd=REPO_ROOT,
+        cwd=PACKAGE_ROOT,
     )
     report = json.loads(result.stdout)
 

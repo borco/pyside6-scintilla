@@ -10,9 +10,9 @@ __pycache__/
 *.pyc
 /.build_install/
 
-# Compiled extension + shared libs dropped into src/ by `make install`
+# Compiled extension + shared libs dropped into the package's src/ by `make install`
 # (see docs/build.md)
-/src/pyside6_scintilla/*.pyd
-/src/pyside6_scintilla/*.so
-/src/pyside6_scintilla/*.dylib
-/src/pyside6_scintilla/*.dll
+/packages/pyside6-scintilla/src/pyside6_scintilla/*.pyd
+/packages/pyside6-scintilla/src/pyside6_scintilla/*.so
+/packages/pyside6-scintilla/src/pyside6_scintilla/*.dylib
+/packages/pyside6-scintilla/src/pyside6_scintilla/*.dll

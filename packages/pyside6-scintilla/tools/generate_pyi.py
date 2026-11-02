@@ -73,9 +73,9 @@ import sys
 from pathlib import Path
 from typing import Final
 
-REPO_ROOT: Final = Path(__file__).resolve().parent.parent
-PACKAGE_DIR: Final = REPO_ROOT / "src" / "pyside6_scintilla"
-IFACE_PATH: Final = REPO_ROOT / "src" / "scintilla" / "include" / "Scintilla.iface"
+PACKAGE_ROOT: Final = Path(__file__).resolve().parent.parent
+PACKAGE_DIR: Final = PACKAGE_ROOT / "src" / "pyside6_scintilla"
+IFACE_PATH: Final = PACKAGE_ROOT / "src" / "scintilla" / "include" / "Scintilla.iface"
 PYI_PATH: Final = PACKAGE_DIR / "_pyside6_scintilla.pyi"
 
 # Matches the `fun`/`get`/`set`/`evt` feature lines in Scintilla.iface, e.g.

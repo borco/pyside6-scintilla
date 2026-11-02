@@ -1,4 +1,4 @@
-"""Verify that shared content blocks in README.md and docs/index.md stay in sync.
+"""Verify that shared content blocks in packages/pyside6-scintilla/README.md and docs/index.md stay in sync.
 
 Both files embed the same project badges, installation snippet, and usage
 example, each wrapped in matching `<!-- sync:NAME -->`/`<!-- /sync:NAME -->`
@@ -13,7 +13,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-FILES = [ROOT / "README.md", ROOT / "docs" / "index.md"]
+FILES = [ROOT / "packages" / "pyside6-scintilla" / "README.md", ROOT / "docs" / "index.md"]
 
 BLOCK_RE = re.compile(r"<!-- sync:(\w+) -->\n(.*?)<!-- /sync:\1 -->\n", re.DOTALL)
 

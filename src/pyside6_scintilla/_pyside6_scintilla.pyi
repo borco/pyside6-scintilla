@@ -3224,10 +3224,10 @@ class ScintillaEditFixed(ScintillaEditBaseFixed):
         r"""Add a container action to the undo stack
 
         Sends `SCI_ADDUNDOACTION`."""
-    def additionalCaretFore(self, /) -> int:
+    def additionalCaretFore(self, /) -> PySide6.QtGui.QColor:
         r"""Get the foreground colour of additional carets.
 
-        Sends `SCI_GETADDITIONALCARETFORE`."""
+        Sends `SCI_GETADDITIONALCARETFORE`. Uses a `QColor` (without alpha) where the message uses a packed `0xBBGGRR` int."""
     def additionalCaretsBlink(self, /) -> bool:
         r"""Whether additional carets will blink
 
@@ -3548,18 +3548,18 @@ class ScintillaEditFixed(ScintillaEditBaseFixed):
         r"""Retrieve the position where the caret was before displaying the call tip.
 
         Sends `SCI_CALLTIPPOSSTART`."""
-    def callTipSetBack(self, back: int, /) -> None:
+    def callTipSetBack(self, back: PySide6.QtGui.QColor | str | PySide6.QtGui.QRgba64 | typing.Any | PySide6.QtCore.Qt.GlobalColor | int, /) -> None:
         r"""Set the background colour for the call tip.
 
-        Sends `SCI_CALLTIPSETBACK`."""
-    def callTipSetFore(self, fore: int, /) -> None:
+        Sends `SCI_CALLTIPSETBACK`. Uses a `QColor` (without alpha) where the message uses a packed `0xBBGGRR` int."""
+    def callTipSetFore(self, fore: PySide6.QtGui.QColor | str | PySide6.QtGui.QRgba64 | typing.Any | PySide6.QtCore.Qt.GlobalColor | int, /) -> None:
         r"""Set the foreground colour for the call tip.
 
-        Sends `SCI_CALLTIPSETFORE`."""
-    def callTipSetForeHlt(self, fore: int, /) -> None:
+        Sends `SCI_CALLTIPSETFORE`. Uses a `QColor` (without alpha) where the message uses a packed `0xBBGGRR` int."""
+    def callTipSetForeHlt(self, fore: PySide6.QtGui.QColor | str | PySide6.QtGui.QRgba64 | typing.Any | PySide6.QtCore.Qt.GlobalColor | int, /) -> None:
         r"""Set the foreground colour for the highlighted part of the call tip.
 
-        Sends `SCI_CALLTIPSETFOREHLT`."""
+        Sends `SCI_CALLTIPSETFOREHLT`. Uses a `QColor` (without alpha) where the message uses a packed `0xBBGGRR` int."""
     def callTipSetHlt(self, highlightStart: int, highlightEnd: int, /) -> None:
         r"""Highlight a segment of the definition.
 
@@ -3596,14 +3596,14 @@ class ScintillaEditFixed(ScintillaEditBaseFixed):
         r"""Cancel any modes such as call tip or auto-completion list display.
 
         Sends `SCI_CANCEL`."""
-    def caretFore(self, /) -> int:
+    def caretFore(self, /) -> PySide6.QtGui.QColor:
         r"""Get the foreground colour of the caret.
 
-        Sends `SCI_GETCARETFORE`."""
-    def caretLineBack(self, /) -> int:
+        Sends `SCI_GETCARETFORE`. Uses a `QColor` (without alpha) where the message uses a packed `0xBBGGRR` int."""
+    def caretLineBack(self, /) -> PySide6.QtGui.QColor:
         r"""Get the colour of the background of the line containing the caret.
 
-        Sends `SCI_GETCARETLINEBACK`."""
+        Sends `SCI_GETCARETLINEBACK`. Uses a `QColor` (without alpha) where the message uses a packed `0xBBGGRR` int."""
     def caretLineBackAlpha(self, /) -> int:
         r"""Get the background alpha of the caret line.
 
@@ -3968,10 +3968,10 @@ class ScintillaEditFixed(ScintillaEditBaseFixed):
         r"""Retrieve the current end of line mode - one of CRLF, CR, or LF.
 
         Sends `SCI_GETEOLMODE`."""
-    def edgeColour(self, /) -> int:
+    def edgeColour(self, /) -> PySide6.QtGui.QColor:
         r"""Retrieve the colour used in edge indication.
 
-        Sends `SCI_GETEDGECOLOUR`."""
+        Sends `SCI_GETEDGECOLOUR`. Uses a `QColor` (without alpha) where the message uses a packed `0xBBGGRR` int."""
     def edgeColumn(self, /) -> int:
         r"""Retrieve the column number which text should be kept within.
 
@@ -3988,14 +3988,14 @@ class ScintillaEditFixed(ScintillaEditBaseFixed):
         r"""Get whether an element supports translucency.
 
         Sends `SCI_GETELEMENTALLOWSTRANSLUCENT`."""
-    def elementBaseColour(self, element: int, /) -> int:
+    def elementBaseColour(self, element: int, /) -> PySide6.QtGui.QColor:
         r"""Get the colour of an element.
 
-        Sends `SCI_GETELEMENTBASECOLOUR`."""
-    def elementColour(self, element: int, /) -> int:
+        Sends `SCI_GETELEMENTBASECOLOUR`. Uses a `QColor` (with alpha) where the message uses a packed `0xAABBGGRR` int. The message's 0 result for an unset value is `QColor(0, 0, 0, 0)`, transparent black."""
+    def elementColour(self, element: int, /) -> PySide6.QtGui.QColor:
         r"""Get the colour of an element.
 
-        Sends `SCI_GETELEMENTCOLOUR`."""
+        Sends `SCI_GETELEMENTCOLOUR`. Uses a `QColor` (with alpha) where the message uses a packed `0xAABBGGRR` int. The message's 0 result for an unset value is `QColor(0, 0, 0, 0)`, transparent black."""
     def elementIsSet(self, element: int, /) -> bool:
         r"""Get whether an element has been set by SetElementColour. When false, a platform-defined or default colour is used.
 
@@ -4224,14 +4224,14 @@ class ScintillaEditFixed(ScintillaEditBaseFixed):
         r"""Like HomeExtend but when word-wrap is enabled extends first to start of display line HomeDisplayExtend, then to start of document line HomeExtend.
 
         Sends `SCI_HOMEWRAPEXTEND`."""
-    def hotspotActiveBack(self, /) -> int:
+    def hotspotActiveBack(self, /) -> PySide6.QtGui.QColor:
         r"""Get the back colour for active hotspots.
 
-        Sends `SCI_GETHOTSPOTACTIVEBACK`."""
-    def hotspotActiveFore(self, /) -> int:
+        Sends `SCI_GETHOTSPOTACTIVEBACK`. Uses a `QColor` (without alpha) where the message uses a packed `0xBBGGRR` int."""
+    def hotspotActiveFore(self, /) -> PySide6.QtGui.QColor:
         r"""Get the fore colour for active hotspots.
 
-        Sends `SCI_GETHOTSPOTACTIVEFORE`."""
+        Sends `SCI_GETHOTSPOTACTIVEFORE`. Uses a `QColor` (without alpha) where the message uses a packed `0xBBGGRR` int."""
     def hotspotActiveUnderline(self, /) -> bool:
         r"""Get whether underlining for active hotspots.
 
@@ -4272,14 +4272,14 @@ class ScintillaEditFixed(ScintillaEditBaseFixed):
         r"""Retrieve the attributes of an indicator.
 
         Sends `SCI_INDICGETFLAGS`."""
-    def indicFore(self, indicator: int, /) -> int:
+    def indicFore(self, indicator: int, /) -> PySide6.QtGui.QColor:
         r"""Retrieve the foreground colour of an indicator.
 
-        Sends `SCI_INDICGETFORE`."""
-    def indicHoverFore(self, indicator: int, /) -> int:
+        Sends `SCI_INDICGETFORE`. Uses a `QColor` (without alpha) where the message uses a packed `0xBBGGRR` int."""
+    def indicHoverFore(self, indicator: int, /) -> PySide6.QtGui.QColor:
         r"""Retrieve the foreground hover colour of an indicator.
 
-        Sends `SCI_INDICGETHOVERFORE`."""
+        Sends `SCI_INDICGETHOVERFORE`. Uses a `QColor` (without alpha) where the message uses a packed `0xBBGGRR` int."""
     def indicHoverStyle(self, indicator: int, /) -> int:
         r"""Retrieve the hover style of an indicator.
 
@@ -4296,14 +4296,14 @@ class ScintillaEditFixed(ScintillaEditBaseFixed):
         r"""Set the attributes of an indicator.
 
         Sends `SCI_INDICSETFLAGS`."""
-    def indicSetFore(self, indicator: int, fore: int, /) -> None:
+    def indicSetFore(self, indicator: int, fore: PySide6.QtGui.QColor | str | PySide6.QtGui.QRgba64 | typing.Any | PySide6.QtCore.Qt.GlobalColor | int, /) -> None:
         r"""Set the foreground colour of an indicator.
 
-        Sends `SCI_INDICSETFORE`."""
-    def indicSetHoverFore(self, indicator: int, fore: int, /) -> None:
+        Sends `SCI_INDICSETFORE`. Uses a `QColor` (without alpha) where the message uses a packed `0xBBGGRR` int."""
+    def indicSetHoverFore(self, indicator: int, fore: PySide6.QtGui.QColor | str | PySide6.QtGui.QRgba64 | typing.Any | PySide6.QtCore.Qt.GlobalColor | int, /) -> None:
         r"""Set the foreground hover colour of an indicator.
 
-        Sends `SCI_INDICSETHOVERFORE`."""
+        Sends `SCI_INDICSETHOVERFORE`. Uses a `QColor` (without alpha) where the message uses a packed `0xBBGGRR` int."""
     def indicSetHoverStyle(self, indicator: int, indicatorStyle: int, /) -> None:
         r"""Set a hover indicator to plain, squiggle or TT.
 
@@ -4568,10 +4568,10 @@ class ScintillaEditFixed(ScintillaEditBaseFixed):
         r"""Which selection is the main selection
 
         Sends `SCI_GETMAINSELECTION`."""
-    def marginBackN(self, margin: int, /) -> int:
+    def marginBackN(self, margin: int, /) -> PySide6.QtGui.QColor:
         r"""Retrieve the background colour of a margin
 
-        Sends `SCI_GETMARGINBACKN`."""
+        Sends `SCI_GETMARGINBACKN`. Uses a `QColor` (without alpha) where the message uses a packed `0xBBGGRR` int."""
     def marginCursorN(self, margin: int, /) -> int:
         r"""Retrieve the cursor shown in a margin.
 
@@ -4712,30 +4712,30 @@ class ScintillaEditFixed(ScintillaEditBaseFixed):
         r"""Set the alpha used for a marker that is drawn in the text area, not the margin.
 
         Sends `SCI_MARKERSETALPHA`."""
-    def markerSetBack(self, markerNumber: int, back: int, /) -> None:
+    def markerSetBack(self, markerNumber: int, back: PySide6.QtGui.QColor | str | PySide6.QtGui.QRgba64 | typing.Any | PySide6.QtCore.Qt.GlobalColor | int, /) -> None:
         r"""Set the background colour used for a particular marker number.
 
-        Sends `SCI_MARKERSETBACK`."""
-    def markerSetBackSelected(self, markerNumber: int, back: int, /) -> None:
+        Sends `SCI_MARKERSETBACK`. Uses a `QColor` (without alpha) where the message uses a packed `0xBBGGRR` int."""
+    def markerSetBackSelected(self, markerNumber: int, back: PySide6.QtGui.QColor | str | PySide6.QtGui.QRgba64 | typing.Any | PySide6.QtCore.Qt.GlobalColor | int, /) -> None:
         r"""Set the background colour used for a particular marker number when its folding block is selected.
 
-        Sends `SCI_MARKERSETBACKSELECTED`."""
-    def markerSetBackSelectedTranslucent(self, markerNumber: int, back: int, /) -> None:
+        Sends `SCI_MARKERSETBACKSELECTED`. Uses a `QColor` (without alpha) where the message uses a packed `0xBBGGRR` int."""
+    def markerSetBackSelectedTranslucent(self, markerNumber: int, back: PySide6.QtGui.QColor | str | PySide6.QtGui.QRgba64 | typing.Any | PySide6.QtCore.Qt.GlobalColor | int, /) -> None:
         r"""Set the background colour used for a particular marker number when its folding block is selected.
 
-        Sends `SCI_MARKERSETBACKSELECTEDTRANSLUCENT`."""
-    def markerSetBackTranslucent(self, markerNumber: int, back: int, /) -> None:
+        Sends `SCI_MARKERSETBACKSELECTEDTRANSLUCENT`. Uses a `QColor` (with alpha) where the message uses a packed `0xAABBGGRR` int."""
+    def markerSetBackTranslucent(self, markerNumber: int, back: PySide6.QtGui.QColor | str | PySide6.QtGui.QRgba64 | typing.Any | PySide6.QtCore.Qt.GlobalColor | int, /) -> None:
         r"""Set the background colour used for a particular marker number.
 
-        Sends `SCI_MARKERSETBACKTRANSLUCENT`."""
-    def markerSetFore(self, markerNumber: int, fore: int, /) -> None:
+        Sends `SCI_MARKERSETBACKTRANSLUCENT`. Uses a `QColor` (with alpha) where the message uses a packed `0xAABBGGRR` int."""
+    def markerSetFore(self, markerNumber: int, fore: PySide6.QtGui.QColor | str | PySide6.QtGui.QRgba64 | typing.Any | PySide6.QtCore.Qt.GlobalColor | int, /) -> None:
         r"""Set the foreground colour used for a particular marker number.
 
-        Sends `SCI_MARKERSETFORE`."""
-    def markerSetForeTranslucent(self, markerNumber: int, fore: int, /) -> None:
+        Sends `SCI_MARKERSETFORE`. Uses a `QColor` (without alpha) where the message uses a packed `0xBBGGRR` int."""
+    def markerSetForeTranslucent(self, markerNumber: int, fore: PySide6.QtGui.QColor | str | PySide6.QtGui.QRgba64 | typing.Any | PySide6.QtCore.Qt.GlobalColor | int, /) -> None:
         r"""Set the foreground colour used for a particular marker number.
 
-        Sends `SCI_MARKERSETFORETRANSLUCENT`."""
+        Sends `SCI_MARKERSETFORETRANSLUCENT`. Uses a `QColor` (with alpha) where the message uses a packed `0xAABBGGRR` int."""
     def markerSetLayer(self, markerNumber: int, layer: int, /) -> None:
         r"""Set the layer used for a marker that is drawn in the text area, not the margin.
 
@@ -4792,10 +4792,10 @@ class ScintillaEditFixed(ScintillaEditBaseFixed):
         r"""Move the selected lines up one line, shifting the line above after the selection
 
         Sends `SCI_MOVESELECTEDLINESUP`."""
-    def multiEdgeAddLine(self, column: int, edgeColour: int, /) -> None:
+    def multiEdgeAddLine(self, column: int, edgeColour: PySide6.QtGui.QColor | str | PySide6.QtGui.QRgba64 | typing.Any | PySide6.QtCore.Qt.GlobalColor | int, /) -> None:
         r"""Add a new vertical edge to the view.
 
-        Sends `SCI_MULTIEDGEADDLINE`."""
+        Sends `SCI_MULTIEDGEADDLINE`. Uses a `QColor` (without alpha) where the message uses a packed `0xBBGGRR` int."""
     def multiEdgeClearAll(self, /) -> None:
         r"""Clear all vertical edges.
 
@@ -5072,10 +5072,10 @@ class ScintillaEditFixed(ScintillaEditBaseFixed):
         r"""Get the appearance of a representation.
 
         Sends `SCI_GETREPRESENTATIONAPPEARANCE`."""
-    def representationColour(self, encodedCharacter: str, /) -> int:
+    def representationColour(self, encodedCharacter: str, /) -> PySide6.QtGui.QColor:
         r"""Get the colour of a representation.
 
-        Sends `SCI_GETREPRESENTATIONCOLOUR`."""
+        Sends `SCI_GETREPRESENTATIONCOLOUR`. Uses a `QColor` (with alpha) where the message uses a packed `0xAABBGGRR` int. The message's 0 result for an unset value is `QColor(0, 0, 0, 0)`, transparent black."""
     def resetElementColour(self, element: int, /) -> None:
         r"""Use the default or platform-defined colour for an element.
 
@@ -5222,10 +5222,10 @@ class ScintillaEditFixed(ScintillaEditBaseFixed):
         r"""Enable or disable accessibility.
 
         Sends `SCI_SETACCESSIBILITY`."""
-    def setAdditionalCaretFore(self, fore: int, /) -> None:
+    def setAdditionalCaretFore(self, fore: PySide6.QtGui.QColor | str | PySide6.QtGui.QRgba64 | typing.Any | PySide6.QtCore.Qt.GlobalColor | int, /) -> None:
         r"""Set the foreground colour of additional carets.
 
-        Sends `SCI_SETADDITIONALCARETFORE`."""
+        Sends `SCI_SETADDITIONALCARETFORE`. Uses a `QColor` (without alpha) where the message uses a packed `0xBBGGRR` int."""
     def setAdditionalCaretsBlink(self, additionalCaretsBlink: bool, /) -> None:
         r"""Set whether additional carets will blink
 
@@ -5238,14 +5238,14 @@ class ScintillaEditFixed(ScintillaEditBaseFixed):
         r"""Set the alpha of the selection.
 
         Sends `SCI_SETADDITIONALSELALPHA`."""
-    def setAdditionalSelBack(self, back: int, /) -> None:
+    def setAdditionalSelBack(self, back: PySide6.QtGui.QColor | str | PySide6.QtGui.QRgba64 | typing.Any | PySide6.QtCore.Qt.GlobalColor | int, /) -> None:
         r"""Set the background colour of additional selections. Must have previously called SetSelBack with non-zero first argument for this to have an effect.
 
-        Sends `SCI_SETADDITIONALSELBACK`."""
-    def setAdditionalSelFore(self, fore: int, /) -> None:
+        Sends `SCI_SETADDITIONALSELBACK`. Uses a `QColor` (without alpha) where the message uses a packed `0xBBGGRR` int."""
+    def setAdditionalSelFore(self, fore: PySide6.QtGui.QColor | str | PySide6.QtGui.QRgba64 | typing.Any | PySide6.QtCore.Qt.GlobalColor | int, /) -> None:
         r"""Set the foreground colour of additional selections. Must have previously called SetSelFore with non-zero first argument for this to have an effect.
 
-        Sends `SCI_SETADDITIONALSELFORE`."""
+        Sends `SCI_SETADDITIONALSELFORE`. Uses a `QColor` (without alpha) where the message uses a packed `0xBBGGRR` int."""
     def setAdditionalSelectionTyping(self, additionalSelectionTyping: bool, /) -> None:
         r"""Set whether typing can be performed into multiple selections
 
@@ -5270,14 +5270,14 @@ class ScintillaEditFixed(ScintillaEditBaseFixed):
         r"""If drawing is buffered then each line of text is drawn into a bitmap buffer before drawing it to the screen to avoid flicker.
 
         Sends `SCI_SETBUFFEREDDRAW`."""
-    def setCaretFore(self, fore: int, /) -> None:
+    def setCaretFore(self, fore: PySide6.QtGui.QColor | str | PySide6.QtGui.QRgba64 | typing.Any | PySide6.QtCore.Qt.GlobalColor | int, /) -> None:
         r"""Set the foreground colour of the caret.
 
-        Sends `SCI_SETCARETFORE`."""
-    def setCaretLineBack(self, back: int, /) -> None:
+        Sends `SCI_SETCARETFORE`. Uses a `QColor` (without alpha) where the message uses a packed `0xBBGGRR` int."""
+    def setCaretLineBack(self, back: PySide6.QtGui.QColor | str | PySide6.QtGui.QRgba64 | typing.Any | PySide6.QtCore.Qt.GlobalColor | int, /) -> None:
         r"""Set the colour of the background of the line containing the caret.
 
-        Sends `SCI_SETCARETLINEBACK`."""
+        Sends `SCI_SETCARETLINEBACK`. Uses a `QColor` (without alpha) where the message uses a packed `0xBBGGRR` int."""
     def setCaretLineBackAlpha(self, alpha: int, /) -> None:
         r"""Set background alpha of the caret line.
 
@@ -5370,10 +5370,10 @@ class ScintillaEditFixed(ScintillaEditBaseFixed):
         r"""Set the current end of line mode.
 
         Sends `SCI_SETEOLMODE`."""
-    def setEdgeColour(self, edgeColour: int, /) -> None:
+    def setEdgeColour(self, edgeColour: PySide6.QtGui.QColor | str | PySide6.QtGui.QRgba64 | typing.Any | PySide6.QtCore.Qt.GlobalColor | int, /) -> None:
         r"""Change the colour used in edge indication.
 
-        Sends `SCI_SETEDGECOLOUR`."""
+        Sends `SCI_SETEDGECOLOUR`. Uses a `QColor` (without alpha) where the message uses a packed `0xBBGGRR` int."""
     def setEdgeColumn(self, column: int, /) -> None:
         r"""Set the column number of the edge. If text goes past the edge then it is highlighted.
 
@@ -5382,10 +5382,10 @@ class ScintillaEditFixed(ScintillaEditBaseFixed):
         r"""The edge may be displayed by a line (EDGE_LINE/EDGE_MULTILINE) or by highlighting text that goes beyond it (EDGE_BACKGROUND) or not displayed at all (EDGE_NONE).
 
         Sends `SCI_SETEDGEMODE`."""
-    def setElementColour(self, element: int, colourElement: int, /) -> None:
+    def setElementColour(self, element: int, colourElement: PySide6.QtGui.QColor | str | PySide6.QtGui.QRgba64 | typing.Any | PySide6.QtCore.Qt.GlobalColor | int, /) -> None:
         r"""Set the colour of an element. Translucency (alpha) may or may not be significant and this may depend on the platform. The alpha byte should commonly be 0xff for opaque.
 
-        Sends `SCI_SETELEMENTCOLOUR`."""
+        Sends `SCI_SETELEMENTCOLOUR`. Uses a `QColor` (with alpha) where the message uses a packed `0xAABBGGRR` int."""
     def setEmptySelection(self, caret: int, /) -> None:
         r"""Set caret to a position, while removing any existing selection.
 
@@ -5422,14 +5422,14 @@ class ScintillaEditFixed(ScintillaEditBaseFixed):
         r"""Set the fold level of a line. This encodes an integer level along with flags indicating whether the line is a header and whether it is effectively white space.
 
         Sends `SCI_SETFOLDLEVEL`."""
-    def setFoldMarginColour(self, useSetting: bool, back: int, /) -> None:
+    def setFoldMarginColour(self, useSetting: bool, back: PySide6.QtGui.QColor | str | PySide6.QtGui.QRgba64 | typing.Any | PySide6.QtCore.Qt.GlobalColor | int, /) -> None:
         r"""Set one of the colours used as a chequerboard pattern in the fold margin
 
-        Sends `SCI_SETFOLDMARGINCOLOUR`."""
-    def setFoldMarginHiColour(self, useSetting: bool, fore: int, /) -> None:
+        Sends `SCI_SETFOLDMARGINCOLOUR`. Uses a `QColor` (without alpha) where the message uses a packed `0xBBGGRR` int."""
+    def setFoldMarginHiColour(self, useSetting: bool, fore: PySide6.QtGui.QColor | str | PySide6.QtGui.QRgba64 | typing.Any | PySide6.QtCore.Qt.GlobalColor | int, /) -> None:
         r"""Set the other colour used as a chequerboard pattern in the fold margin
 
-        Sends `SCI_SETFOLDMARGINHICOLOUR`."""
+        Sends `SCI_SETFOLDMARGINHICOLOUR`. Uses a `QColor` (without alpha) where the message uses a packed `0xBBGGRR` int."""
     def setFontLocale(self, localeName: str, /) -> None:
         r"""Set the locale for displaying text.
 
@@ -5446,14 +5446,14 @@ class ScintillaEditFixed(ScintillaEditBaseFixed):
         r"""Set the highlighted indentation guide column. 0 = no highlighted guide.
 
         Sends `SCI_SETHIGHLIGHTGUIDE`."""
-    def setHotspotActiveBack(self, useSetting: bool, back: int, /) -> None:
+    def setHotspotActiveBack(self, useSetting: bool, back: PySide6.QtGui.QColor | str | PySide6.QtGui.QRgba64 | typing.Any | PySide6.QtCore.Qt.GlobalColor | int, /) -> None:
         r"""Set a back colour for active hotspots.
 
-        Sends `SCI_SETHOTSPOTACTIVEBACK`."""
-    def setHotspotActiveFore(self, useSetting: bool, fore: int, /) -> None:
+        Sends `SCI_SETHOTSPOTACTIVEBACK`. Uses a `QColor` (without alpha) where the message uses a packed `0xBBGGRR` int."""
+    def setHotspotActiveFore(self, useSetting: bool, fore: PySide6.QtGui.QColor | str | PySide6.QtGui.QRgba64 | typing.Any | PySide6.QtCore.Qt.GlobalColor | int, /) -> None:
         r"""Set a fore colour for active hotspots.
 
-        Sends `SCI_SETHOTSPOTACTIVEFORE`."""
+        Sends `SCI_SETHOTSPOTACTIVEFORE`. Uses a `QColor` (without alpha) where the message uses a packed `0xBBGGRR` int."""
     def setHotspotActiveUnderline(self, underline: bool, /) -> None:
         r"""Enable / Disable underlining active hotspots.
 
@@ -5530,10 +5530,10 @@ class ScintillaEditFixed(ScintillaEditBaseFixed):
         r"""Set the main selection
 
         Sends `SCI_SETMAINSELECTION`."""
-    def setMarginBackN(self, margin: int, back: int, /) -> None:
+    def setMarginBackN(self, margin: int, back: PySide6.QtGui.QColor | str | PySide6.QtGui.QRgba64 | typing.Any | PySide6.QtCore.Qt.GlobalColor | int, /) -> None:
         r"""Set the background colour of a margin. Only visible for SC_MARGIN_COLOUR.
 
-        Sends `SCI_SETMARGINBACKN`."""
+        Sends `SCI_SETMARGINBACKN`. Uses a `QColor` (without alpha) where the message uses a packed `0xBBGGRR` int."""
     def setMarginCursorN(self, margin: int, cursor: int, /) -> None:
         r"""Set the cursor shown when the mouse is inside a margin.
 
@@ -5668,10 +5668,10 @@ class ScintillaEditFixed(ScintillaEditBaseFixed):
         r"""Set the appearance of a representation.
 
         Sends `SCI_SETREPRESENTATIONAPPEARANCE`."""
-    def setRepresentationColour(self, encodedCharacter: str, colour: int, /) -> None:
+    def setRepresentationColour(self, encodedCharacter: str, colour: PySide6.QtGui.QColor | str | PySide6.QtGui.QRgba64 | typing.Any | PySide6.QtCore.Qt.GlobalColor | int, /) -> None:
         r"""Set the colour of a representation.
 
-        Sends `SCI_SETREPRESENTATIONCOLOUR`."""
+        Sends `SCI_SETREPRESENTATIONCOLOUR`. Uses a `QColor` (with alpha) where the message uses a packed `0xAABBGGRR` int."""
     def setSavePoint(self, /) -> None:
         r"""Remember the current position in the undo history as the position at which the document was saved.
 
@@ -5696,18 +5696,18 @@ class ScintillaEditFixed(ScintillaEditBaseFixed):
         r"""Set the alpha of the selection.
 
         Sends `SCI_SETSELALPHA`."""
-    def setSelBack(self, useSetting: bool, back: int, /) -> None:
+    def setSelBack(self, useSetting: bool, back: PySide6.QtGui.QColor | str | PySide6.QtGui.QRgba64 | typing.Any | PySide6.QtCore.Qt.GlobalColor | int, /) -> None:
         r"""Set the background colour of the main and additional selections and whether to use this setting.
 
-        Sends `SCI_SETSELBACK`."""
+        Sends `SCI_SETSELBACK`. Uses a `QColor` (without alpha) where the message uses a packed `0xBBGGRR` int."""
     def setSelEOLFilled(self, filled: bool, /) -> None:
         r"""Set the selection to have its end of line filled or not.
 
         Sends `SCI_SETSELEOLFILLED`."""
-    def setSelFore(self, useSetting: bool, fore: int, /) -> None:
+    def setSelFore(self, useSetting: bool, fore: PySide6.QtGui.QColor | str | PySide6.QtGui.QRgba64 | typing.Any | PySide6.QtCore.Qt.GlobalColor | int, /) -> None:
         r"""Set the foreground colour of the main and additional selections and whether to use this setting.
 
-        Sends `SCI_SETSELFORE`."""
+        Sends `SCI_SETSELFORE`. Uses a `QColor` (without alpha) where the message uses a packed `0xBBGGRR` int."""
     def setSelection(self, caret: int, anchor: int, /) -> None:
         r"""Set a simple selection
 
@@ -5860,18 +5860,18 @@ class ScintillaEditFixed(ScintillaEditBaseFixed):
         r"""Set the way the display area is determined when a particular line is to be moved to by Find, FindNext, GotoLine, etc.
 
         Sends `SCI_SETVISIBLEPOLICY`."""
-    def setWhitespaceBack(self, useSetting: bool, back: int, /) -> None:
+    def setWhitespaceBack(self, useSetting: bool, back: PySide6.QtGui.QColor | str | PySide6.QtGui.QRgba64 | typing.Any | PySide6.QtCore.Qt.GlobalColor | int, /) -> None:
         r"""Set the background colour of all whitespace and whether to use this setting.
 
-        Sends `SCI_SETWHITESPACEBACK`."""
+        Sends `SCI_SETWHITESPACEBACK`. Uses a `QColor` (without alpha) where the message uses a packed `0xBBGGRR` int."""
     def setWhitespaceChars(self, characters: str, /) -> None:
         r"""Set the set of characters making up whitespace for when moving or selecting by word. Should be called after SetWordChars.
 
         Sends `SCI_SETWHITESPACECHARS`."""
-    def setWhitespaceFore(self, useSetting: bool, fore: int, /) -> None:
+    def setWhitespaceFore(self, useSetting: bool, fore: PySide6.QtGui.QColor | str | PySide6.QtGui.QRgba64 | typing.Any | PySide6.QtCore.Qt.GlobalColor | int, /) -> None:
         r"""Set the foreground colour of all whitespace and whether to use this setting.
 
-        Sends `SCI_SETWHITESPACEFORE`."""
+        Sends `SCI_SETWHITESPACEFORE`. Uses a `QColor` (without alpha) where the message uses a packed `0xBBGGRR` int."""
     def setWhitespaceSize(self, size: int, /) -> None:
         r"""Set the size of the dots used to mark space characters.
 
@@ -5960,10 +5960,10 @@ class ScintillaEditFixed(ScintillaEditBaseFixed):
         r"""Returns the style byte at the position.
 
         Sends `SCI_GETSTYLEAT`."""
-    def styleBack(self, style: int, /) -> int:
+    def styleBack(self, style: int, /) -> PySide6.QtGui.QColor:
         r"""Get the background colour of a style.
 
-        Sends `SCI_STYLEGETBACK`."""
+        Sends `SCI_STYLEGETBACK`. Uses a `QColor` (without alpha) where the message uses a packed `0xBBGGRR` int."""
     def styleBold(self, style: int, /) -> bool:
         r"""Get is a style bold or not.
 
@@ -5996,10 +5996,10 @@ class ScintillaEditFixed(ScintillaEditBaseFixed):
         r"""Get the font of a style. Returns the length of the fontName Result is NUL-terminated.
 
         Sends `SCI_STYLEGETFONT`. Returns the result instead of filling a `fontName` buffer; the message's own result (the length) is dropped."""
-    def styleFore(self, style: int, /) -> int:
+    def styleFore(self, style: int, /) -> PySide6.QtGui.QColor:
         r"""Get the foreground colour of a style.
 
-        Sends `SCI_STYLEGETFORE`."""
+        Sends `SCI_STYLEGETFORE`. Uses a `QColor` (without alpha) where the message uses a packed `0xBBGGRR` int."""
     def styleFromSubStyle(self, subStyle: int, /) -> int:
         r"""For a sub style, return the base style, else return the argument.
 
@@ -6024,10 +6024,10 @@ class ScintillaEditFixed(ScintillaEditBaseFixed):
         r"""Reset the default style to its state at startup
 
         Sends `SCI_STYLERESETDEFAULT`."""
-    def styleSetBack(self, style: int, back: int, /) -> None:
+    def styleSetBack(self, style: int, back: PySide6.QtGui.QColor | str | PySide6.QtGui.QRgba64 | typing.Any | PySide6.QtCore.Qt.GlobalColor | int, /) -> None:
         r"""Set the background colour of a style.
 
-        Sends `SCI_STYLESETBACK`."""
+        Sends `SCI_STYLESETBACK`. Uses a `QColor` (without alpha) where the message uses a packed `0xBBGGRR` int."""
     def styleSetBold(self, style: int, bold: bool, /) -> None:
         r"""Set a style to be bold or not.
 
@@ -6056,10 +6056,10 @@ class ScintillaEditFixed(ScintillaEditBaseFixed):
         r"""Set the font of a style.
 
         Sends `SCI_STYLESETFONT`."""
-    def styleSetFore(self, style: int, fore: int, /) -> None:
+    def styleSetFore(self, style: int, fore: PySide6.QtGui.QColor | str | PySide6.QtGui.QRgba64 | typing.Any | PySide6.QtCore.Qt.GlobalColor | int, /) -> None:
         r"""Set the foreground colour of a style.
 
-        Sends `SCI_STYLESETFORE`."""
+        Sends `SCI_STYLESETFORE`. Uses a `QColor` (without alpha) where the message uses a packed `0xBBGGRR` int."""
     def styleSetHotSpot(self, style: int, hotspot: bool, /) -> None:
         r"""Set a style to be a hotspot or not.
 

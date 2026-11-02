@@ -100,6 +100,7 @@ target_sources(_pyside6_scintilla PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/scintilla_edit_fixed.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/scintilla_edit_fixed.h
     ${CMAKE_CURRENT_SOURCE_DIR}/scintilla_text_encoding.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/scintilla_colour.h
     ${CMAKE_CURRENT_SOURCE_DIR}/scintilla_text_encoding.h
 )
 target_include_directories(_pyside6_scintilla PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})

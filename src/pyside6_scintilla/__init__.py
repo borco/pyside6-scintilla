@@ -8,6 +8,8 @@ how the bindings are built and maintained.
 
 # the binding will not load if we don't explicitly import PySide6.QtWidgets
 import PySide6.QtWidgets  # noqa: F401
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QColor
 from shiboken6.Shiboken import VoidPtr
 
 from ._pyside6_scintilla import Scintilla
@@ -63,6 +65,9 @@ class ScintillaEdit(_ScintillaEditFixed):
       getters also drop ``Get``: ``SCI_GETLEXERLANGUAGE`` -> ``lexerLanguage``);
     - ``char *`` text is ``str``, in the document's encoding; raw data (style
       bytes, images) is bytes;
+    - colours are ``QColor``, not Scintilla's packed ``0xBBGGRR`` (or
+      ``0xAABBGGRR``) ints -- an ``int`` still converts, but as Qt's
+      ``0xRRGGBB``, like everywhere in PySide6;
     - a length argument that only measures the string argument is dropped;
     - a result buffer is returned instead of passed in;
     - positions and lengths stay byte counts, as in Scintilla -- use
@@ -116,10 +121,51 @@ class ScintillaEdit(_ScintillaEditFixed):
 
 __version__ = "5.6.3.8"
 
+
+def colour_to_scintilla(colour: QColor | Qt.GlobalColor | str, alpha: bool = False) -> int:
+    """Pack a colour into Scintilla's integer format, for the raw `send()`.
+
+    Scintilla's `colour` messages take `0xBBGGRR` (red in the low byte), and its
+    `colouralpha` ones `0xAABBGGRR` (pass `alpha=True`) -- the opposite byte
+    order from Qt's `0xAARRGGBB`. `ScintillaEdit`'s typed colour methods take a
+    `QColor` and convert for you; this is for the raw message layer.
+
+    `colour` is a `QColor`, a `Qt.GlobalColor`, or a colour name such as
+    `"#00ff00"` or `"red"`. An `int` is rejected rather than guessed at, since
+    it could be in either byte order. (The typed methods, going through
+    PySide6's own `QColor` conversion, can't check this: there an invalid
+    colour name silently becomes black, and an `int` is read as Qt's
+    `0xRRGGBB`.)
+
+    Raises `TypeError` for an `int`, and `ValueError` for an invalid colour
+    (e.g. an unknown name).
+    """
+    if isinstance(colour, int):
+        raise TypeError("colour_to_scintilla() takes a QColor, Qt.GlobalColor or colour name, not an int")
+    qcolor = QColor(colour)
+    if not qcolor.isValid():
+        raise ValueError(f"invalid colour: {colour!r}")
+    packed = qcolor.red() | (qcolor.green() << 8) | (qcolor.blue() << 16)
+    if alpha:
+        packed |= qcolor.alpha() << 24
+    return packed
+
+
+def colour_from_scintilla(value: int, alpha: bool = False) -> QColor:
+    """Unpack a colour from Scintilla's integer format, e.g. a raw `send()` result.
+
+    `value` is `0xBBGGRR`, or `0xAABBGGRR` with `alpha=True`; without `alpha`
+    the result is opaque. The inverse of `colour_to_scintilla()`.
+    """
+    return QColor(value & 0xFF, (value >> 8) & 0xFF, (value >> 16) & 0xFF, (value >> 24) & 0xFF if alpha else 255)
+
+
 __all__ = [
     "Scintilla",
     "ScintillaDocument",
     "ScintillaEdit",
     "ScintillaEditBase",
     "__version__",
+    "colour_from_scintilla",
+    "colour_to_scintilla",
 ]

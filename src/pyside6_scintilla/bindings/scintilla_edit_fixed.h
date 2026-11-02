@@ -8,6 +8,7 @@
 #define SCINTILLA_EDIT_FIXED_H
 
 #include <QByteArray>
+#include <QColor>
 #include <QPair>
 #include <QRect>
 #include <QString>
@@ -96,12 +97,12 @@ public:
 	qint64 iMEInteraction() const;
 	void setIMEInteraction(qint64 imeInteraction);
 	void markerDefine(qint64 markerNumber, qint64 markerSymbol);
-	void markerSetFore(qint64 markerNumber, qint64 fore);
-	void markerSetBack(qint64 markerNumber, qint64 back);
-	void markerSetBackSelected(qint64 markerNumber, qint64 back);
-	void markerSetForeTranslucent(qint64 markerNumber, qint64 fore);
-	void markerSetBackTranslucent(qint64 markerNumber, qint64 back);
-	void markerSetBackSelectedTranslucent(qint64 markerNumber, qint64 back);
+	void markerSetFore(qint64 markerNumber, const QColor &fore);
+	void markerSetBack(qint64 markerNumber, const QColor &back);
+	void markerSetBackSelected(qint64 markerNumber, const QColor &back);
+	void markerSetForeTranslucent(qint64 markerNumber, const QColor &fore);
+	void markerSetBackTranslucent(qint64 markerNumber, const QColor &back);
+	void markerSetBackSelectedTranslucent(qint64 markerNumber, const QColor &back);
 	void markerSetStrokeWidth(qint64 markerNumber, qint64 hundredths);
 	void markerEnableHighlight(bool enabled);
 	qint64 markerAdd(qint64 line, qint64 markerNumber);
@@ -125,13 +126,13 @@ public:
 	bool marginSensitiveN(qint64 margin) const;
 	void setMarginCursorN(qint64 margin, qint64 cursor);
 	qint64 marginCursorN(qint64 margin) const;
-	void setMarginBackN(qint64 margin, qint64 back);
-	qint64 marginBackN(qint64 margin) const;
+	void setMarginBackN(qint64 margin, const QColor &back);
+	QColor marginBackN(qint64 margin) const;
 	void setMargins(qint64 margins);
 	qint64 margins() const;
 	void styleClearAll();
-	void styleSetFore(qint64 style, qint64 fore);
-	void styleSetBack(qint64 style, qint64 back);
+	void styleSetFore(qint64 style, const QColor &fore);
+	void styleSetBack(qint64 style, const QColor &back);
 	void styleSetBold(qint64 style, bool bold);
 	void styleSetItalic(qint64 style, bool italic);
 	void styleSetSize(qint64 style, qint64 sizePoints);
@@ -139,8 +140,8 @@ public:
 	void styleSetEOLFilled(qint64 style, bool eolFilled);
 	void styleResetDefault();
 	void styleSetUnderline(qint64 style, bool underline);
-	qint64 styleFore(qint64 style) const;
-	qint64 styleBack(qint64 style) const;
+	QColor styleFore(qint64 style) const;
+	QColor styleBack(qint64 style) const;
 	bool styleBold(qint64 style) const;
 	bool styleItalic(qint64 style) const;
 	qint64 styleSize(qint64 style) const;
@@ -165,14 +166,14 @@ public:
 	qint64 styleStretch(qint64 style) const;
 	void styleSetInvisibleRepresentation(qint64 style, const QString &representation);
 	QString styleInvisibleRepresentation(qint64 style) const;
-	void setElementColour(qint64 element, qint64 colourElement);
-	qint64 elementColour(qint64 element) const;
+	void setElementColour(qint64 element, const QColor &colourElement);
+	QColor elementColour(qint64 element) const;
 	void resetElementColour(qint64 element);
 	bool elementIsSet(qint64 element) const;
 	bool elementAllowsTranslucent(qint64 element) const;
-	qint64 elementBaseColour(qint64 element) const;
-	void setSelFore(bool useSetting, qint64 fore);
-	void setSelBack(bool useSetting, qint64 back);
+	QColor elementBaseColour(qint64 element) const;
+	void setSelFore(bool useSetting, const QColor &fore);
+	void setSelBack(bool useSetting, const QColor &back);
 	qint64 selAlpha() const;
 	void setSelAlpha(qint64 alpha);
 	bool selEOLFilled() const;
@@ -183,7 +184,7 @@ public:
 	void setCaretLineLayer(qint64 layer);
 	bool caretLineHighlightSubLine() const;
 	void setCaretLineHighlightSubLine(bool subLine);
-	void setCaretFore(qint64 fore);
+	void setCaretFore(const QColor &fore);
 	void assignCmdKey(qint64 keyDefinition, qint64 sciCommand);
 	void clearCmdKey(qint64 keyDefinition);
 	void clearAllCmdKeys();
@@ -214,20 +215,20 @@ public:
 	QString undoActionText(qint64 action) const;
 	void indicSetStyle(qint64 indicator, qint64 indicatorStyle);
 	qint64 indicStyle(qint64 indicator) const;
-	void indicSetFore(qint64 indicator, qint64 fore);
-	qint64 indicFore(qint64 indicator) const;
+	void indicSetFore(qint64 indicator, const QColor &fore);
+	QColor indicFore(qint64 indicator) const;
 	void indicSetUnder(qint64 indicator, bool under);
 	bool indicUnder(qint64 indicator) const;
 	void indicSetHoverStyle(qint64 indicator, qint64 indicatorStyle);
 	qint64 indicHoverStyle(qint64 indicator) const;
-	void indicSetHoverFore(qint64 indicator, qint64 fore);
-	qint64 indicHoverFore(qint64 indicator) const;
+	void indicSetHoverFore(qint64 indicator, const QColor &fore);
+	QColor indicHoverFore(qint64 indicator) const;
 	void indicSetFlags(qint64 indicator, qint64 flags);
 	qint64 indicFlags(qint64 indicator) const;
 	void indicSetStrokeWidth(qint64 indicator, qint64 hundredths);
 	qint64 indicStrokeWidth(qint64 indicator) const;
-	void setWhitespaceFore(bool useSetting, qint64 fore);
-	void setWhitespaceBack(bool useSetting, qint64 back);
+	void setWhitespaceFore(bool useSetting, const QColor &fore);
+	void setWhitespaceBack(bool useSetting, const QColor &back);
 	void setWhitespaceSize(qint64 size);
 	qint64 whitespaceSize() const;
 	void setLineState(qint64 line, qint64 state);
@@ -235,8 +236,8 @@ public:
 	qint64 maxLineState() const;
 	bool caretLineVisible() const;
 	void setCaretLineVisible(bool show);
-	qint64 caretLineBack() const;
-	void setCaretLineBack(qint64 back);
+	QColor caretLineBack() const;
+	void setCaretLineBack(const QColor &back);
 	qint64 caretLineFrame() const;
 	void setCaretLineFrame(qint64 width);
 	void styleSetChangeable(qint64 style, bool changeable);
@@ -293,7 +294,7 @@ public:
 	qint64 highlightGuide() const;
 	qint64 lineEndPosition(qint64 line) const;
 	qint64 codePage() const;
-	qint64 caretFore() const;
+	QColor caretFore() const;
 	bool readOnly() const;
 	void setCurrentPos(qint64 caret);
 	void setSelectionStart(qint64 anchor);
@@ -377,9 +378,9 @@ public:
 	qint64 callTipPosStart() const;
 	void callTipSetPosStart(qint64 posStart);
 	void callTipSetHlt(qint64 highlightStart, qint64 highlightEnd);
-	void callTipSetBack(qint64 back);
-	void callTipSetFore(qint64 fore);
-	void callTipSetForeHlt(qint64 fore);
+	void callTipSetBack(const QColor &back);
+	void callTipSetFore(const QColor &fore);
+	void callTipSetForeHlt(const QColor &fore);
 	void callTipUseStyle(qint64 tabSize);
 	void callTipSetPosition(bool above);
 	qint64 visibleFromDocLine(qint64 docLine);
@@ -454,8 +455,8 @@ public:
 	QString tag(qint64 tagNumber) const;
 	void linesJoin();
 	void linesSplit(qint64 pixelWidth);
-	void setFoldMarginColour(bool useSetting, qint64 back);
-	void setFoldMarginHiColour(bool useSetting, qint64 fore);
+	void setFoldMarginColour(bool useSetting, const QColor &back);
+	void setFoldMarginHiColour(bool useSetting, const QColor &fore);
 	void setAccessibility(qint64 accessibility);
 	qint64 accessibility() const;
 	void lineDown();
@@ -536,9 +537,9 @@ public:
 	void setEdgeColumn(qint64 column);
 	qint64 edgeMode() const;
 	void setEdgeMode(qint64 edgeMode);
-	qint64 edgeColour() const;
-	void setEdgeColour(qint64 edgeColour);
-	void multiEdgeAddLine(qint64 column, qint64 edgeColour);
+	QColor edgeColour() const;
+	void setEdgeColour(const QColor &edgeColour);
+	void multiEdgeAddLine(qint64 column, const QColor &edgeColour);
 	void multiEdgeClearAll();
 	qint64 multiEdgeColumn(qint64 which) const;
 	void searchAnchor();
@@ -583,10 +584,10 @@ public:
 	void setYCaretPolicy(qint64 caretPolicy, qint64 caretSlop);
 	void setPrintWrapMode(qint64 wrapMode);
 	qint64 printWrapMode() const;
-	void setHotspotActiveFore(bool useSetting, qint64 fore);
-	qint64 hotspotActiveFore() const;
-	void setHotspotActiveBack(bool useSetting, qint64 back);
-	qint64 hotspotActiveBack() const;
+	void setHotspotActiveFore(bool useSetting, const QColor &fore);
+	QColor hotspotActiveFore() const;
+	void setHotspotActiveBack(bool useSetting, const QColor &back);
+	QColor hotspotActiveBack() const;
 	void setHotspotActiveUnderline(bool underline);
 	bool hotspotActiveUnderline() const;
 	void setHotspotSingleLine(bool singleLine);
@@ -755,12 +756,12 @@ public:
 	qint64 virtualSpaceOptions() const;
 	void setRectangularSelectionModifier(qint64 modifier);
 	qint64 rectangularSelectionModifier() const;
-	void setAdditionalSelFore(qint64 fore);
-	void setAdditionalSelBack(qint64 back);
+	void setAdditionalSelFore(const QColor &fore);
+	void setAdditionalSelBack(const QColor &back);
 	void setAdditionalSelAlpha(qint64 alpha);
 	qint64 additionalSelAlpha() const;
-	void setAdditionalCaretFore(qint64 fore);
-	qint64 additionalCaretFore() const;
+	void setAdditionalCaretFore(const QColor &fore);
+	QColor additionalCaretFore() const;
 	void rotateSelection();
 	void swapMainAnchorCaret();
 	void multipleSelectAddNext();
@@ -798,8 +799,8 @@ public:
 	void clearAllRepresentations();
 	void setRepresentationAppearance(const QString &encodedCharacter, qint64 appearance);
 	qint64 representationAppearance(const QString &encodedCharacter) const;
-	void setRepresentationColour(const QString &encodedCharacter, qint64 colour);
-	qint64 representationColour(const QString &encodedCharacter) const;
+	void setRepresentationColour(const QString &encodedCharacter, const QColor &colour);
+	QColor representationColour(const QString &encodedCharacter) const;
 	void eOLAnnotationSetText(qint64 line, const QString &text);
 	QString eOLAnnotationText(qint64 line) const;
 	void eOLAnnotationSetStyle(qint64 line, qint64 style);

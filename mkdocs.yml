@@ -176,4 +176,5 @@ nav:
       - ScintillaEdit: reference/scintilla-edit.md
       - ScintillaDocument: reference/scintilla-document.md
       - Scintilla.Message: reference/message.md
+      - Colours: reference/colours.md
   - PyPI: https://pypi.org/project/pyside6-scintilla/

@@ -134,6 +134,7 @@ HEADER_PROLOGUE: Final = """\
 #define SCINTILLA_EDIT_FIXED_H
 
 #include <QByteArray>
+#include <QColor>
 #include <QPair>
 #include <QRect>
 #include <QString>
@@ -183,6 +184,7 @@ SOURCE_PROLOGUE: Final = """\
 
 #include <QPaintDevice>
 
+#include "scintilla_colour.h"
 #include "scintilla_text_encoding.h"
 
 ScintillaEditFixed::ScintillaEditFixed(QWidget *parent) : ScintillaEditBaseFixed(parent) {}
@@ -266,8 +268,16 @@ def param_name(name: str) -> str:
     return name[0].lower() + name[1:]
 
 
+# Scintilla's packed colour types, and whether each carries alpha: `colour`
+# is 0xBBGGRR, `colouralpha` 0xAABBGGRR. Exposed as QColor (issue #17),
+# converted by scintilla_colour.h.
+COLOUR_TYPES: Final = {"colour": False, "colouralpha": True}
+
+
 def scalar_type(iface_type: str) -> str:
-    """C++ type WidgetGen uses for a non-string iface type."""
+    """C++ type of a non-string iface type: QColor for colours, else WidgetGen's bool/integer."""
+    if iface_type in COLOUR_TYPES:
+        return "QColor"
     return "bool" if iface_type == "bool" else "qint64"
 
 
@@ -313,6 +323,8 @@ class Method:
                 continue
             if iface_type in ("string", "cells"):
                 cpp_type = self.__string_param_type()
+            elif iface_type in COLOUR_TYPES:
+                cpp_type = f"const {scalar_type(iface_type)} &"
             else:
                 cpp_type = scalar_type(iface_type) + " "
             params.append((iface_type, cpp_type, param_name(name)))
@@ -377,6 +389,16 @@ class Method:
         elif self.__computed_length:
             encoded = "" if self.__kind == "bytes" else "encoded "
             notes.append(f"No `length` argument: it's the byte length of the {encoded}`{param2}`.")
+        colour_types = sorted(
+            {self.__feature[k] for k in ("ReturnType", "Param1Type", "Param2Type")} & COLOUR_TYPES.keys()
+        )
+        if colour_types:
+            packed = " / ".join("`0xAABBGGRR`" if COLOUR_TYPES[c] else "`0xBBGGRR`" for c in colour_types)
+            alpha = "with" if "colouralpha" in colour_types else "without"
+            note = f"Uses a `QColor` ({alpha} alpha) where the message uses a packed {packed} int."
+            if self.__feature["ReturnType"] == "colouralpha":
+                note += " The message's 0 result for an unset value is `QColor(0, 0, 0, 0)`, transparent black."
+            notes.append(note)
         if self.__iface_name in NUL_SAFE_FALLBACKS:
             notes.append(
                 "Unlike the message (a NUL-terminated string), keeps embedded NUL characters: "
@@ -397,6 +419,9 @@ class Method:
                 if self.__kind != "bytes":
                     body.append(f"\tconst QByteArray {name}Bytes = {self.__encode(name)};")
                 args[name] = f"reinterpret_cast<qint64>({self.__bytes_var(name)}.constData())"
+            elif iface_type in COLOUR_TYPES:
+                with_alpha = "true" if COLOUR_TYPES[iface_type] else "false"
+                args[name] = f"colourToScintilla({name}, {with_alpha})"
             else:
                 args[name] = name
         fallback = NUL_SAFE_FALLBACKS.get(self.__iface_name)
@@ -432,6 +457,9 @@ class Method:
                 body.append(f"\t{send};")
             elif return_type == "bool":
                 body.append(f"\treturn {send} != 0;")
+            elif return_type == "QColor":
+                with_alpha = "true" if COLOUR_TYPES[self.__feature["ReturnType"]] else "false"
+                body.append(f"\treturn colourFromScintilla({send}, {with_alpha});")
             else:
                 body.append(f"\treturn {send};")
         return "\n".join([self.__signature(qualified=True) + " {", *body, "}", ""])

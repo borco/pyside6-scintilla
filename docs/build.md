@@ -13,7 +13,14 @@
     PySide6's wheels are built with, to avoid ABI mismatches against the
     Qt/shiboken libraries bundled in the PySide6 wheel.
   - **macOS**: Xcode command line tools.
-  - **Linux**: GCC or Clang.
+  - **Linux**: GCC or Clang. **Not Ubuntu 26.04 or newer (or another
+    distro with libxml2 2.14+)**: `shiboken6-generator`'s prebuilt
+    `shiboken6` binary (6.11 and 6.12 alike) links the system
+    `libxml2.so.2`, which libxml2 2.14 replaced with `libxml2.so.16`, so the
+    build fails with "error while loading shared libraries: libxml2.so.2".
+    Build on Ubuntu 24.04 (as CI does) or in a container/manylinux image.
+    Only building is affected: the extension doesn't use libxml2, and the
+    published wheels run fine on 26.04 (CI's `runtime` job checks this).
 - CMake 3.25+ and Ninja -- available as dev dependencies via `uv`, or from
   `<Qt>/Tools/CMake_64` / `<Qt>/Tools/Ninja` if you installed them through the
   Qt installer.

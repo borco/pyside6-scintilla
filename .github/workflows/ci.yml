@@ -17,9 +17,11 @@ jobs:
         # ubuntu-24.04, not ubuntu-latest: from Ubuntu 26.04 (ubuntu-latest
         # since late 2026) libxml2 no longer ships libxml2.so.2, which
         # shiboken6-generator's prebuilt `shiboken6` binary links against
-        # ("error while loading shared libraries: libxml2.so.2"). Matches
-        # the arm runner. wheels.yml is unaffected: cibuildwheel builds Linux
-        # wheels inside manylinux containers, not on the runner itself.
+        # ("error while loading shared libraries: libxml2.so.2"; 6.12.0 too).
+        # Only the build needs it -- the extension doesn't link libxml2 -- so
+        # the `runtime` job below checks the built wheel on 26.04 instead.
+        # wheels.yml is unaffected: cibuildwheel builds Linux wheels inside
+        # manylinux containers, not on the runner itself.
         os: [ubuntu-24.04, windows-latest, ubuntu-24.04-arm, macos-latest]
     steps:
       - uses: actions/checkout@v5
@@ -90,3 +92,58 @@ jobs:
           uv run python tools/check_docs_sync.py
           uv run python tools/generate_scintilla_edit.py --check
           uv run pyright
+
+      # For the `runtime` job: a wheel from this same build (no isolation, so
+      # it reuses .venv and the build directory -- about a minute).
+      - name: Build wheel (for the runtime job)
+        if: matrix.os == 'ubuntu-24.04'
+        run: uv build --wheel --no-build-isolation --out-dir dist
+
+      - name: Upload wheel
+        if: matrix.os == 'ubuntu-24.04'
+        uses: actions/upload-artifact@v4
+        with:
+          name: wheel-linux-x86_64
+          path: dist/*.whl
+
+  # The build can't run on Ubuntu 26.04 (see the matrix comment above), but
+  # users install wheels there: check that the wheel built on 24.04 installs
+  # and passes the test suite on 26.04, with a newer Python, against the
+  # PySide6 wheels from PyPI -- what `pip install pyside6-scintilla` does.
+  runtime:
+    name: runtime (ubuntu-26.04)
+    needs: build
+    runs-on: ubuntu-26.04
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: wheel-linux-x86_64
+          path: dist
+
+      - name: Install runtime dependencies
+        # libgl1/libegl1/libxkbcommon0: needed for Qt6Gui to load under
+        # QT_QPA_PLATFORM=offscreen, as in the build job.
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgl1 libegl1 libxkbcommon0
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          python-version: "3.14"
+
+      - name: Install the wheel
+        run: |
+          uv venv
+          uv pip install dist/*.whl pytest pytest-mock pytest-qt
+
+      # test_typing_stubs.py runs pyright over the source tree, a static check
+      # the build job already covers (same exclusion as cibuildwheel's
+      # test-command). Run from the checkout, but the src/ layout means the
+      # tests import the installed wheel, not the source tree.
+      - name: Run tests against the installed wheel
+        env:
+          QT_QPA_PLATFORM: offscreen
+        run: .venv/bin/python -m pytest tests --ignore=tests/test_typing_stubs.py

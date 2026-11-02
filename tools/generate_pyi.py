@@ -17,6 +17,10 @@ docs/bindings.md):
 
 After generation, this script also:
 
+- Drops genpyi's `pyside6_scintilla._pyside6_scintilla.` qualifier from the
+  stub's references to its own classes (e.g. base classes), which pyright
+  can't resolve through the stub's `import ... as _pyside6_scintilla`
+  self-import -- see `fix_self_references()`.
 - Aliases `Scintilla.Position`/`sptr_t`/`uptr_t` to `int`. These are
   primitive typedefs, not nested types, but genpyi emits them as
   `Scintilla.Position`-style forward references that wouldn't otherwise
@@ -37,13 +41,11 @@ After generation, this script also:
   `Scintilla.iface`, but do have per-member tables in
   `src/scintilla/doc/ScintillaDoc.html` -- see `VIRTUAL_SPACE_DOCS`,
   `UPDATE_DOCS`, and `MODIFICATION_FLAGS_DOCS` below.
-- Widens `ScintillaEditBase.sends`'s `s` parameter, and `ScintillaEdit`'s
-  other `const char *` parameters (e.g. `setText`/`addText`/`insertText`),
-  to also accept `str`. shiboken's `const char *` converter accepts a Python
-  `str` (UTF-8 encoded) at runtime, but genpyi only types these as
-  `bytes | bytearray | memoryview` (optionally `| None`).
-- Adds hand-written docstrings to `ScintillaEditBase.send`/`sends` -- the two
-  entry points users actually call, but genpyi only emits their bare
+- Drops `memoryview` from `QByteArray` parameter types (e.g. `sends`,
+  `setStylingEx`): PySide6 annotates it, but its converter rejects one at
+  runtime. See `QBYTEARRAY_PARAM_OLD`.
+- Adds hand-written docstrings to `ScintillaEditBase.send`/`sends`/`sendr` --
+  the raw entry points users actually call, but genpyi only emits their bare
   signatures (no Qt docstrings exist for them since they're not Qt
   overrides). See `SEND_DOCS` below.
 - Adds a class docstring to `ScintillaEditBase`, and a docstring to each of
@@ -54,10 +56,10 @@ After generation, this script also:
   `ScintillaDoc.html`, since none of these have `Scintilla.iface` doc
   comments. See `SCINTILLA_EDIT_BASE_CLASS_DOC`, `SCINTILLA_EDIT_BASE_SIGNAL_DOCS`,
   and `SCINTILLA_EDIT_BASE_OVERRIDE_DOCS` below.
-- Resolves `ScintillaEdit`'s `'sptr_t'`/`'Scintilla.sptr_t'`/
-  `'Scintilla.uptr_t'` forward references to `int`. genpyi inconsistently
-  emits these as unresolvable quoted forward refs across its ~780 typed
-  methods (genpyi prints "UNRECOGNIZED: 'sptr_t'" warnings for these).
+- Resolves any remaining `'sptr_t'`/`'Scintilla.sptr_t'`/
+  `'Scintilla.uptr_t'` forward references to `int` (genpyi prints
+  "UNRECOGNIZED: 'sptr_t'" warnings for these). The bound classes avoid these
+  types (see scintilla_edit_base_fixed.h), so this is a safety net.
 
 Run after rebuilding the extension (`make install` or `uv sync
 --reinstall-package pyside6-scintilla`), and whenever `bindings.xml`/
@@ -91,20 +93,24 @@ METHOD_RE: Final = re.compile(r"^(\s+)def (\w+)\(.*\) -> .+: \.\.\.\n?$")
 # "    notify  : typing.ClassVar[Signal] = ... # notify(Scintilla::NotificationData*)".
 SIGNAL_RE: Final = re.compile(r"^(\s+)(\w+)\s*: typing\.ClassVar\[Signal\] = \.\.\.(?: #.*)?\n?$")
 
-# genpyi's resolution of `send`/`sends`' `sptr_t`/`uptr_t` return and `lParam`
-# types is inconsistent across regenerations -- sometimes `int` directly (the
-# desired form below), sometimes an unresolvable `'sptr_t'`/
-# `typing.Optional[ForwardRef('sptr_t')]` forward ref (genpyi prints
-# "UNRECOGNIZED: 'sptr_t'" warnings for these two methods when this happens).
-SEND_LINE_RE: Final = re.compile(r"^    def send\(self,.*\) -> .+: \.\.\.$", re.M)
-SEND_SIGNATURE: Final = (
-    "    def send(self, iMessage: int, /, wParam: int | None = ..., lParam: int | None = ...) -> int: ..."
-)
-SENDS_LINE_RE: Final = re.compile(r"^    def sends\(self,.*\) -> .+: \.\.\.$", re.M)
-SENDS_SIGNATURE: Final = (
-    "    def sends(self, iMessage: int, /, wParam: int | None = ..., "
-    "s: bytes | bytearray | memoryview | None = ...) -> int: ..."
-)
+# The extension's own dotted module path, which genpyi uses to qualify
+# references to its classes (e.g. base classes). The stub imports itself as
+# `import pyside6_scintilla._pyside6_scintilla as _pyside6_scintilla`, which
+# binds only `_pyside6_scintilla`, so these fully-qualified names don't resolve
+# for pyright -- see fix_self_references().
+SELF_MODULE_QUALIFIER: Final = "pyside6_scintilla._pyside6_scintilla."
+
+# genpyi types `QByteArray` parameters as `QByteArray | bytes | bytearray |
+# memoryview` (PySide6's own annotation), but PySide6's QByteArray converter
+# rejects a memoryview at runtime.
+QBYTEARRAY_PARAM_OLD: Final = "PySide6.QtCore.QByteArray | bytes | bytearray | memoryview"
+QBYTEARRAY_PARAM_NEW: Final = "PySide6.QtCore.QByteArray | bytes | bytearray"
+
+# genpyi types ScintillaDocument's `void *pdoc_` constructor parameter as
+# `int`, but shiboken's `void *` converter rejects an int address at runtime
+# and takes a `shiboken6.Shiboken.VoidPtr` (see ScintillaEdit.get_doc()).
+DOC_POINTER_PARAM_OLD: Final = "pdoc_: int | None = ..."
+DOC_POINTER_PARAM_NEW: Final = "pdoc_: Shiboken.VoidPtr | None = ..."
 
 # Matches Scintilla.iface's "enu CharacterSource=SC_CHARACTERSOURCE_" line, capturing
 # the value-name prefix ("SC_CHARACTERSOURCE_") shared by its `val` lines.
@@ -112,19 +118,6 @@ CHARACTER_SOURCE_ENU_RE: Final = re.compile(r"^enu CharacterSource=(\w+)")
 
 # Matches a `val <PREFIXED_NAME>=<value>` line, e.g. "val SC_CHARACTERSOURCE_DIRECT_INPUT=0".
 VAL_RE: Final = re.compile(r"^val (\w+)=")
-
-# genpyi types `const char *` parameters as bytes-like only; shiboken's
-# converter also accepts `str` (UTF-8 encoded) at runtime.
-SENDS_OLD: Final = "s: bytes | bytearray | memoryview | None = ..."
-SENDS_NEW: Final = "s: bytes | bytearray | memoryview | str | None = ..."
-
-# Same `const char *` widening as SENDS_OLD/SENDS_NEW above, but for
-# ScintillaEdit's ~50 non-optional `const char *` parameters (e.g.
-# setText/addText/insertText), which genpyi types as plain
-# `bytes | bytearray | memoryview` with no `| None`. The negative lookahead
-# avoids re-widening SENDS_NEW once it's already been applied.
-CONST_CHAR_PTR_RE: Final = re.compile(r"bytes \| bytearray \| memoryview(?! \| str)")
-CONST_CHAR_PTR_NEW: Final = "bytes | bytearray | memoryview | str"
 
 # genpyi inconsistently resolves ScintillaEdit's ~780 `sptr_t`/`uptr_t`
 # (Scintilla::sptr_t/uptr_t, "intptr_t"/"uintptr_t"-like typedefs) parameter
@@ -1198,30 +1191,29 @@ ENUM_DOCS: Final[dict[str, tuple[str | None, dict[str, str]]]] = {
 WIDGET_FEATURE_RE: Final = re.compile(r"^(fun|get|set)\s+\S+\s+(\w+)=")
 
 
-# Hand-transcribed from ScintillaEdit.cpp's hand-written methods (not
-# generated from Scintilla.iface): TextReturner, find_text/findText,
-# get_text_range/textRange, get_doc/set_doc, format_range/formatRange.
+# Hand-written methods of the generated ScintillaEditFixed (see the
+# HEADER_PROLOGUE in tools/generate_scintilla_edit.py -- not one-to-one with
+# Scintilla.iface features): find_text/findText, get_text_range/textRange,
+# set_doc, format_range/formatRange. (get_doc is implemented, and documented,
+# in __init__.py.)
 # Applied before the Scintilla.iface-derived docs below, so these take
 # precedence over the generic iface docs for FindText/FormatRange (which
 # normalise to the same findText/formatRange method names).
 SCINTILLA_EDIT_HELPER_DOCS: Final = {
-    "TextReturner": (
-        "Send `message` with `wParam`, passing a buffer as its `lParam`, and return the buffer.\n\n"
-        "        Used internally for messages whose result is a string, e.g. `getText`/`getLine`."
-    ),
     "find_text": (
-        "Search for `text` between `cpMin` and `cpMax` using `flags` (`Scintilla.FindOption` values).\n\n"
-        "        Returns the `(start, end)` position of the match, or `(-1, cpMax)` if not found."
+        "Search for `text` between byte positions `cpMin` and `cpMax` using `flags` "
+        "(`Scintilla.FindOption` values).\n\n"
+        "        Returns the `(start, end)` byte positions of the match, or `(-1, cpMax)` if not found."
     ),
     "findText": "Alias for `find_text`.",
-    "get_text_range": "Return the document's text between `start` and `end`.",
+    "get_text_range": "Return the document's text between byte positions `start` and `end`.",
     "textRange": "Alias for `get_text_range`.",
-    "get_doc": (
-        "Return a new `ScintillaDocument` wrapping this editor's current document.\n\n"
-        "        Pass it to another `ScintillaEdit`'s `set_doc` to share the document between views.\n\n"
-        "        The returned object has no Qt parent, so it's kept alive only by your Python "
-        "reference to it -- if you let it go, its `modified`/`save_point`/etc. signals stop firing "
-        "(the underlying document itself stays alive as long as an editor is using it)."
+    "getBytes": (
+        "Return the document (or the byte range `start`..`end`) as stored: its bytes in the "
+        "document's encoding, not decoded.\n\n"
+        "        The bytes counterpart of `getText()`/`textRange()`: use it where byte offsets matter "
+        "(e.g. feeding a parser whose positions must match Scintilla's), instead of decoding to "
+        "`str` and encoding back. `.data()` gives a Python `bytes`."
     ),
     "set_doc": (
         "Make this editor display `doc`.\n\n"
@@ -1258,7 +1250,7 @@ SCINTILLA_DOCUMENT_SIGNAL_DOCS: Final = {
     "modified": (
         "The document's text or styling changed, or is about to (SCN_MODIFIED). `modification_type` "
         "is a `Scintilla.ModificationFlags` bitmask describing what; `text` holds the inserted/deleted "
-        "bytes for `Scintilla.ModificationFlags.InsertText`/`DeleteText`."
+        "text (decoded per the document's code page) for `Scintilla.ModificationFlags.InsertText`/`DeleteText`."
     ),
     "style_needed": (
         "Container-lexer styling is needed up to `pos` (SCN_STYLENEEDED). Only sent if "
@@ -1300,9 +1292,19 @@ SCINTILLA_DOCUMENT_DOCS: Final = {
     "is_save_point": "Return whether the document is at its save point (unmodified since `set_save_point`).",
     "set_read_only": "Set whether the document refuses modification.",
     "is_read_only": "Return whether the document refuses modification.",
-    "insert_string": "Insert `str` at `position`.",
-    "get_char_range": "Return `length` bytes of the document's text starting at `position`.",
-    "style_at": "Return the style byte at `position`.",
+    "insert_string": (
+        "Insert `text` at byte `position`, encoded per the document's code page (UTF-8 for "
+        "`Scintilla.CpUtf8`, the matching DBCS codec for 932/936/949/950, Latin-1 for 0)."
+    ),
+    "get_char_range": (
+        "Return the document's text in the `length` bytes starting at byte `position`, decoded per the "
+        "document's code page (see `insert_string`)."
+    ),
+    "get_byte_range": (
+        "Return the `length` bytes starting at byte `position` as stored, not decoded -- the bytes "
+        "counterpart of `get_char_range`."
+    ),
+    "style_at": "Return the style number (0-255) at byte `position`.",
     "line_start": "Return the position of the start of line `lineno`.",
     "line_end": "Return the position of the end of line `lineno`, before any line ending characters.",
     "line_end_position": "Return the position of the end of the line containing `pos`, before any line ending characters.",
@@ -1335,9 +1337,10 @@ SCINTILLA_DOCUMENT_DOCS: Final = {
 }
 
 
-# Hand-written -- ScintillaEditBase.send/sends are this binding's two entry
-# points for the ~800 Scintilla.Message commands, but they're plain C++
-# methods (not Qt overrides), so genpyi emits only their bare signatures.
+# Hand-written -- ScintillaEditBase's send/sends/sendr (declared on
+# ScintillaEditBaseFixed) are this binding's raw entry points for the ~800
+# Scintilla.Message commands, but they're plain C++ methods (not Qt
+# overrides), so genpyi emits only their bare signatures.
 SEND_DOCS: Final = {
     "send": (
         "Send a message to the underlying Scintilla editor and return its result.\n\n"
@@ -1347,10 +1350,22 @@ SEND_DOCS: Final = {
         "upstream Scintilla documentation."
     ),
     "sends": (
-        "Like `send`, but pass `s` as the message's string `lParam`.\n\n"
+        "Like `send`, but pass `data` as the message's string `lParam`.\n\n"
         "        Use this for messages whose `lParam` is a string, e.g. "
-        "`Scintilla.Message.AddText` or `Scintilla.Message.SetText`. `s` accepts "
-        "`bytes`, `bytearray`, `memoryview`, or `str` (encoded as UTF-8)."
+        "`Scintilla.Message.SetText`. `data` is the exact bytes Scintilla receives "
+        "(NUL-terminated; embedded NULs are passed through too), so it must already be in "
+        "the document's encoding -- `str` isn't accepted. For text, prefer `ScintillaEdit`'s "
+        "typed methods, which take and return `str`."
+    ),
+    "sendr": (
+        "Send a message whose `lParam` is a result buffer, and return that result as bytes.\n\n"
+        "        For messages Scintilla.iface types as `stringresult`, e.g. "
+        "`Scintilla.Message.GetSelText` or `Scintilla.Message.GetLexerLanguage`. The buffer is "
+        "sized by first sending the message with a NULL `lParam`, as Scintilla documents, and "
+        "`wParam` is passed to both sends -- so for the messages whose `wParam` is the buffer "
+        "length (`GetText`, `GetCurLine`), pass that length (e.g. `textLength()`); with 0 they "
+        "copy nothing and the result is all NULs. The typed `getText()`/`getCurLine()` handle "
+        "this for you."
     ),
 }
 
@@ -1429,7 +1444,8 @@ SCINTILLA_EDIT_BASE_SIGNAL_DOCS: Final = {
     "modified": (
         "The document's text or styling changed, or is about to (SCN_MODIFIED). `type` is a "
         "`Scintilla.ModificationFlags` bitmask describing what; `text` holds the inserted/deleted "
-        "bytes for `Scintilla.ModificationFlags.InsertText`/`DeleteText`."
+        "text (decoded per the document's encoding) for `Scintilla.ModificationFlags.InsertText`/`DeleteText`. "
+        "`position`/`length` are byte positions/counts, not character ones."
     ),
     "modifyAttemptReadOnly": "The user tried to edit the document while it is read-only (SCN_MODIFYATTEMPTRO).",
     "needShown": (
@@ -1601,6 +1617,40 @@ def parse_widget_method_docs(iface_path: Path) -> dict[str, str]:
     return docs
 
 
+def with_message_notes(docs: dict[str, str]) -> dict[str, str]:
+    """Append each generated ScintillaEdit method's message/deviation note to its iface doc.
+
+    The notes come from tools/generate_scintilla_edit.py (`Method.doc_note()`),
+    which knows exactly how each method's signature differs from the
+    Scintilla message it sends -- so a reader of Scintilla's own docs can map
+    one to the other.
+    """
+    from generate_scintilla_edit import doc_notes
+
+    merged = dict(docs)
+    for name, note in doc_notes().items():
+        merged[name] = f"{docs[name]}\n\n        {note}" if name in docs else note
+    return merged
+
+
+NOTIFICATION_TEXT_PROPERTY: Final = (
+    "        @property\n"
+    "        def text(self) -> PySide6.QtCore.QByteArray:\n"
+    '            r"""The notification\'s text as raw document bytes: `length` bytes for SCN_MODIFIED, '
+    "else NUL-terminated. Decode per the document's encoding, or use the typed signals, "
+    'which deliver `str`. (`textBytes()` is the same value.)"""\n'
+)
+
+
+def add_notification_text_property(text: str) -> str:
+    """Declare the `NotificationData.text` property that `__init__.py` defines over `textBytes()`."""
+    return text.replace(
+        "        def textBytes(self, /) -> PySide6.QtCore.QByteArray: ...\n",
+        "        def textBytes(self, /) -> PySide6.QtCore.QByteArray: ...\n" + NOTIFICATION_TEXT_PROPERTY,
+        1,
+    )
+
+
 def add_primitive_aliases(text: str) -> str:
     """Insert int aliases for Position/sptr_t/uptr_t right after `class Scintilla(...)`."""
     return text.replace(
@@ -1685,36 +1735,30 @@ def add_signal_docstrings(text: str, class_name: str, docs: dict[str, str]) -> s
     return "".join(out)
 
 
-def fix_self_import(text: str) -> str:
-    """Rewrite genpyi's bare `import _pyside6_scintilla` to the real dotted module path.
+def fix_self_references(text: str) -> str:
+    """Make the stub's references to its own classes resolvable for pyright.
 
-    genpyi derives the self-import from the extension's runtime `__name__`
-    (bare `_pyside6_scintilla`, since shiboken doesn't qualify compiled
-    extension module names with their parent package), not from where the
-    stub is actually installed (`pyside6_scintilla/_pyside6_scintilla.pyi`,
-    i.e. submodule `pyside6_scintilla._pyside6_scintilla`). Pyright can't
-    resolve a bare top-level `_pyside6_scintilla` import, so every
-    `_pyside6_scintilla.<Name>` reference -- return types like
-    `ScintillaEdit.get_doc()`, and base classes like
-    `ScintillaEditFixed(_pyside6_scintilla.ScintillaEdit)` -- silently
-    resolves to `Unknown`, along with every member a subclass inherits
-    through one of those unresolved bases.
+    genpyi qualifies them with the extension's dotted module path (e.g.
+    `class ScintillaEditFixed(pyside6_scintilla._pyside6_scintilla.ScintillaEditBaseFixed)`),
+    while its self-import is a bare `import _pyside6_scintilla` -- neither of
+    which pyright can resolve (no top-level `_pyside6_scintilla` module
+    exists, and nothing binds `pyside6_scintilla`). An unresolved name
+    silently becomes `Unknown` -- and an unresolved base class makes every
+    inherited member `Unknown` too. The classes are defined in this same
+    stub, so the qualifier and the self-import are simply dropped.
     """
-    return text.replace(
-        "import _pyside6_scintilla\n",
-        "import pyside6_scintilla._pyside6_scintilla as _pyside6_scintilla\n",
-        1,
-    )
+    text = text.replace("import _pyside6_scintilla\n", "", 1)
+    return text.replace(SELF_MODULE_QUALIFIER, "")
 
 
-def normalize_send_signatures(text: str) -> str:
-    """Force `ScintillaEditBase.send`/`sends` back to their `int`-based signatures.
+def narrow_qbytearray_params(text: str) -> str:
+    """Drop `memoryview` from `QByteArray` parameter types. See QBYTEARRAY_PARAM_OLD."""
+    return text.replace(QBYTEARRAY_PARAM_OLD, QBYTEARRAY_PARAM_NEW)
 
-    See `SEND_LINE_RE`/`SENDS_LINE_RE` above for why this is needed.
-    """
-    text = SEND_LINE_RE.sub(SEND_SIGNATURE, text, count=1)
-    text = SENDS_LINE_RE.sub(SENDS_SIGNATURE, text, count=1)
-    return text
+
+def fix_doc_pointer_param(text: str) -> str:
+    """Type ScintillaDocument's `pdoc_` constructor parameter as `VoidPtr`. See DOC_POINTER_PARAM_OLD."""
+    return text.replace(DOC_POINTER_PARAM_OLD, DOC_POINTER_PARAM_NEW)
 
 
 def add_method_docstrings(text: str, class_name: str, docs: dict[str, str]) -> str:
@@ -1740,16 +1784,6 @@ def add_method_docstrings(text: str, class_name: str, docs: dict[str, str]) -> s
     return "".join(out)
 
 
-def widen_sends_string_param(text: str) -> str:
-    """Add `str` to `ScintillaEditBase.sends`'s `s` parameter type."""
-    return text.replace(SENDS_OLD, SENDS_NEW, 1)
-
-
-def widen_const_char_ptr_params(text: str) -> str:
-    """Add `str` to `ScintillaEdit`'s other `const char *` parameter types. See CONST_CHAR_PTR_RE."""
-    return CONST_CHAR_PTR_RE.sub(CONST_CHAR_PTR_NEW, text)
-
-
 def resolve_sptr_uptr_forward_refs(text: str) -> str:
     """Replace unresolved `'sptr_t'`/`'Scintilla.sptr_t'`/`'Scintilla.uptr_t'` forward refs with `int`. See SPTR_UPTR_FORWARD_REF_RE."""
     return SPTR_UPTR_FORWARD_REF_RE.sub("int", text)
@@ -1771,8 +1805,8 @@ def main() -> None:
     """Generate `_pyside6_scintilla.pyi`, then post-process it in place."""
     run_genpyi()
     text = PYI_PATH.read_text(encoding="utf-8")
-    text = fix_self_import(text)
-    text = normalize_send_signatures(text)
+    text = fix_self_references(text)
+    text = add_notification_text_property(text)
     text = add_primitive_aliases(text)
     text = add_namespace_constants(text)
     text = add_enum_docstrings(text, "Message", parse_iface_docs(IFACE_PATH))
@@ -1794,22 +1828,21 @@ def main() -> None:
         text = add_enum_docstrings(text, enum_name, member_docs, class_doc=class_doc)
     text = add_class_docstring(text, "ScintillaEditBase", SCINTILLA_EDIT_BASE_CLASS_DOC)
     text = add_class_docstring(text, "ScintillaDocument", SCINTILLA_DOCUMENT_CLASS_DOC)
-    text = add_signal_docstrings(text, "ScintillaDocument", SCINTILLA_DOCUMENT_SIGNAL_DOCS)
-    text = add_signal_docstrings(text, "ScintillaEditBase", SCINTILLA_EDIT_BASE_SIGNAL_DOCS)
-    # ScintillaEditBaseFixed/ScintillaEditFixed only redeclare the signals
-    # scintilla_signal_fixes.h re-emits with plain-int signatures (see
-    # docs/bindings.md) -- add_signal_docstrings only matches `ClassVar[Signal]`
-    # lines that exist in the target class body, so reusing the same dict here
-    # documents just those masked/visible ones, not all ~37.
-    text = add_signal_docstrings(text, "ScintillaEditBaseFixed", SCINTILLA_EDIT_BASE_SIGNAL_DOCS)
-    text = add_signal_docstrings(text, "ScintillaEditFixed", SCINTILLA_EDIT_BASE_SIGNAL_DOCS)
-    text = add_method_docstrings(text, "ScintillaEditBase", SEND_DOCS)
-    text = add_method_docstrings(text, "ScintillaEditBase", SCINTILLA_EDIT_BASE_OVERRIDE_DOCS)
-    text = add_method_docstrings(text, "ScintillaEdit", SCINTILLA_EDIT_HELPER_DOCS)
-    text = add_method_docstrings(text, "ScintillaEdit", parse_widget_method_docs(IFACE_PATH))
-    text = add_method_docstrings(text, "ScintillaDocument", SCINTILLA_DOCUMENT_DOCS)
-    text = widen_sends_string_param(text)
-    text = widen_const_char_ptr_params(text)
+    # The *Fixed classes are what __init__.py exposes, but they only redeclare
+    # the members they replace (see docs/bindings.md) -- the add_*_docstrings
+    # helpers only match lines that exist in the target class body, so reusing
+    # the same dicts on both classes documents each member where it's declared.
+    for document_class in ("ScintillaDocument", "ScintillaDocumentFixed"):
+        text = add_signal_docstrings(text, document_class, SCINTILLA_DOCUMENT_SIGNAL_DOCS)
+        text = add_method_docstrings(text, document_class, SCINTILLA_DOCUMENT_DOCS)
+    for base_class in ("ScintillaEditBase", "ScintillaEditBaseFixed"):
+        text = add_signal_docstrings(text, base_class, SCINTILLA_EDIT_BASE_SIGNAL_DOCS)
+        text = add_method_docstrings(text, base_class, SCINTILLA_EDIT_BASE_OVERRIDE_DOCS)
+    text = add_method_docstrings(text, "ScintillaEditBaseFixed", SEND_DOCS)
+    text = add_method_docstrings(text, "ScintillaEditFixed", SCINTILLA_EDIT_HELPER_DOCS)
+    text = add_method_docstrings(text, "ScintillaEditFixed", with_message_notes(parse_widget_method_docs(IFACE_PATH)))
+    text = narrow_qbytearray_params(text)
+    text = fix_doc_pointer_param(text)
     text = resolve_sptr_uptr_forward_refs(text)
     PYI_PATH.write_text(text, encoding="utf-8")
 

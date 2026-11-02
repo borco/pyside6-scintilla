@@ -8,10 +8,39 @@ how the bindings are built and maintained.
 
 # the binding will not load if we don't explicitly import PySide6.QtWidgets
 import PySide6.QtWidgets  # noqa: F401
+from shiboken6.Shiboken import VoidPtr
 
-from ._pyside6_scintilla import Scintilla, ScintillaDocument
+from ._pyside6_scintilla import Scintilla
+from ._pyside6_scintilla import ScintillaDocumentFixed as _ScintillaDocumentFixed
 from ._pyside6_scintilla import ScintillaEditBaseFixed as _ScintillaEditBaseFixed
 from ._pyside6_scintilla import ScintillaEditFixed as _ScintillaEditFixed
+
+
+# NotificationData.text is raw document bytes (`length` of them for
+# SCN_MODIFIED), not a NUL-terminated UTF-8 string as shiboken would read the
+# `const char *` field -- see bindings.xml. The typed signals (`modified`, ...)
+# carry the decoded str; this keeps the raw struct's field an attribute.
+# (setattr: the stub declares the property, so pyright sees a read-only attribute here.)
+setattr(  # noqa: B010
+    Scintilla.NotificationData,
+    "text",
+    property(
+        Scintilla.NotificationData.textBytes,
+        doc="The notification's text as raw document bytes (`QByteArray`): `length` bytes for "
+        "SCN_MODIFIED, else NUL-terminated. Decode per the document's encoding, or use the typed "
+        "signals, which deliver `str`.",
+    ),
+)
+
+
+class ScintillaDocument(_ScintillaDocumentFixed):
+    """A Scintilla document, independent of any editor view.
+
+    A real subclass rather than an import alias, so type checkers (and
+    "go to definition") report this class's own name instead of the
+    underlying ``ScintillaDocumentFixed`` binding class -- see
+    docs/bindings.md for why that class exists.
+    """
 
 
 class ScintillaEditBase(_ScintillaEditBaseFixed):
@@ -25,13 +54,64 @@ class ScintillaEditBase(_ScintillaEditBaseFixed):
 
 
 class ScintillaEdit(_ScintillaEditFixed):
-    """The Scintilla editing widget.
+    """The Scintilla editing widget, with one typed method per Scintilla message.
+
+    Each ``SCI_*`` message in Scintilla's documentation maps to a method by one
+    rule (each method's docstring names its message and any difference):
+
+    - the name drops ``SCI_`` and is camelCased (``SCI_ADDTEXT`` -> ``addText``,
+      getters also drop ``Get``: ``SCI_GETLEXERLANGUAGE`` -> ``lexerLanguage``);
+    - ``char *`` text is ``str``, in the document's encoding; raw data (style
+      bytes, images) is bytes;
+    - a length argument that only measures the string argument is dropped;
+    - a result buffer is returned instead of passed in;
+    - positions and lengths stay byte counts, as in Scintilla -- use
+      ``getBytes()`` where byte offsets matter.
 
     A real subclass rather than an import alias, so type checkers (and
     "go to definition") report this class's own name instead of the
     underlying ``ScintillaEditFixed`` binding class -- see docs/bindings.md
     for why that class exists.
     """
+
+    def get_doc(self) -> ScintillaDocument:
+        """Return a new `ScintillaDocument` wrapping this editor's current document.
+
+        Pass it to another `ScintillaEdit`'s `set_doc` to share the document between views.
+
+        The returned object has no Qt parent, so it's kept alive only by your Python
+        reference to it -- if you let it go, its `modified`/`save_point`/etc. signals stop
+        firing (the underlying document itself stays alive as long as an editor is using it).
+        """
+        # Implemented here, not in C++, so it returns this module's ScintillaDocument
+        # (the document is reference counted, so this wraps the same buffer).
+        return ScintillaDocument(None, VoidPtr(self.send(Scintilla.Message.GetDocPointer)))
+
+    # These three messages take a NULL text to mean "clear the line" (an empty
+    # string sets an empty, still present annotation), as upstream's
+    # `const char *` allowed. The generated methods take a QString, which
+    # can't be NULL, so `None` is handled here.
+
+    def annotationSetText(self, line: int, text: str | None) -> None:
+        """Set the annotation text for a line; `None` clears it (`SCI_ANNOTATIONSETTEXT` with NULL)."""
+        if text is None:
+            self.send(Scintilla.Message.AnnotationSetText, line, 0)
+        else:
+            super().annotationSetText(line, text)
+
+    def eOLAnnotationSetText(self, line: int, text: str | None) -> None:
+        """Set the end of line annotation text for a line; `None` clears it (`SCI_EOLANNOTATIONSETTEXT` with NULL)."""
+        if text is None:
+            self.send(Scintilla.Message.EOLAnnotationSetText, line, 0)
+        else:
+            super().eOLAnnotationSetText(line, text)
+
+    def marginSetText(self, line: int, text: str | None) -> None:
+        """Set the text in the text margin for a line; `None` clears it (`SCI_MARGINSETTEXT` with NULL)."""
+        if text is None:
+            self.send(Scintilla.Message.MarginSetText, line, 0)
+        else:
+            super().marginSetText(line, text)
 
 
 __version__ = "5.6.3.7"

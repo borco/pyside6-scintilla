@@ -187,7 +187,9 @@ class TreeSitterHighlighter(QObject):
         editor = self.__editor
         self.__set_connected(False)
         try:
-            source = editor.getText(editor.textLength()).data()
+            # tree-sitter works on bytes and reports byte offsets, which match
+            # Scintilla's positions -- so take the stored bytes, not str.
+            source = editor.getBytes().data()
             tree = self.__parser.parse(source)
 
             ranges: list[tuple[int, int, int]] = []

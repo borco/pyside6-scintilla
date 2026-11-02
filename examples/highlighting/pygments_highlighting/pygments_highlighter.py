@@ -110,7 +110,7 @@ class PygmentsHighlighter(QObject):
         editor = self.__editor
         self.__set_connected(False)
         try:
-            text = editor.getText(editor.textLength()).data().decode("utf-8")
+            text = editor.getText()
 
             editor.startStyling(0, 0)
             for token, value in self.__lexer.get_tokens(text):

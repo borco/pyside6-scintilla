@@ -1,4 +1,4 @@
-.PHONY: setup lint format test clean clean-setup configure build install publish stubs docs-serve
+.PHONY: setup lint format test clean clean-setup configure build install publish generate stubs docs-serve
 
 setup:
 	uv sync
@@ -6,6 +6,7 @@ setup:
 lint:
 	uv run ruff check .
 	uv run python tools/check_docs_sync.py
+	uv run python tools/generate_scintilla_edit.py --check
 	uv run pyright
 
 # Serve the docs site locally with live-reload (http://127.0.0.1:8000/pyside6-scintilla/).
@@ -49,6 +50,13 @@ install: build
 publish: format test lint
 	uv build
 	uv publish
+
+# Regenerate src/pyside6_scintilla/bindings/scintilla_edit_fixed.{h,cpp} (the
+# typed ScintillaEdit class) from Scintilla.iface -- see
+# tools/generate_scintilla_edit.py. Run after vendoring a new Scintilla
+# release, then rebuild and `make stubs`.
+generate:
+	uv run python tools/generate_scintilla_edit.py
 
 # Regenerate src/pyside6_scintilla/_pyside6_scintilla.pyi (see tools/generate_pyi.py
 # and docs/bindings.md). Run after `make install` / `uv sync --reinstall-package

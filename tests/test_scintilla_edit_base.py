@@ -15,7 +15,7 @@ def test_set_and_get_text_length(qtbot: QtBot) -> None:
     editor = ScintillaEditBase()
     qtbot.addWidget(editor)
 
-    editor.sends(int(Scintilla.Message.SetText), 0, "hello")
+    editor.sends(int(Scintilla.Message.SetText), 0, b"hello")
 
     assert editor.send(int(Scintilla.Message.GetTextLength)) == len("hello")
 
@@ -30,6 +30,6 @@ def test_modified_signal_reaches_python_slot(qtbot: QtBot, mocker: MockerFixture
     slot = mocker.Mock()
     editor.modified.connect(slot)
 
-    editor.sends(int(Scintilla.Message.SetText), 0, "hello")
+    editor.sends(int(Scintilla.Message.SetText), 0, b"hello")
 
     assert slot.called

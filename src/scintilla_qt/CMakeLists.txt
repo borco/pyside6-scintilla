@@ -87,11 +87,11 @@ qt_add_library(${LIB_NAME} SHARED
     ${SCINTILLA_DIR}/qt/ScintillaEditBase/ScintillaQt.cpp
     ${SCINTILLA_DIR}/qt/ScintillaEditBase/ScintillaQt.h
 
-    # Qt widget: ScintillaEdit (typed wrapper, one method per SCI_* message)
+    # Qt document wrapper. Upstream's ScintillaEdit (WidgetGen.py output) is
+    # deliberately not built: src/pyside6_scintilla/bindings/scintilla_edit_fixed.*
+    # (tools/generate_scintilla_edit.py) replaces it, see issue #16.
     ${SCINTILLA_DIR}/qt/ScintillaEdit/ScintillaDocument.cpp
     ${SCINTILLA_DIR}/qt/ScintillaEdit/ScintillaDocument.h
-    ${SCINTILLA_DIR}/qt/ScintillaEdit/ScintillaEdit.cpp
-    ${SCINTILLA_DIR}/qt/ScintillaEdit/ScintillaEdit.h
 )
 
 target_include_directories(${LIB_NAME}

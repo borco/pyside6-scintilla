@@ -82,4 +82,5 @@ jobs:
           uv run ruff check .
           uv run ruff format --check .
           uv run python tools/check_docs_sync.py
+          uv run python tools/generate_scintilla_edit.py --check
           uv run pyright

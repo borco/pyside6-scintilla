@@ -41,7 +41,7 @@ def line_number_margin_width(editor: ScintillaEditBase) -> int:
     """Pixel width that fits the current number of lines, plus a little padding."""
     line_count = editor.send(Scintilla.Message.GetLineCount)
     digits = max(2, len(str(line_count)))
-    return editor.sends(Scintilla.Message.TextWidth, Scintilla.StylesCommon.LineNumber, "9" * digits) + 4
+    return editor.sends(Scintilla.Message.TextWidth, Scintilla.StylesCommon.LineNumber, b"9" * digits) + 4
 
 
 class MainWindow(QMainWindow):
@@ -63,11 +63,13 @@ class MainWindow(QMainWindow):
         # Use the platform's default fixed-width font instead of Scintilla's
         # built-in default (a proportional font), as is conventional for a
         # code editor.
+        # The raw sends() takes the exact bytes Scintilla receives: UTF-8 here,
+        # Scintilla's default document encoding (and always the font name's).
         fixed_font = QFontDatabase.systemFont(QFontDatabase.SystemFont.FixedFont)
-        editor.sends(message.StyleSetFont, Scintilla.StylesCommon.Default, fixed_font.family())
+        editor.sends(message.StyleSetFont, Scintilla.StylesCommon.Default, fixed_font.family().encode("utf-8"))
         editor.send(message.StyleClearAll)
 
-        editor.sends(message.SetText, 0, SAMPLE_TEXT)
+        editor.sends(message.SetText, 0, SAMPLE_TEXT.encode("utf-8"))
 
         # Line-number margin, shown by default.
         editor.send(message.SetMarginTypeN, LINE_NUMBER_MARGIN, Scintilla.MarginType.Number)

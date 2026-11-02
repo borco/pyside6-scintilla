@@ -6,6 +6,55 @@ Changelog](https://keepachangelog.com/en/1.0.0/); entries are kept high-level
 (what shipped, breaking changes) rather than a full commit-by-commit log —
 see git history for that.
 
+## [Unreleased]
+
+### Changed (breaking)
+
+- A strict, consistent text/bytes API (#16). Text -- document text, names,
+  display strings -- is `str` in and out, encoded with the document's
+  encoding (UTF-8 by default; the matching codec for other code pages).
+  Raw data -- style bytes, images, the raw `sends` -- is bytes in, and
+  `QByteArray` out. Nothing is converted implicitly: passing bytes to a text
+  method, or `str` to a bytes one, raises `TypeError`.
+
+  | Before | Now |
+  | --- | --- |
+  | `editor.getText(n).data().decode()` | `editor.getText()` |
+  | `editor.getText(n).data()` (for the raw bytes) | `editor.getBytes()` / `getBytes(start, end)` -- the document's stored bytes, undecoded |
+  | `doc.get_char_range(...)` (for the raw bytes) | `doc.get_byte_range(...)` |
+  | `editor.getLine(i)`, `getSelText()`, `textRange(a, b)`, `styleFont(s)`, ... returned `QByteArray` | return `str` |
+  | `editor.addText(len(b), s)`, `appendText`, `replaceTarget`, `searchInTarget`, `copyText`, ... | `editor.addText(s)` -- the byte length is computed from the encoded text |
+  | `editor.setStylingEx(n, styles)`, `addStyledText(n, cells)` | `editor.setStylingEx(styles)` -- bytes, length computed |
+  | `editor.getCurLine(n)` returned the line | `editor.getCurLine()` returns `(line, caret)` |
+  | `base.sends(msg, w, "text")` | `base.sends(msg, w, b"text")` -- bytes only |
+  | `editor.TextReturner(msg, w)` | `base.sendr(msg, w)` (also on `ScintillaEditBase`) |
+  | `doc.insert_string(pos, b"...")`, `doc.get_char_range(...)` returned bytes | `str` in and out; `doc.style_at()` returns an `int` |
+  | `modified` signals' `text` was `QByteArray` | `str` |
+  | `NotificationData.text` (raw `notify` signal) was a UTF-8-decoded `str` | `QByteArray`: the raw `length` bytes, in the document's encoding |
+  | `targetAsUTF8()`/`encodedFromUTF8()` (always empty on Qt) | removed |
+
+  Positions and lengths elsewhere are still Scintilla's byte offsets. Each
+  method's docstring names the `SCI_*` message it sends and how its signature
+  differs from it.
+
+### Fixed
+
+- A wrong argument type raised `NameError: name '_pyside6_scintilla' is not
+  defined` from shiboken's error reporting instead of a `TypeError`.
+- `getText(n)`/`getCurLine(n)` padded their result with NULs.
+- `setText`/`insertText`/`replaceSel` silently cut text off at an embedded
+  NUL character; they now keep it.
+- The type stub claimed text methods accepted `bytes | bytearray |
+  memoryview`; it now matches the runtime exactly.
+- `ScintillaEdit` is generated from the vendored `Scintilla.iface` again
+  (upstream's generated copy was about 40 messages behind), adding e.g.
+  `undoActionText`, `selectionSerialized`, `replaceTargetMinimal` and
+  `copySeparator`.
+- `macroRecord`/`command` signal parameters were truncated to 32 bits on
+  Windows.
+- `NotificationData.text` raised `UnicodeDecodeError` in non-UTF-8 code pages
+  and ignored `length`.
+
 ## [5.6.3.7] - 2026-07-28
 
 ### Changed

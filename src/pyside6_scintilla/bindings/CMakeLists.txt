@@ -85,11 +85,6 @@ else()
         CXX_VISIBILITY_PRESET hidden
         VISIBILITY_INLINES_HIDDEN ON
     )
-    if(NOT APPLE)
-        # Drop the OpenGL libraries Qt6::Gui's CMake target adds but nothing
-        # here uses -- see the same option in ../../scintilla_qt/CMakeLists.txt.
-        target_link_options(_pyside6_scintilla PRIVATE "LINKER:--as-needed")
-    endif()
 endif()
 
 # The classes Python actually sees (see __init__.py), compiled into the

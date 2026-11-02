@@ -13,8 +13,8 @@ see git history for that.
 - Linux wheels no longer bundle private copies of `libOpenGL`, `libGLX` and
   `libGLdispatch`. Qt's CMake target linked OpenGL into the extension
   although it never uses it, so auditwheel grafted those libraries into the
-  wheel, next to the system ones PySide6 loads. The extension now links with
-  `--as-needed`.
+  wheel, next to the system ones PySide6 loads, and a locally built wheel
+  needed `libopengl0` installed. OpenGL is now kept off the link line.
 
 ## [5.6.3.8] - 2026-11-02
 

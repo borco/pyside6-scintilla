@@ -5,13 +5,13 @@ requires = [
     # Qt SDK version in wheels.yml/[tool.cibuildwheel]) -- see the runtime pin
     # in [project].dependencies below (issue #15). Unpinned, a build would
     # pick up whatever PySide6 is newest on PyPI, against an older Qt SDK.
-    "shiboken6-generator>=6.11,<6.12",
-    "shiboken6>=6.11,<6.12",
+    "shiboken6-generator>=6.12,<6.13",
+    "shiboken6>=6.12,<6.13",
     # Essentials, not the PySide6 meta-package: everything the build reads
     # from the wheel -- PySide6/lib/cmake/PySide6 (find_package), the
     # typesystems/ and glue/ for Core/Gui/Widgets, and libpyside6 itself --
     # ships in Essentials. See [project].dependencies below (issue #14).
-    "PySide6-Essentials>=6.11,<6.12",
+    "PySide6-Essentials>=6.12,<6.13",
 ]
 build-backend = "scikit_build_core.build"
 
@@ -42,6 +42,7 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3.15",
     "Programming Language :: C++",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: Text Editors",
@@ -59,13 +60,13 @@ requires-python = ">=3.11"
 #
 # Pinned to one PySide6 minor (issue #15): the extension calls into
 # shiboken6/PySide6's C++ libraries, whose ABI isn't stable across minor
-# releases (on Linux the soname even carries it: libpyside6.abi3.so.6.11), so
+# releases (on Linux the soname even carries it: libpyside6.abi3.so.6.12), so
 # a wheel built against 6.11 fails to import with 6.12 ("procedure could not
 # be found"). Patch releases are compatible. Each PySide6 minor needs its own
 # release of this package; pip picks the one matching the installed PySide6.
 dependencies = [
-    "PySide6-Essentials>=6.11,<6.12",
-    "shiboken6>=6.11,<6.12",
+    "PySide6-Essentials>=6.12,<6.13",
+    "shiboken6>=6.12,<6.13",
 ]
 
 
@@ -143,7 +144,7 @@ test-environment = { QT_QPA_PLATFORM = "offscreen" }
 repair-wheel-command = "delvewheel repair -w {dest_dir} -v --ignore-existing --exclude Qt6Core.dll --exclude Qt6Gui.dll --exclude Qt6Widgets.dll --exclude pyside6.abi3.dll --exclude shiboken6.abi3.dll {wheel}"
 
 [tool.cibuildwheel.linux]
-# manylinux_2_34 matches PySide6 6.11.1's own wheel tag
+# manylinux_2_34 matches PySide6 6.12.0's own wheel tag
 # (manylinux_2_34_x86_64), so installing PySide6-Essentials inside the build
 # container resolves to a compatible wheel.
 manylinux-x86_64-image = "manylinux_2_34"
@@ -162,8 +163,8 @@ manylinux-x86_64-image = "manylinux_2_34"
 # version numbers since the bundled libclang's version doesn't necessarily
 # match dnf's. mesa-libGL/mesa-libEGL/libxkbcommon*/fontconfig: needed for
 # Qt6Gui to load under QT_QPA_PLATFORM=offscreen for the test suite.
-before-all = "/opt/python/cp313-cp313/bin/pip install git+https://github.com/miurahr/aqtinstall.git@8c3695d4a4e1ceabf6a74dc6c79681656dc6b74b && /opt/python/cp313-cp313/bin/python -m aqt install-qt linux desktop 6.11.1 linux_gcc_64 -m qt5compat -O /opt/qt && dnf install -y mesa-libGL mesa-libEGL libxkbcommon libxkbcommon-x11 fontconfig libxslt clang && RESOURCE_DIR=$(clang -print-resource-dir) && CLANG_DIR=$(dirname $RESOURCE_DIR) && CLANG_VER=$(basename $RESOURCE_DIR) && for v in 18 19 20 21 22 23 24; do [ $v = $CLANG_VER ] || ln -sfn $CLANG_VER $CLANG_DIR/$v; done"
-environment = { CMAKE_PREFIX_PATH = "/opt/qt/6.11.1/gcc_64", CLANG_INSTALL_DIR = "/usr" }
+before-all = "/opt/python/cp313-cp313/bin/pip install git+https://github.com/miurahr/aqtinstall.git@8c3695d4a4e1ceabf6a74dc6c79681656dc6b74b && /opt/python/cp313-cp313/bin/python -m aqt install-qt linux desktop 6.12.0 linux_gcc_64 -m qt5compat -O /opt/qt && dnf install -y mesa-libGL mesa-libEGL libxkbcommon libxkbcommon-x11 fontconfig libxslt clang && RESOURCE_DIR=$(clang -print-resource-dir) && CLANG_DIR=$(dirname $RESOURCE_DIR) && CLANG_VER=$(basename $RESOURCE_DIR) && for v in 18 19 20 21 22 23 24; do [ $v = $CLANG_VER ] || ln -sfn $CLANG_VER $CLANG_DIR/$v; done"
+environment = { CMAKE_PREFIX_PATH = "/opt/qt/6.12.0/gcc_64", CLANG_INSTALL_DIR = "/usr" }
 test-environment = { QT_QPA_PLATFORM = "offscreen" }
 # Qt6Core, Qt6Gui, Qt6Widgets, and the PySide6/shiboken6 shared objects are
 # provided at runtime by the installed PySide6 package (same rationale as the
@@ -174,7 +175,7 @@ test-environment = { QT_QPA_PLATFORM = "offscreen" }
 # same ICU version and provides these at runtime too, so exclude them as well.
 # Everything else scintilla_qt depends on (notably libQt6Core5Compat.so.6)
 # gets bundled.
-repair-wheel-command = "auditwheel repair -w {dest_dir} --exclude libQt6Core.so.6 --exclude libQt6Gui.so.6 --exclude libQt6Widgets.so.6 --exclude libpyside6.abi3.so.6.11 --exclude libshiboken6.abi3.so.6.11 --exclude libicui18n.so.73 --exclude libicuuc.so.73 --exclude libicudata.so.73 {wheel}"
+repair-wheel-command = "auditwheel repair -w {dest_dir} --exclude libQt6Core.so.6 --exclude libQt6Gui.so.6 --exclude libQt6Widgets.so.6 --exclude libpyside6.abi3.so.6.12 --exclude libshiboken6.abi3.so.6.12 --exclude libicui18n.so.73 --exclude libicuuc.so.73 --exclude libicudata.so.73 {wheel}"
 
 [[tool.cibuildwheel.overrides]]
 select = "*-manylinux_aarch64"
@@ -183,11 +184,11 @@ select = "*-manylinux_aarch64"
 # arch "linux_gcc_arm64" (verified locally and in ci.yml's ubuntu-24.04-arm
 # job, which installs Qt the same way via jurplel/install-qt-action).
 # Plain aqtinstall 3.3.* (not the patched fork used below for x86_64/
-# Windows) finds Qt 6.11.1 fine for this host - the miurahr/aqtinstall#959
+# Windows) finds Qt 6.11+ fine for this host - the miurahr/aqtinstall#959
 # listing bug that forces the patched fork elsewhere doesn't reproduce here.
-before-all = "/opt/python/cp313-cp313/bin/pip install 'aqtinstall==3.3.*' && /opt/python/cp313-cp313/bin/python -m aqt install-qt linux_arm64 desktop 6.11.1 linux_gcc_arm64 -m qt5compat -O /opt/qt && dnf install -y mesa-libGL mesa-libEGL libxkbcommon libxkbcommon-x11 fontconfig libxslt clang && RESOURCE_DIR=$(clang -print-resource-dir) && CLANG_DIR=$(dirname $RESOURCE_DIR) && CLANG_VER=$(basename $RESOURCE_DIR) && for v in 18 19 20 21 22 23 24; do [ $v = $CLANG_VER ] || ln -sfn $CLANG_VER $CLANG_DIR/$v; done"
-environment = { CMAKE_PREFIX_PATH = "/opt/qt/6.11.1/gcc_arm64", CLANG_INSTALL_DIR = "/usr" }
-# aqtinstall's prebuilt Qt 6.11.1 arm64 binaries are built on Ubuntu 24.04
+before-all = "/opt/python/cp313-cp313/bin/pip install 'aqtinstall==3.3.*' && /opt/python/cp313-cp313/bin/python -m aqt install-qt linux_arm64 desktop 6.12.0 linux_gcc_arm64 -m qt5compat -O /opt/qt && dnf install -y mesa-libGL mesa-libEGL libxkbcommon libxkbcommon-x11 fontconfig libxslt clang && RESOURCE_DIR=$(clang -print-resource-dir) && CLANG_DIR=$(dirname $RESOURCE_DIR) && CLANG_VER=$(basename $RESOURCE_DIR) && for v in 18 19 20 21 22 23 24; do [ $v = $CLANG_VER ] || ln -sfn $CLANG_VER $CLANG_DIR/$v; done"
+environment = { CMAKE_PREFIX_PATH = "/opt/qt/6.12.0/gcc_arm64", CLANG_INSTALL_DIR = "/usr" }
+# aqtinstall's prebuilt Qt 6.11+ arm64 binaries are built on Ubuntu 24.04
 # (glibc 2.39) and won't even run under manylinux_2_34's older glibc
 # ("GLIBC_2.35"/"GLIBCXX_3.4.30 not found", verified locally) - same floor
 # PySide6's own aarch64 wheels adopted from 6.8.1 onward (manylinux_2_31 ->
@@ -209,12 +210,13 @@ archs = ["arm64", "x86_64"]
 # wheel architectures - including the cp313-macosx_x86_64 build, which runs
 # under Rosetta 2 on Apple Silicon runners/hosts. Skip if /tmp/qt already
 # has it (local iteration on the M1 Mac Mini pre-populates this path).
-before-all = "[ -d /tmp/qt/6.11.1/macos ] || (python3 -m pip install --break-system-packages 'aqtinstall @ git+https://github.com/miurahr/aqtinstall.git@8c3695d4a4e1ceabf6a74dc6c79681656dc6b74b' && python3 -m aqt install-qt mac desktop 6.11.1 clang_64 -m qt5compat -O /tmp/qt)"
-# Qt 6.11's QtCore5Compat.framework has a minimum target of macOS 13.0 -
-# bump MACOSX_DEPLOYMENT_TARGET to match (cibuildwheel's arm64 default is
-# 11.0), so delocate doesn't reject the wheel and the resulting wheel tag
-# (macosx_13_0_arm64) accurately reflects what it needs.
-environment = { CMAKE_PREFIX_PATH = "/tmp/qt/6.11.1/macos", MACOSX_DEPLOYMENT_TARGET = "13.0" }
+before-all = "[ -d /tmp/qt/6.12.0/macos ] || (python3 -m pip install --break-system-packages 'aqtinstall @ git+https://github.com/miurahr/aqtinstall.git@8c3695d4a4e1ceabf6a74dc6c79681656dc6b74b' && python3 -m aqt install-qt mac desktop 6.12.0 clang_64 -m qt5compat -O /tmp/qt)"
+# Qt 6.12's QtCore5Compat.framework (bundled in the wheel) has a minimum
+# target of macOS 14.4 - match it (cibuildwheel's arm64 default is 11.0) so
+# delocate doesn't reject the wheel. From macOS 11 on, wheel tags carry only
+# the major version, so the wheel is still tagged macosx_14_0, the same as
+# PySide6 6.12's own wheels.
+environment = { CMAKE_PREFIX_PATH = "/tmp/qt/6.12.0/macos", MACOSX_DEPLOYMENT_TARGET = "14.4" }
 test-environment = { QT_QPA_PLATFORM = "offscreen" }
 # QtWidgets.framework, QtGui.framework, QtCore.framework, libpyside6 and
 # libshiboken6 aren't bundled in the wheel - they're provided at runtime by

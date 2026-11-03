@@ -13,8 +13,8 @@ workflow.
 | --- | --- | --- |
 | Wraps | Scintilla's Qt widget (`ScintillaEditBase`, a `QAbstractScrollArea`) | Lexilla's C++ API (`CreateLexer`, `ILexer5`) |
 | Binding generator | [shiboken6](https://doc.qt.io/qtforpython-6/shiboken6/) (PySide6's own) | [nanobind](https://nanobind.readthedocs.io/) |
-| Build needs | a Qt 6.11 SDK (incl. `Qt6Core5Compat`), PySide6 + shiboken6 6.11, libclang | a C++17 compiler |
-| Runtime needs | PySide6-Essentials 6.11.x (pinned to the minor) | nothing (pyside6-scintilla only for the glue) |
+| Build needs | a Qt 6.12 SDK (incl. `Qt6Core5Compat`), PySide6 + shiboken6 6.12, libclang | a C++17 compiler |
+| Runtime needs | PySide6-Essentials 6.12.x (pinned to the minor) | nothing (pyside6-scintilla only for the glue) |
 | Python ABI | limited API, `cp311-abi3` (shiboken6's `FORCE_LIMITED_API`) | limited API, `cp312-abi3` (nanobind's `STABLE_ABI` needs 3.12) |
 | Built as | `scintilla_qt` shared library + the `_pyside6_scintilla` extension | `lexilla_core` static library linked into `_lexilla` |
 | Workspace build | without build isolation (must see `.venv`'s PySide6) | isolated, as usual |

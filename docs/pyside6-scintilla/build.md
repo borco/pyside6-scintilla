@@ -65,7 +65,8 @@ release with all of these updated together:
 4. `uv lock` (then `uv sync --reinstall-package pyside6-scintilla`, run the
    tests, and `make scintilla-stubs` in case genpyi's output changed).
 5. The Qt SDK version mentioned in this file's examples, and the
-   installation note in `packages/pyside6-scintilla/README.md`/`docs/index.md`.
+   installation note in `packages/pyside6-scintilla/README.md`/`docs/pyside6-scintilla/index.md`,
+   the root `README.md` and `docs/development/` (`build.md`, `architecture.md`).
 6. `packages/pyside6-scintilla/CHANGELOG.md`: a breaking "requires PySide6
    6.X" entry, and a new `__version__`.
 

@@ -16,7 +16,7 @@ so the prerequisites below are pyside6-scintilla's. lexilla-specific notes:
 
 - Python 3.12+ (the workspace's floor -- lexilla needs 3.12; pyside6-scintilla
   itself supports 3.11) and [uv](https://docs.astral.sh/uv/)
-- Qt 6.11.x, the PySide6/shiboken6 minor pinned in
+- Qt 6.12.x, the PySide6/shiboken6 minor pinned in
   `packages/pyside6-scintilla/pyproject.toml` (the SDK must match the minor
   the extension links against; patch releases are interchangeable),
   **including the Qt 5 Compatibility module (`Qt6Core5Compat`)** -- not
@@ -49,13 +49,13 @@ pointing at your Qt 6 installation:
 
 ```powershell
 # Windows (PowerShell)
-$env:CMAKE_PREFIX_PATH = "C:\Qt\6.11.1\msvc2022_64"
+$env:CMAKE_PREFIX_PATH = "C:\Qt\6.12.0\msvc2022_64"
 uv sync
 ```
 
 ```bash
 # Linux / macOS
-export CMAKE_PREFIX_PATH=/path/to/Qt/6.11.1/gcc_64   # or macos/clang_64, etc.
+export CMAKE_PREFIX_PATH=/path/to/Qt/6.12.0/gcc_64   # or macos/clang_64, etc.
 uv sync
 ```
 
@@ -65,7 +65,7 @@ uv sync
 >
 > ```powershell
 > $existing = [System.Environment]::GetEnvironmentVariable("CMAKE_PREFIX_PATH", "User")
-> $new = if ($existing) { "$existing;C:\Qt\6.11.1\msvc2022_64" } else { "C:\Qt\6.11.1\msvc2022_64" }
+> $new = if ($existing) { "$existing;C:\Qt\6.12.0\msvc2022_64" } else { "C:\Qt\6.12.0\msvc2022_64" }
 > [System.Environment]::SetEnvironmentVariable("CMAKE_PREFIX_PATH", $new, "User")
 > ```
 >
@@ -105,7 +105,7 @@ top-level `Makefile`.
 `.github/workflows/ci.yml` runs on every push and on pull requests targeting
 `master`, across Ubuntu 24.04 x86_64/aarch64, Windows and macOS. Each job:
 
-1. Sets up the toolchain with `.github/actions/setup`: Qt **6.11.1** plus
+1. Sets up the toolchain with `.github/actions/setup`: Qt **6.12.0** plus
    `Qt6Core5Compat` via
    [`jurplel/install-qt-action`](https://github.com/jurplel/install-qt-action)
    (the one place CI names the Qt version), `CMAKE_PREFIX_PATH` (and, on

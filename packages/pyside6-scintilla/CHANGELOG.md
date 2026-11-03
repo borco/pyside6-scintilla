@@ -6,6 +6,22 @@ Changelog](https://keepachangelog.com/en/1.0.0/); entries are kept high-level
 (what shipped, breaking changes) rather than a full commit-by-commit log —
 see git history for that.
 
+## [5.6.3.11] - 2026-11-03
+
+### Changed (breaking)
+
+- Built for PySide6 6.12 (#15): requires `PySide6-Essentials>=6.12,<6.13`
+  and `shiboken6>=6.12,<6.13`. Keep using 5.6.3.10 with PySide6 6.11 -- pip
+  picks the release matching the installed PySide6 minor.
+- macOS wheels need macOS 14.4 (tagged `macosx_14_0`, like PySide6 6.12's
+  own wheels), up from 13.0: Qt 6.12's `QtCore5Compat.framework`, bundled in
+  the wheel, requires it.
+
+### Added
+
+- Python 3.15 classifier (PySide6 6.12 supports it; the `cp311-abi3` wheel
+  already ran on it).
+
 ## [5.6.3.10] - 2026-11-03
 
 ### Changed

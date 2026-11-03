@@ -34,7 +34,7 @@ tools/                        repo-level development scripts
 
 The repo is a [uv workspace](https://docs.astral.sh/uv/concepts/projects/workspaces/):
 `uv sync` at the root builds both packages from source into one `.venv`
-(this needs a Qt 6.11 SDK, for pyside6-scintilla), and the top-level
+(this needs a Qt 6.12 SDK, for pyside6-scintilla), and the top-level
 `Makefile` runs the usual tasks for both:
 
 ```bash

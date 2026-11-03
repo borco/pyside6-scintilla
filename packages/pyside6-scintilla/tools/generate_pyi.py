@@ -61,7 +61,7 @@ After generation, this script also:
   "UNRECOGNIZED: 'sptr_t'" warnings for these). The bound classes avoid these
   types (see scintilla_edit_base_fixed.h), so this is a safety net.
 
-Run after rebuilding the extension (`make install` or `uv sync
+Run after rebuilding the extension (`make scintilla-install` or `uv sync
 --reinstall-package pyside6-scintilla`), and whenever `bindings.xml`/
 `bindings.h` change the public API surface.
 """

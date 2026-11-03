@@ -60,7 +60,7 @@ implementation, no Qt).
 
 Since the move into the monorepo, the copy is the **Scintilla release the
 repo vendors** for pyside6-scintilla (`packages/pyside6-scintilla/src/scintilla/`,
-currently 5.6.3 -- see [Verifying vendored Scintilla](../pyside6-scintilla/auditing.md) for its
+currently 5.6.9 -- see [Verifying vendored Scintilla](../pyside6-scintilla/auditing.md) for its
 tarball and checksum), byte for byte. `tools/sync_scintilla_headers.py`
 copies it, and its `--check` mode (in `make lint` and CI) fails if the copy
 drifts. lexilla keeps a copy at all, rather than including the vendored tree,
@@ -74,7 +74,7 @@ releases; the 5.6 `Scintilla.h` only adds messages.)
 | Field | Value |
 | --- | --- |
 | Source | `packages/pyside6-scintilla/src/scintilla/` (the vendored Scintilla) |
-| Version | per `src/scintilla_interface/version.txt` (`563` = 5.6.3) |
+| Version | per `src/scintilla_interface/version.txt` (`569` = 5.6.9) |
 | Files copied | `include/ILexer.h`, `include/Sci_Position.h`, `include/Scintilla.h`, `License.txt`, `version.txt` |
 | Copy path | `src/scintilla_interface` |
 
@@ -133,8 +133,9 @@ passes any of these constants to the other:
 So there's no "did this constant come from lexilla or pyside6-scintilla"
 ambiguity for a caller, because no constant is ever obtained from
 lexilla in the first place -- a value common to both vendored copies of
-the legacy `Scintilla.h` macros (verified identical for all 1277 shared
-names across the 5.5.0/5.6.3 versions each project happens to vendor) is
+the legacy `Scintilla.h` macros (byte-identical copies since the monorepo;
+before it, verified identical for all 1277 names shared by the 5.5.0/5.6.3
+versions each project vendored) is
 purely an internal implementation detail of each package's own build, not
 something either package's API surfaces or relies on the other to agree on.
 

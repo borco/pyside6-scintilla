@@ -1,7 +1,7 @@
 # Multiple Selection and Virtual Space [:material-link-variant:](../../scintilla-original/ScintillaDoc.html#MultipleSelectionAndVirtualSpace "Upstream documentation"){ .heading-link }
 
 > [!NOTE]
-> This page is adapted from the upstream Scintilla **5.6.3** documentation
+> This page is adapted from the upstream Scintilla **5.6.9** documentation
 > (`ScintillaDoc.html`), converted to Markdown for this site. It documents
 > the underlying `ScintillaEditBase.send`/`sends` message API -- see the
 > [API reference](../../../reference/scintilla/index.md) for the Python bindings themselves.
@@ -21,7 +21,7 @@
 - [`SCI_CLEARSELECTIONS`](#SCI_CLEARSELECTIONS)
 - [`SCI_SETSELECTION(position caret, position anchor)`](#SCI_SETSELECTION)
 - [`SCI_ADDSELECTION(position caret, position anchor)`](#SCI_ADDSELECTION)
-- [`SCI_SELECTIONFROMPOINT(int x, int y) → int`](#SCI_SELECTIONFROMPOINT)
+- [`SCI_SELECTIONFROMPOINT(pixels x, pixels y) → int`](#SCI_SELECTIONFROMPOINT)
 - [`SCI_DROPSELECTIONN(int selection)`](#SCI_DROPSELECTIONN)
 - [`SCI_SETMAINSELECTION(int selection)`](#SCI_SETMAINSELECTION)
 - [`SCI_GETMAINSELECTION → int`](#SCI_GETMAINSELECTION)
@@ -134,7 +134,7 @@ Set a single selection from `anchor` to `caret` as the only selection.
 
 Add a new selection from `anchor` to `caret` as the main selection retaining all other selections as additional selections. Since there is always at least one selection, to set a list of selections, the first selection should be added with `SCI_SETSELECTION` and later selections added with `SCI_ADDSELECTION`
 
-### `SCI_SELECTIONFROMPOINT(int x, int y) → int` {: #SCI_SELECTIONFROMPOINT }
+### `SCI_SELECTIONFROMPOINT(pixels x, pixels y) → int` {: #SCI_SELECTIONFROMPOINT }
 
 Return the index of the selection at the point. If there is no selection at the point, return -1. This can be used to drop a selection or make it the main selection.
 

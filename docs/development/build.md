@@ -112,8 +112,11 @@ top-level `Makefile`.
 2. Runs both packages' tests (with `QT_QPA_PLATFORM=offscreen` for a
    headless `pytest-qt`) and the same checks as `make lint`.
 
-The Ubuntu 24.04 job also builds both wheels; the `runtime` job installs them
-on Ubuntu 26.04 with Python 3.14 and runs both test suites against them.
+The Ubuntu 24.04 job also builds both wheels; the `runtime` jobs install them
+on Ubuntu 26.04 and run the test suites against them, once per end-point of
+the supported Python range: 3.11 (pyside6-scintilla's floor; its tests only,
+since lexilla needs 3.12), 3.12 (lexilla's floor) and the newest, 3.15. The
+wheels are stable-ABI, so the versions in between run the same build.
 
 ## Building wheels
 

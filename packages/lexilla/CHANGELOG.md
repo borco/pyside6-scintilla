@@ -14,6 +14,8 @@ commit-by-commit log — see git history for that.
   pyside6-scintilla vendors), up from 5.6.3. Only `Scintilla.h` changed: it
   adds constants (`SC_UPDATE_TEXT`, `SC_UPDATE_LINE_COUNT`, the scale
   technique messages); `ILexer5` and the fold-level constants are unchanged.
+- Lists Python 3.15 in the package classifiers; the `cp312-abi3` wheel
+  already installed there, and CI now tests it (#26).
 
 ## [5.5.0.2] - 2026-11-03
 

@@ -16,7 +16,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Required for Scintilla's Qt widgets (ScintillaQt etc.), which use Q_OBJECT.
 set(CMAKE_AUTOMOC ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Core5Compat)
+include(cmake/MatchingQt.cmake)
+find_qt_matching_pyside6()
 qt6_standard_project_setup()
 
 if(UNIX AND NOT APPLE AND TARGET WrapOpenGL::WrapOpenGL)

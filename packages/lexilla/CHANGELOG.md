@@ -6,6 +6,15 @@ Changelog](https://keepachangelog.com/en/1.0.0/); entries are kept
 high-level (what shipped, breaking changes) rather than a full
 commit-by-commit log — see git history for that.
 
+## [Unreleased]
+
+### Changed
+
+- Built against the Scintilla 5.6.9 interface headers (the Scintilla release
+  pyside6-scintilla vendors), up from 5.6.3. Only `Scintilla.h` changed: it
+  adds constants (`SC_UPDATE_TEXT`, `SC_UPDATE_LINE_COUNT`, the scale
+  technique messages); `ILexer5` and the fold-level constants are unchanged.
+
 ## [5.5.0.2] - 2026-11-03
 
 ### Changed (breaking)

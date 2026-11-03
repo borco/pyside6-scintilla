@@ -6,15 +6,41 @@ Changelog](https://keepachangelog.com/en/1.0.0/); entries are kept high-level
 (what shipped, breaking changes) rather than a full commit-by-commit log —
 see git history for that.
 
-## [Unreleased]
+## [5.6.9.0] - 2026-11-03
 
 ### Changed
 
+- Vendors Scintilla 5.6.9, up from 5.6.3 (#23). See
+  [ScintillaHistory](https://www.scintilla.org/ScintillaHistory.html) for
+  the full list: faster layout and lower memory use, Unicode 17 case
+  conversion and character categories, and crash fixes.
+- `updateUi` (`SCN_UPDATEUI`) and the styling after an edit now run from a
+  posted Qt event rather than inside painting (Scintilla 5.6.5): they arrive
+  once the event loop runs, before the next repaint, and also for a widget
+  that isn't being painted (e.g. hidden).
 - Building from source finds the Qt SDK matching the installed PySide6 by
   itself (#25): it looks for that Qt release in the standard install
   locations (`C:/Qt`, `~/Qt`, `/opt/Qt`) unless `CMAKE_PREFIX_PATH` already
   provides a matching one, and stops with a clear message naming the
   needed Qt version instead of failing inside PySide6's headers.
+
+### Added
+
+- `setScaleTechnique()`/`scaleTechnique()` (`SCI_SETSCALETECHNIQUE`) and the
+  `Scintilla.ScaleTechnique` enum. `ScaleTechnique.PixelAligned` aligns
+  lines to physical pixels, removing the 'seams' between background
+  rectangles under fractional display scaling (e.g. 150%).
+- The pixel methods (`setMarginWidthN`, `textWidth`, `pointXFromPosition`,
+  ... -- the messages Scintilla now types as `pixels`) take and return
+  logical pixels, like upstream's `ScintillaEdit`: under `PixelAligned`,
+  where the engine works in device pixels, they convert (rounding), while
+  raw `send()` sees device pixels. Each has a `...F` twin (`textWidthF`,
+  `setMarginWidthNF`, ...) with unrounded `float` pixels. With the default
+  technique nothing changes.
+- `Scintilla.Update.Text` and `Update.LineCount` (`SC_UPDATE_TEXT`/
+  `SC_UPDATE_LINE_COUNT`) for `updateUi`. With `Update.Text`, the
+  notification's `position` (`NotificationData.position`, from the `notify`
+  signal) holds the start of the changes.
 
 ## [5.6.3.11] - 2026-11-03
 

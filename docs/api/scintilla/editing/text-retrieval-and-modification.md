@@ -1,7 +1,7 @@
 # Text retrieval and modification [:material-link-variant:](../../scintilla-original/ScintillaDoc.html#TextRetrievalAndModification "Upstream documentation"){ .heading-link }
 
 > [!NOTE]
-> This page is adapted from the upstream Scintilla **5.6.3** documentation
+> This page is adapted from the upstream Scintilla **5.6.9** documentation
 > (`ScintillaDoc.html`), converted to Markdown for this site. It documents
 > the underlying `ScintillaEditBase.send`/`sends` message API -- see the
 > [API reference](../../../reference/scintilla/index.md) for the Python bindings themselves.

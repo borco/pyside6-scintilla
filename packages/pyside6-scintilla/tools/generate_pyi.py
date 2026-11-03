@@ -61,7 +61,7 @@ After generation, this script also:
   "UNRECOGNIZED: 'sptr_t'" warnings for these). The bound classes avoid these
   types (see scintilla_edit_base_fixed.h), so this is a safety net.
 
-Run after rebuilding the extension (`make install` or `uv sync
+Run after rebuilding the extension (`make scintilla-install` or `uv sync
 --reinstall-package pyside6-scintilla`), and whenever `bindings.xml`/
 `bindings.h` change the public API surface.
 """
@@ -195,6 +195,10 @@ UPDATE_DOCS: Final = {
     "Selection": "Selection may have been changed.",
     "VScroll": "May have scrolled vertically.",
     "HScroll": "May have scrolled horizontally.",
+    "Text": "Contents may have changed (text inserted or deleted, not just styling or markers); the "
+    "notification's `position` (`NotificationData.position`, via the `notify` signal) holds the start "
+    "position of the changes. Added in Scintilla 5.6.5.",
+    "LineCount": "Number of lines may have changed. Added in Scintilla 5.6.5.",
 }
 
 # Hand-transcribed from the SCN_MODIFIED notification's "Modify notification
@@ -230,8 +234,8 @@ MODIFICATION_FLAGS_DOCS: Final = {
 
 
 # Hand-transcribed from the relevant `SCI_*` message descriptions in
-# src/scintilla/doc/ScintillaDoc.html for each of the 63 `enum class`es bound
-# in bindings.xml that have neither `Scintilla.iface` doc comments (like
+# src/scintilla/doc/ScintillaDoc.html for each `enum class` bound in
+# bindings.xml that have neither `Scintilla.iface` doc comments (like
 # Message/CharacterSource above) nor a dedicated hand-transcribed dict (like
 # VirtualSpace/Update/ModificationFlags above). Maps enum name -> (class
 # docstring or None, {member name: docstring}); members with nothing beyond
@@ -1076,6 +1080,17 @@ ENUM_DOCS: Final[dict[str, tuple[str | None, dict[str, str]]]] = {
             "without any indentation.",
         },
     ),
+    "ScaleTechnique": (
+        "How display scaling is implemented, set with `SCI_SETSCALETECHNIQUE`/`SCI_GETSCALETECHNIQUE` "
+        "(provisional; added in Scintilla 5.6.4). Only Qt implements a non-default technique.",
+        {
+            "Default": "The platform's default behaviour.",
+            "PixelAligned": "Align the top and bottom of lines to physical pixels, avoiding 'seams' between "
+            "background rectangles under fractional scaling (e.g. 125%/150% display scale). May be slower "
+            "than the default. In this mode the engine works in device pixels: raw `send()` pixel values "
+            "are device pixels, while `ScintillaEdit`'s typed pixel methods convert to/from logical pixels.",
+        },
+    ),
     "Technology": (
         "The drawing API/technology used for rendering, set with `SCI_SETTECHNOLOGY`; choices beyond "
         "`Default` are Windows-specific DirectWrite variants.",
@@ -1470,7 +1485,9 @@ SCINTILLA_EDIT_BASE_SIGNAL_DOCS: Final = {
     "textAreaClicked": "The text area was clicked on `line`, with `modifiers` held down.",
     "updateUi": (
         "The text, styling, selection, or scroll position may have changed (SCN_UPDATEUI). "
-        "`updated` is a `Scintilla.Update` bitmask of what changed since the previous notification."
+        "`updated` is a `Scintilla.Update` bitmask of what changed since the previous notification. "
+        "For `Update.Text`, the notification's `position` (the start of the changes; not carried by this "
+        "signal) is available from the `notify` signal's `NotificationData`."
     ),
     "uriDropped": "The user dragged a URI such as a file path onto the editor (SCN_URIDROPPED, GTK only).",
     "userListSelection": (
@@ -1623,10 +1640,14 @@ def with_message_notes(docs: dict[str, str]) -> dict[str, str]:
     The notes come from tools/generate_scintilla_edit.py (`Method.doc_note()`),
     which knows exactly how each method's signature differs from the
     Scintilla message it sends -- so a reader of Scintilla's own docs can map
-    one to the other.
+    one to the other. A `...F` float twin shares its base method's iface doc.
     """
-    from generate_scintilla_edit import doc_notes
+    from generate_scintilla_edit import doc_notes, float_twin_bases
 
+    docs = dict(docs)
+    for twin, base in float_twin_bases().items():
+        if base in docs:
+            docs[twin] = docs[base]
     merged = dict(docs)
     for name, note in doc_notes().items():
         merged[name] = f"{docs[name]}\n\n        {note}" if name in docs else note

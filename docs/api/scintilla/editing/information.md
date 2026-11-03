@@ -1,7 +1,7 @@
 # Information [:material-link-variant:](../../scintilla-original/ScintillaDoc.html#Information "Upstream documentation"){ .heading-link }
 
 > [!NOTE]
-> This page is adapted from the upstream Scintilla **5.6.3** documentation
+> This page is adapted from the upstream Scintilla **5.6.9** documentation
 > (`ScintillaDoc.html`), converted to Markdown for this site. It documents
 > the underlying `ScintillaEditBase.send`/`sends` message API -- see the
 > [API reference](../../../reference/scintilla/index.md) for the Python bindings themselves.
@@ -19,14 +19,14 @@
 - [`SCI_FINDCOLUMN(line line, position column) → position`](#SCI_FINDCOLUMN)
 - [`SCI_POSITIONBEFORE(position pos) → position`](#SCI_POSITIONBEFORE)
 - [`SCI_POSITIONAFTER(position pos) → position`](#SCI_POSITIONAFTER)
-- [`SCI_TEXTWIDTH(int style, const char *text) → int`](#SCI_TEXTWIDTH)
-- [`SCI_TEXTHEIGHT(line line) → int`](#SCI_TEXTHEIGHT)
-- [`SCI_POSITIONFROMPOINT(int x, int y) → position`](#SCI_POSITIONFROMPOINT)
-- [`SCI_POSITIONFROMPOINTCLOSE(int x, int y) → position`](#SCI_POSITIONFROMPOINTCLOSE)
-- [`SCI_CHARPOSITIONFROMPOINT(int x, int y) → position`](#SCI_CHARPOSITIONFROMPOINT)
-- [`SCI_CHARPOSITIONFROMPOINTCLOSE(int x, int y) → position`](#SCI_CHARPOSITIONFROMPOINTCLOSE)
-- [`SCI_POINTXFROMPOSITION(<unused>, position pos) → int`](#SCI_POINTXFROMPOSITION)
-- [`SCI_POINTYFROMPOSITION(<unused>, position pos) → int`](#SCI_POINTYFROMPOSITION)
+- [`SCI_TEXTWIDTH(int style, const char *text) → pixels`](#SCI_TEXTWIDTH)
+- [`SCI_TEXTHEIGHT(line line) → pixels`](#SCI_TEXTHEIGHT)
+- [`SCI_POSITIONFROMPOINT(pixels x, pixels y) → position`](#SCI_POSITIONFROMPOINT)
+- [`SCI_POSITIONFROMPOINTCLOSE(pixels x, pixels y) → position`](#SCI_POSITIONFROMPOINTCLOSE)
+- [`SCI_CHARPOSITIONFROMPOINT(pixels x, pixels y) → position`](#SCI_CHARPOSITIONFROMPOINT)
+- [`SCI_CHARPOSITIONFROMPOINTCLOSE(pixels x, pixels y) → position`](#SCI_CHARPOSITIONFROMPOINTCLOSE)
+- [`SCI_POINTXFROMPOSITION(<unused>, position pos) → pixels`](#SCI_POINTXFROMPOSITION)
+- [`SCI_POINTYFROMPOSITION(<unused>, position pos) → pixels`](#SCI_POINTYFROMPOSITION)
 
 ### `SCI_GETTEXTLENGTH → position` {: #SCI_GETTEXTLENGTH }
 
@@ -78,29 +78,29 @@ This message returns the position of a `column` on a `line` taking the width of 
 
 These messages return the position before and after another position in the document taking into account the current code page. The minimum position returned is 0 and the maximum is the last position in the document. If called with a position within a multi byte character will return the position of the start/end of that character.
 
-### `SCI_TEXTWIDTH(int style, const char *text) → int` {: #SCI_TEXTWIDTH }
+### `SCI_TEXTWIDTH(int style, const char *text) → pixels` {: #SCI_TEXTWIDTH }
 
 This returns the pixel width of a string drawn in the given `style` which can be used, for example, to decide how wide to make the line number margin in order to display a given number of numerals.
 
-### `SCI_TEXTHEIGHT(line line) → int` {: #SCI_TEXTHEIGHT }
+### `SCI_TEXTHEIGHT(line line) → pixels` {: #SCI_TEXTHEIGHT }
 
 This returns the height in pixels of a particular line. Currently all lines are the same height.
 
-### `SCI_POSITIONFROMPOINT(int x, int y) → position` {: #SCI_POSITIONFROMPOINT }
+### `SCI_POSITIONFROMPOINT(pixels x, pixels y) → position` {: #SCI_POSITIONFROMPOINT }
 
-### `SCI_POSITIONFROMPOINTCLOSE(int x, int y) → position` {: #SCI_POSITIONFROMPOINTCLOSE }
+### `SCI_POSITIONFROMPOINTCLOSE(pixels x, pixels y) → position` {: #SCI_POSITIONFROMPOINTCLOSE }
 
 `SCI_POSITIONFROMPOINT` finds the closest character position to a point and `SCI_POSITIONFROMPOINTCLOSE` is similar but returns -1 if the point is outside the window or not close to any characters.
 
-### `SCI_CHARPOSITIONFROMPOINT(int x, int y) → position` {: #SCI_CHARPOSITIONFROMPOINT }
+### `SCI_CHARPOSITIONFROMPOINT(pixels x, pixels y) → position` {: #SCI_CHARPOSITIONFROMPOINT }
 
-### `SCI_CHARPOSITIONFROMPOINTCLOSE(int x, int y) → position` {: #SCI_CHARPOSITIONFROMPOINTCLOSE }
+### `SCI_CHARPOSITIONFROMPOINTCLOSE(pixels x, pixels y) → position` {: #SCI_CHARPOSITIONFROMPOINTCLOSE }
 
 `SCI_CHARPOSITIONFROMPOINT` finds the closest character to a point and `SCI_CHARPOSITIONFROMPOINTCLOSE` is similar but returns -1 if the point is outside the window or not close to any characters. This is similar to the previous methods but finds characters rather than inter-character positions.
 
-### `SCI_POINTXFROMPOSITION(<unused>, position pos) → int` {: #SCI_POINTXFROMPOSITION }
+### `SCI_POINTXFROMPOSITION(<unused>, position pos) → pixels` {: #SCI_POINTXFROMPOSITION }
 
-### `SCI_POINTYFROMPOSITION(<unused>, position pos) → int` {: #SCI_POINTYFROMPOSITION }
+### `SCI_POINTYFROMPOSITION(<unused>, position pos) → pixels` {: #SCI_POINTYFROMPOSITION }
 
 These messages return the x and y display pixel location of text at position `pos` in the document.
 

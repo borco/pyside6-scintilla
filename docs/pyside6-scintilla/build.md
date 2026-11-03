@@ -11,9 +11,16 @@ repo root.
 ## Faster C++/binding-only iteration
 
 For changes to `CMakeLists.txt`, `bindings.xml`, or the binding glue, `uv
-sync --reinstall-package` does a clean rebuild every time. The
-`scintilla-configure`/`-build`/`-install` Make targets are faster for repeated
-iteration: they reuse an incremental CMake build tree
+sync --reinstall-package pyside6-scintilla` rebuilds and reinstalls the
+package. Its build tree persists (`packages/pyside6-scintilla/build/<wheel
+tag>/`, scikit-build-core's `build-dir`), so the build is incremental and
+trusts file timestamps. After vendoring a new Scintilla release, delete that
+directory first: extracting the tarball keeps upstream's file dates, which
+are older than the existing object files, so nothing gets recompiled and
+the old Scintilla stays in the build.
+
+The `scintilla-configure`/`-build`/`-install` Make targets are faster for
+repeated iteration: they reuse an incremental CMake build tree
 (`packages/pyside6-scintilla/build/venv/`) and, via the `venv` preset's
 `CMAKE_INSTALL_PREFIX`, drop the rebuilt extension and shared libs directly
 into `packages/pyside6-scintilla/src/pyside6_scintilla/`, where `import

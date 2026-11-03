@@ -18,7 +18,8 @@ from PySide6.QtCore import Signal
 from shiboken6 import Shiboken
 
 
-class QIntList: ...
+class QIntList:
+    ...
 
 
 class Scintilla(Shiboken.Object):
@@ -52,16 +53,13 @@ class Scintilla(Shiboken.Object):
     r"""Highest valid `keywordSet` index accepted by `Scintilla.Message.SetKeyWords`."""
     IndicatorMax: typing.Final = 43
     r"""Highest valid indicator number."""
-
     class Accessibility(enum.IntEnum):
         r"""Controls whether accessibility (screen reader) support is enabled, set with `SCI_SETACCESSIBILITY`/`SCI_GETACCESSIBILITY`."""
-
         Disabled                  = 0x0
         Enabled                   = 0x1
 
     class Alpha(enum.IntEnum):
         r"""Translucency level used by alpha-blended drawing such as marker and selection layers."""
-
         Transparent               = 0x0
         r"""Value 0; completely transparent."""
         Opaque                    = 0xff
@@ -71,7 +69,6 @@ class Scintilla(Shiboken.Object):
 
     class AnnotationVisible(enum.IntEnum):
         r"""Display mode for line annotations, set with `SCI_ANNOTATIONSETVISIBLE`/`SCI_ANNOTATIONGETVISIBLE`."""
-
         Hidden                    = 0x0
         r"""Annotations are not displayed."""
         Standard                  = 0x1
@@ -83,7 +80,6 @@ class Scintilla(Shiboken.Object):
 
     class AutoCompleteOption(enum.IntEnum):
         r"""Options controlling autocompletion list display and selection behaviour, set with `SCI_AUTOCSETOPTIONS`."""
-
         Normal                    = 0x0
         FixedSize                 = 0x1
         r"""On Win32 only, uses a fixed-size list instead of one resizable by the user; also avoids a header rectangle above the list."""
@@ -92,7 +88,6 @@ class Scintilla(Shiboken.Object):
 
     class AutomaticFold(enum.IntEnum):
         r"""Bit flags choosing which parts of fold-handling behaviour Scintilla performs automatically instead of relying on the container, set with `SCI_SETAUTOMATICFOLD`."""
-
         None_                     = 0x0
         Show                      = 0x1
         r"""Automatically shows lines as needed, avoiding the `SCN_NEEDSHOWN` notification."""
@@ -103,7 +98,6 @@ class Scintilla(Shiboken.Object):
 
     class Bidirectional(enum.IntEnum):
         r"""Selects the default text direction for bidirectional (e.g. Arabic/Hebrew) text support, set with `SCI_SETBIDIRECTIONAL`."""
-
         Disabled                  = 0x0
         r"""Bidirectional support is off; also the value returned by `SCI_GETBIDIRECTIONAL` if a previous `SCI_SETBIDIRECTIONAL` call failed."""
         L2R                       = 0x1
@@ -113,7 +107,6 @@ class Scintilla(Shiboken.Object):
 
     class CaretPolicy(enum.IntEnum):
         r"""Bit flags controlling how the caret is kept in view, passed as the `caretPolicy` argument to `SCI_SETXCARETPOLICY`/`SCI_SETYCARETPOLICY` together with a `caretSlop` value."""
-
         Slop                      = 0x1
         r"""Enables a slop value (`caretSlop`) defining an unwanted zone near the margins (pixels for vertical margins, lines for horizontal margins) that the caret is kept out of, so surrounding context stays visible."""
         Strict                    = 0x4
@@ -125,7 +118,6 @@ class Scintilla(Shiboken.Object):
 
     class CaretSticky(enum.IntEnum):
         r"""Controls when the caret's horizontal position on a line is remembered when moving between lines, set with `SCI_SETCARETSTICKY`."""
-
         Off                       = 0x0
         r"""Default: all text changes and caret position changes remember the caret's new horizontal position when moving to a different line."""
         On                        = 0x1
@@ -135,7 +127,6 @@ class Scintilla(Shiboken.Object):
 
     class CaretStyle(enum.IntEnum):
         r"""Caret drawing style, set with `SCI_SETCARETSTYLE`; separate bit ranges select insert-mode, overtype-mode, and curses-mode appearance."""
-
         Invisible                 = 0x0
         r"""Carets are not drawn at all."""
         OverstrikeBar             = 0x0
@@ -155,7 +146,6 @@ class Scintilla(Shiboken.Object):
 
     class CaseInsensitiveBehaviour(enum.IntEnum):
         r"""Controls how case-insensitive autocompletion selects among matching entries, set with `SCI_AUTOCSETCASEINSENSITIVEBEHAVIOUR`."""
-
         RespectCase               = 0x0
         r"""Default: even with case-insensitive autocompletion, still selects the first list entry that matches the entered text in a case-sensitive way."""
         IgnoreCase                = 0x1
@@ -163,7 +153,6 @@ class Scintilla(Shiboken.Object):
 
     class CaseVisible(enum.IntEnum):
         r"""Forces how a style's text is displayed (upper/lower/camel case) without altering the stored text, set with `SCI_STYLESETCASE`."""
-
         Mixed                     = 0x0
         r"""Displays text normally, unmodified."""
         Upper                     = 0x1
@@ -172,7 +161,6 @@ class Scintilla(Shiboken.Object):
 
     class ChangeHistoryOption(enum.IntEnum):
         r"""Bit flags enabling change-history tracking and how it is displayed, set with `SCI_SETCHANGEHISTORY`."""
-
         Disabled                  = 0x0
         r"""Default: change history is turned off."""
         Enabled                   = 0x1
@@ -184,7 +172,6 @@ class Scintilla(Shiboken.Object):
 
     class CharacterSet(enum.IntEnum):
         r"""Character set used to display a style's text (independent of document encoding), set with `SCI_STYLESETCHARACTERSET`; useful for comments/string literals in a different language than the rest of the document. This binding's Qt platform layer (`PlatQt.cpp`) maps each value to a Qt `QTextCodec` name, so support depends only on which codecs Qt ships, not on the OS -- unlike Scintilla's native GTK/Cocoa/Win32 ports, where support and code-page mapping vary by platform."""
-
         Ansi                      = 0x0
         r"""Not mapped to a codec by this binding's Qt platform layer -- falls back to the same "ISO 8859-1" codec as `Default` regardless of platform."""
         Default                   = 0x1
@@ -232,7 +219,6 @@ class Scintilla(Shiboken.Object):
 
     class CharacterSource(enum.IntEnum):
         r"""Identifies how a character was entered, reported as `NotificationData.characterSource` on the `SCN_CHARADDED` notification -- only available via the raw `notify` signal, since the typed `charAdded` signal only carries the character code."""
-
         DirectInput               = 0x0
         r"""Direct input characters."""
         TentativeInput            = 0x1
@@ -242,7 +228,6 @@ class Scintilla(Shiboken.Object):
 
     class CompletionMethods(enum.IntEnum):
         r"""Identifies how an autocompletion list selection was triggered, reported as the `listCompletionMethod` field of `SCN_AUTOCSELECTION`/`SCN_AUTOCCOMPLETED` notifications."""
-
         FillUp                    = 0x1
         r"""A fillup character (see `SCI_AUTOCSETFILLUPS`) triggered the completion; the character used is reported separately."""
         DoubleClick               = 0x2
@@ -258,7 +243,6 @@ class Scintilla(Shiboken.Object):
 
     class CursorShape(enum.IntEnum):
         r"""Mouse cursor shape shown over the editor or a margin, set with `SCI_SETCURSOR`/`SCI_SETMARGINCURSORN`."""
-
         Normal                    = -1
         Arrow                     = 0x2
         Wait                      = 0x4
@@ -268,7 +252,6 @@ class Scintilla(Shiboken.Object):
 
     class DocumentOption(enum.IntEnum):
         r"""Bit flags chosen when creating a document with `SCI_CREATEDOCUMENT`, affecting memory allocation and performance."""
-
         Default                   = 0x0
         StylesNone                = 0x1
         r"""Stops allocation of memory for per-character styles, treating the whole document as style 0; saves significant memory. Lexers may still style visually via indicators. Often combined with the null lexer for documents too large to lex efficiently."""
@@ -277,7 +260,6 @@ class Scintilla(Shiboken.Object):
 
     class EOLAnnotationVisible(enum.IntEnum):
         r"""Display mode and decoration style for end-of-line annotations, set with `SCI_EOLANNOTATIONSETVISIBLE`/`SCI_EOLANNOTATIONGETVISIBLE`."""
-
         Hidden                    = 0x0
         r"""End-of-line annotations are not displayed."""
         Standard                  = 0x1
@@ -305,7 +287,6 @@ class Scintilla(Shiboken.Object):
 
     class EdgeVisualStyle(enum.IntEnum):
         r"""Used with `SCI_SETEDGEMODE`/`SCI_GETEDGEMODE` to control how the long-line edge marker is displayed."""
-
         None_                     = 0x0
         r"""Long lines are not marked. This is the default state."""
         Line                      = 0x1
@@ -317,7 +298,6 @@ class Scintilla(Shiboken.Object):
 
     class Element(enum.IntEnum):
         r"""Identifies a visual element (selection, caret, whitespace, fold/hidden line, etc.) whose colour can be get/set with `SCI_SETELEMENTCOLOUR`/`SCI_GETELEMENTCOLOUR`."""
-
         List                      = 0x0
         r"""Text colour in autocompletion lists; on Win32 this is currently provided by the platform layer."""
         ListBack                  = 0x1
@@ -367,14 +347,12 @@ class Scintilla(Shiboken.Object):
 
     class EndOfLine(enum.IntEnum):
         r"""Selects the line-ending character sequence used by `SCI_SETEOLMODE`/`SCI_CONVERTEOLS`."""
-
         CrLf                      = 0x0
         Cr                        = 0x1
         Lf                        = 0x2
 
     class FindOption(enum.IntEnum):
         r"""Flags (combinable by OR-ing) controlling how `SCI_SEARCHINTARGET` and related search messages match text, set via `SCI_SETSEARCHFLAGS`."""
-
         None_                     = 0x0
         r"""Default setting is a case-insensitive literal match."""
         WholeWord                 = 0x2
@@ -392,7 +370,6 @@ class Scintilla(Shiboken.Object):
 
     class FocusChange(enum.IntEnum):
         r"""Notification codes sent to the container for `SCEN_CHANGE`/`SCEN_SETFOCUS`/`SCEN_KILLFOCUS` events."""
-
         Killfocus                 = 0x100
         r"""Fired when Scintilla loses focus."""
         Setfocus                  = 0x200
@@ -402,7 +379,6 @@ class Scintilla(Shiboken.Object):
 
     class FoldAction(enum.IntEnum):
         r"""Action to perform on a fold point, used with `SCI_FOLDLINE`, `SCI_FOLDCHILDREN`, and `SCI_FOLDALL`."""
-
         Contract                  = 0x0
         Expand                    = 0x1
         Toggle                    = 0x2
@@ -412,7 +388,6 @@ class Scintilla(Shiboken.Object):
 
     class FoldDisplayTextStyle(enum.IntEnum):
         r"""Controls how fold-tag text (set via `SCI_TOGGLEFOLDSHOWTEXT`/`SCI_SETDEFAULTFOLDDISPLAYTEXT`) is rendered, via `SCI_FOLDDISPLAYTEXTSETSTYLE`."""
-
         Hidden                    = 0x0
         r"""Do not display the fold text tags. This is the default."""
         Standard                  = 0x1
@@ -421,7 +396,6 @@ class Scintilla(Shiboken.Object):
 
     class FoldFlag(enum.IntEnum):
         r"""Bit flags controlling where fold-indicator lines are drawn in the text area, set with `SCI_SETFOLDFLAGS`."""
-
         None_                     = 0x0
         LineBeforeExpanded        = 0x2
         r"""Draws a line above the fold header when it is expanded."""
@@ -438,7 +412,6 @@ class Scintilla(Shiboken.Object):
 
     class FoldLevel(enum.IntEnum):
         r"""A line's fold level and associated flags, set/got with `SCI_SETFOLDLEVEL`/`SCI_GETFOLDLEVEL` as a single 32-bit value combining a level number with flag bits."""
-
         None_                     = 0x0
         r"""A default level that may occur before folding is applied."""
         Base                      = 0x400
@@ -452,7 +425,6 @@ class Scintilla(Shiboken.Object):
 
     class FontQuality(enum.IntEnum):
         r"""Controls the antialiasing method used to render fonts, set/got via `SCI_SETFONTQUALITY`/`SCI_GETFONTQUALITY` (Windows only at present)."""
-
         QualityDefault            = 0x0
         r"""The backward-compatible default antialiasing behaviour."""
         QualityNonAntialiased     = 0x1
@@ -463,7 +435,6 @@ class Scintilla(Shiboken.Object):
 
     class FontStretch(enum.IntEnum):
         r"""Horizontal stretch/condensation of a font's glyphs, set with `SCI_STYLESETSTRETCH`; corresponds to a horizontal magnification between 50% and 200%, though most fonts/platforms only support 2-3 of these values well."""
-
         UltraCondensed            = 0x1
         r"""Corresponds to 50% horizontal width."""
         ExtraCondensed            = 0x2
@@ -485,7 +456,6 @@ class Scintilla(Shiboken.Object):
 
     class FontWeight(enum.IntEnum):
         r"""Font boldness/weight, set with `SCI_STYLESETWEIGHT`; any value from 1 (very light) to 999 (very heavy) is accepted, though fonts typically only support 2-4 distinct weights."""
-
         Normal                    = 0x190
         r"""Standard weight (400); selected by `SCI_STYLESETBOLD` when its boolean argument is false."""
         SemiBold                  = 0x258
@@ -495,7 +465,6 @@ class Scintilla(Shiboken.Object):
 
     class IMEInteraction(enum.IntEnum):
         r"""Selects how the platform's Input Method Editor (for Chinese, Japanese, or Korean text entry) is displayed, set with `SCI_SETIMEINTERACTION`."""
-
         Windowed                  = 0x0
         r"""The IME is shown as a separate window above Scintilla, like in other applications."""
         Inline                    = 0x1
@@ -503,7 +472,6 @@ class Scintilla(Shiboken.Object):
 
     class IdleStyling(enum.IntEnum):
         r"""Controls whether syntax styling of text outside the immediately visible area is deferred to an idle-time background task, set with `SCI_SETIDLESTYLING`."""
-
         None_                     = 0x0
         r"""Default: styling is performed for all currently visible text before displaying it, which may make scrolling slow on very large files."""
         ToVisible                 = 0x1
@@ -515,7 +483,6 @@ class Scintilla(Shiboken.Object):
 
     class IndentView(enum.IntEnum):
         r"""Controls how far indentation guides extend on blank/empty lines, set with `SCI_SETINDENTATIONGUIDES`."""
-
         None_                     = 0x0
         r"""No indentation guides are shown (turns the feature off)."""
         Real                      = 0x1
@@ -527,7 +494,6 @@ class Scintilla(Shiboken.Object):
 
     class IndicFlag(enum.IntEnum):
         r"""Flags controlling indicator colouring behaviour, set/got with `SCI_INDICSETFLAGS`/`SCI_INDICGETFLAGS`."""
-
         None_                     = 0x0
         r"""Default: the indicator uses its configured fore colour."""
         ValueFore                 = 0x1
@@ -535,7 +501,6 @@ class Scintilla(Shiboken.Object):
 
     class IndicValue(enum.IntEnum):
         r"""Masks for packing an RGB colour into the indicator value used with `SCI_SETINDICATORVALUE` when `IndicFlag.ValueFore` is set."""
-
         Mask                      = 0xffffff
         r"""Mask (0xFFFFFF) used to extract the RGB colour portion from an indicator value."""
         Bit                       = 0x1000000
@@ -543,7 +508,6 @@ class Scintilla(Shiboken.Object):
 
     class IndicatorNumbers(enum.IntEnum):
         r"""Identifies the indicator number ranges reserved for containers, IME, and change-history use, as passed to the `SCI_INDIC*` messages."""
-
         Container                 = 0x8
         r"""First indicator number in the range reserved for use by containers; indicators 0-7 are reserved for lexers."""
         Ime                       = 0x20
@@ -571,7 +535,6 @@ class Scintilla(Shiboken.Object):
 
     class IndicatorStyle(enum.IntEnum):
         r"""Visual appearance of an indicator, set with `SCI_INDICSETSTYLE` and used to highlight text such as syntax errors, deprecated names, or URLs."""
-
         Plain                     = 0x0
         r"""Underlined with a single, straight line."""
         Squiggle                  = 0x1
@@ -620,7 +583,6 @@ class Scintilla(Shiboken.Object):
 
     class KeyMod(enum.IntEnum):
         r"""Modifier-key flags (combinable by OR-ing) used alongside a `Keys` code in a `keyDefinition` passed to `SCI_ASSIGNCMDKEY`/`SCI_CLEARCMDKEY` for custom key bindings."""
-
         Norm                      = 0x0
         r"""No modifiers; useful as the zero value when building a key-binding table."""
         Shift                     = 0x1
@@ -633,7 +595,6 @@ class Scintilla(Shiboken.Object):
 
     class Keys(enum.IntEnum):
         r"""Virtual key codes used in a `keyDefinition` (with `KeyMod` modifiers) passed to `SCI_ASSIGNCMDKEY`/`SCI_CLEARCMDKEY` for custom key bindings."""
-
         Escape                    = 0x7
         Back                      = 0x8
         Tab                       = 0x9
@@ -659,7 +620,6 @@ class Scintilla(Shiboken.Object):
 
     class Layer(enum.IntEnum):
         r"""Controls whether a background effect (selection or caret-line background) is drawn opaquely on the base layer or translucently under/over the text, used by `SCI_SETSELECTIONLAYER`/`SCI_SETCARETLINELAYER`."""
-
         Base                      = 0x0
         r"""Draw the background opaquely on the base layer."""
         UnderText                 = 0x1
@@ -669,7 +629,6 @@ class Scintilla(Shiboken.Object):
 
     class LineCache(enum.IntEnum):
         r"""Controls which lines have their layout (wrapping/positions) cached, set with `SCI_SETLAYOUTCACHE`."""
-
         None_                     = 0x0
         r"""No lines are cached."""
         Caret                     = 0x1
@@ -681,7 +640,6 @@ class Scintilla(Shiboken.Object):
 
     class LineCharacterIndexType(enum.IntEnum):
         r"""Identifies which line/character position index is active, used with `SCI_GETLINECHARACTERINDEX`/`SCI_ALLOCATELINECHARACTERINDEX`; only supported for UTF-8 documents."""
-
         None_                     = 0x0
         r"""No line-character index is active."""
         Utf32                     = 0x1
@@ -691,7 +649,6 @@ class Scintilla(Shiboken.Object):
 
     class LineEndType(enum.IntEnum):
         r"""Selects whether only ASCII line endings or also Unicode line endings are recognized, used with `SCI_SETLINEENDTYPESALLOWED`/`SCI_GETLINEENDTYPESSUPPORTED`; Unicode mode is ineffective unless the active lexer also supports it."""
-
         Default                   = 0x0
         r"""Only ASCII line ends (CR, LF, CRLF) are interpreted."""
         Unicode                   = 0x1
@@ -699,14 +656,12 @@ class Scintilla(Shiboken.Object):
 
     class MarginOption(enum.IntEnum):
         r"""Bit flags for `SCI_SETMARGINOPTIONS` that control margin click behaviour."""
-
         None_                     = 0x0
         SubLineSelect             = 0x1
         r"""Clicking the margin in front of a wrapped line selects only that sub-line instead of the whole wrapped line."""
 
     class MarginType(enum.IntEnum):
         r"""The kind of content a margin shows, set with `SCI_SETMARGINTYPEN`; by convention margin 0 is used for line numbers and the next two for symbols."""
-
         Symbol                    = 0x0
         r"""A symbol margin, e.g. for markers (breakpoints, bookmarks)."""
         Number                    = 0x1
@@ -724,7 +679,6 @@ class Scintilla(Shiboken.Object):
 
     class MarkerOutline(enum.IntEnum):
         r"""Marker numbers reserved by Scintilla for change-history tracking and folding margin symbols, used with `SCI_MARKERDEFINE`."""
-
         HistoryRevertedToOrigin   = 0x15
         r"""Marks a line that was changed and saved but then reverted to its original state; the line differs from its on-disk state."""
         HistorySaved              = 0x16
@@ -750,7 +704,6 @@ class Scintilla(Shiboken.Object):
 
     class MarkerSymbol(enum.IntEnum):
         r"""Symbol drawn for a given marker number in the selection margin, assigned with `SCI_MARKERDEFINE`; by default all 32 markers use `Circle`."""
-
         Circle                    = 0x0
         RoundRect                 = 0x1
         Arrow                     = 0x2
@@ -797,7 +750,6 @@ class Scintilla(Shiboken.Object):
         r"""Add a Unicode code point to this base value (10000) to use that character as the marker, e.g. `Character + 9637`."""
 
     class Message(enum.IntEnum):
-
         AddText                   = 0x7d1
         r"""Add text to the document at current position."""
         AddStyledText             = 0x7d2
@@ -2433,7 +2385,6 @@ class Scintilla(Shiboken.Object):
 
     class ModificationFlags(enum.IntEnum):
         r"""Bitmask describing what kind of document change occurred, delivered as the `type`/`modification_type` parameter of `ScintillaEditBase.modified`/`ScintillaDocument.modified` (SCN_MODIFIED), and used to filter which kinds of modification get reported at all via `SCI_SETMODEVENTMASK`/`SCI_GETMODEVENTMASK`."""
-
         None_                     = 0x0
         r"""Base value with no fields valid. Will not occur but is useful in tests."""
         InsertText                = 0x1
@@ -2487,7 +2438,6 @@ class Scintilla(Shiboken.Object):
 
     class MultiAutoComplete(enum.IntEnum):
         r"""Controls whether autocompleted text is inserted into just the main selection or into every selection, set with `SCI_AUTOCSETMULTI`."""
-
         Once                      = 0x0
         r"""Autocompleted text goes into only the main selection; this is the default."""
         Each                      = 0x1
@@ -2495,7 +2445,6 @@ class Scintilla(Shiboken.Object):
 
     class MultiPaste(enum.IntEnum):
         r"""Controls whether pasted text goes into just the main selection or into every selection, set with `SCI_SETMULTIPASTE`."""
-
         Once                      = 0x0
         r"""Pasted text goes into only the main selection; this is the default."""
         Each                      = 0x1
@@ -2503,7 +2452,6 @@ class Scintilla(Shiboken.Object):
 
     class Notification(enum.IntEnum):
         r"""Identifies which Scintilla notification (`SCN_*`) a `NotificationData` carries, as `NotificationData.nmhdr.code` -- delivered via the raw `notify` signal, or (for most values) a corresponding typed signal on `ScintillaEditBase` that carries the same notification already unpacked into typed parameters."""
-
         StyleNeeded               = 0x7d0
         r"""Corresponds to the `styleNeeded` signal."""
         CharAdded                 = 0x7d1
@@ -2570,7 +2518,6 @@ class Scintilla(Shiboken.Object):
         r"""The current selection in an autocompletion list changed without being chosen; no typed signal exists for this -- only reachable via the raw `notify` signal."""
 
     class NotificationData(Shiboken.Object):
-
         annotationLinesAdded      = ...  # type: Scintilla.Position
         ch                        = ...  # type: int
         characterSource           = ...  # type: Scintilla.CharacterSource
@@ -2597,7 +2544,7 @@ class Scintilla(Shiboken.Object):
         @typing.overload
         def __init__(self, NotificationData: Scintilla.NotificationData, /) -> None: ...
 
-        def __copy__(self, /) -> typing.Self: ...
+        def __copy__(self, /) -> Scintilla.NotificationData: ...
         @property
         def text(self, /) -> PySide6.QtCore.QByteArray: ...
         def textBytes(self, /) -> PySide6.QtCore.QByteArray: ...
@@ -2607,7 +2554,6 @@ class Scintilla(Shiboken.Object):
 
     class Ordering(enum.IntEnum):
         r"""Controls how the autocompletion list passed to `SCI_AUTOCSHOW` is ordered, set with `SCI_AUTOCSETORDER` before showing the list."""
-
         PreSorted                 = 0x0
         r"""The default; requires the application to supply the list already in alphabetical sorted order."""
         PerformSort               = 0x1
@@ -2617,7 +2563,6 @@ class Scintilla(Shiboken.Object):
 
     class PhasesDraw(enum.IntEnum):
         r"""Selects the drawing order/strategy for the text area, trading speed against correctly rendering overlapping pixels, set with `SCI_SETPHASESDRAW`."""
-
         One                       = 0x0
         r"""Deprecated single-phase drawing: each run of characters is drawn with its background in one pass, which can let a following run's background cut off an overhanging character. Should not be used by applications."""
         Two                       = 0x1
@@ -2627,7 +2572,6 @@ class Scintilla(Shiboken.Object):
 
     class PopUp(enum.IntEnum):
         r"""Controls when the built-in default context/edit menu is shown, set with `SCI_USEPOPUP`."""
-
         Never                     = 0x0
         r"""Never show the default editing menu; context-menu messages are passed to the parent window instead."""
         All                       = 0x1
@@ -2637,7 +2581,6 @@ class Scintilla(Shiboken.Object):
 
     class PrintOption(enum.IntEnum):
         r"""Colour mode used when printing the document, set with `SCI_SETPRINTCOLOURMODE`; useful for saving ink/toner when the editor uses a dark screen theme."""
-
         Normal                    = 0x0
         r"""Default: prints using the current screen colours, except line-number margins print on a white background."""
         InvertLight               = 0x1
@@ -2653,7 +2596,6 @@ class Scintilla(Shiboken.Object):
 
     class RepresentationAppearance(enum.IntEnum):
         r"""Flags controlling how a character representation set with `SCI_SETREPRESENTATION` is drawn, used with `SCI_SETREPRESENTATIONAPPEARANCE`."""
-
         Plain                     = 0x0
         r"""Draws the representation text with no decoration."""
         Blob                      = 0x1
@@ -2663,7 +2605,6 @@ class Scintilla(Shiboken.Object):
 
     class SelectionMode(enum.IntEnum):
         r"""The selection mode used by `SCI_SETSELECTIONMODE`/`SCI_CHANGESELECTIONMODE`/`SCI_GETSELECTIONMODE`, controlling how caret moves extend the selection."""
-
         Stream                    = 0x0
         r"""Regular, contiguous text selection."""
         Rectangle                 = 0x1
@@ -2675,7 +2616,6 @@ class Scintilla(Shiboken.Object):
 
     class Status(enum.IntEnum):
         r"""Error/warning status codes returned by `SCI_GETSTATUS` and set by `SCI_SETSTATUS`; values 1-999 are errors and `WarnStart` (1000) and above are warnings."""
-
         Ok                        = 0x0
         r"""No failures."""
         Failure                   = 0x1
@@ -2691,7 +2631,6 @@ class Scintilla(Shiboken.Object):
 
     class StylesCommon(enum.IntEnum):
         r"""Predefined style numbers with special meaning, used with `SCI_STYLESETFORE` and friends; lexer styles occupy 0 to `Max`, and `SCI_STYLECLEARALL` resets every style to `Default`'s attributes."""
-
         Default                   = 0x20
         r"""The attributes every style is reset to by `SCI_STYLECLEARALL`."""
         LineNumber                = 0x21
@@ -2715,7 +2654,6 @@ class Scintilla(Shiboken.Object):
 
     class Supports(enum.IntEnum):
         r"""Feature flags queried with `SCI_SUPPORTSFEATURE` to check which drawing/measurement capabilities the current platform supports."""
-
         LineDrawsFinal            = 0x0
         r"""Whether drawing a line draws its final position; only false on Win32 GDI."""
         PixelDivisions            = 0x1
@@ -2731,7 +2669,6 @@ class Scintilla(Shiboken.Object):
 
     class TabDrawMode(enum.IntEnum):
         r"""How tab characters are drawn when white space is made visible, set with `SCI_SETTABDRAWMODE`."""
-
         LongArrow                 = 0x0
         r"""The default mode: an arrow stretching until the tabstop."""
         StrikeOut                 = 0x1
@@ -2741,7 +2678,6 @@ class Scintilla(Shiboken.Object):
 
     class Technology(enum.IntEnum):
         r"""The drawing API/technology used for rendering, set with `SCI_SETTECHNOLOGY`; choices beyond `Default` are Windows-specific DirectWrite variants."""
-
         Default                   = 0x0
         r"""Use the older GDI API, compatible with all versions of Windows including Vista and XP."""
         DirectWrite               = 0x1
@@ -2755,7 +2691,6 @@ class Scintilla(Shiboken.Object):
 
     class TypeProperty(enum.IntEnum):
         r"""How to interpret the string value of a named lexer property (set via `SCI_SETPROPERTY`), as reported by `SCI_PROPERTYTYPE` -- all property values are passed as plain strings regardless of type. Only available for newer lexers; a companion to `SCI_PROPERTYNAMES` (lists property names) and `SCI_DESCRIBEPROPERTY` (a human-readable description), e.g. for building a generic lexer property editor."""
-
         Boolean                   = 0x0
         r"""The property's string value is "0" or "1"."""
         Integer                   = 0x1
@@ -2765,14 +2700,12 @@ class Scintilla(Shiboken.Object):
 
     class UndoFlags(enum.IntEnum):
         r"""Flags passed to `SCI_ADDUNDOACTION` controlling how a container-supplied undo action interacts with coalescing of other undo actions."""
-
         None_                     = 0x0
         MayCoalesce               = 0x1
         r"""The container action may be coalesced together with surrounding insertion/deletion actions into a single compound action."""
 
     class UndoSelectionHistoryOption(enum.IntEnum):
         r"""Controls whether selection (and scroll position) state is restored when performing undo/redo, set with `SCI_SETUNDOSELECTIONHISTORY`."""
-
         Disabled                  = 0x0
         r"""The default: undo selection history turned off."""
         Enabled                   = 0x1
@@ -2781,7 +2714,6 @@ class Scintilla(Shiboken.Object):
         r"""Also restore the vertical scroll position; has no effect unless combined with `Enabled`."""
 
     class Update(enum.IntEnum):
-
         None_                     = 0x0
         r"""Value without any changes."""
         Content                   = 0x1
@@ -2794,7 +2726,6 @@ class Scintilla(Shiboken.Object):
         r"""May have scrolled horizontally."""
 
     class VirtualSpace(enum.IntEnum):
-
         None_                     = 0x0
         r"""The default: no virtual space."""
         RectangularSelection      = 0x1
@@ -2806,7 +2737,6 @@ class Scintilla(Shiboken.Object):
 
     class VisiblePolicy(enum.IntEnum):
         r"""Flags for `SCI_SETVISIBLEPOLICY` controlling vertical positioning when `SCI_ENSUREVISIBLEENFORCEPOLICY` is called; operates like the caret's vertical policy (`SCI_SETYCARETPOLICY`)."""
-
         Slop                      = 0x1
         r"""Defines an unwanted zone, a number of lines near the vertical margins where the target line should not end up, keeping it within visible context."""
         Strict                    = 0x4
@@ -2814,7 +2744,6 @@ class Scintilla(Shiboken.Object):
 
     class WhiteSpace(enum.IntEnum):
         r"""The white-space display mode set with `SCI_SETVIEWWS`/`SCI_GETVIEWWS`, controlling whether spaces and tabs are drawn as visible dots and arrows."""
-
         Invisible                 = 0x0
         r"""The normal display mode: white space is displayed as an empty background colour."""
         VisibleAlways             = 0x1
@@ -2826,7 +2755,6 @@ class Scintilla(Shiboken.Object):
 
     class Wrap(enum.IntEnum):
         r"""The line-wrap mode set with `SCI_SETWRAPMODE` (and, partially, `SCI_SETPRINTWRAPMODE`)."""
-
         None_                     = 0x0
         r"""Disables line wrapping."""
         Word                      = 0x1
@@ -2838,7 +2766,6 @@ class Scintilla(Shiboken.Object):
 
     class WrapIndentMode(enum.IntEnum):
         r"""Controls how wrapped sublines of a line are indented relative to the first subline, set with `SCI_SETWRAPINDENTMODE`."""
-
         Fixed                     = 0x0
         r"""Wrapped sublines are aligned to the left of the window plus the amount set by `SCI_SETWRAPSTARTINDENT` (the default mode)."""
         Same                      = 0x1
@@ -2850,7 +2777,6 @@ class Scintilla(Shiboken.Object):
 
     class WrapVisualFlag(enum.IntEnum):
         r"""Bit flags for `SCI_SETWRAPVISUALFLAGS` controlling which visual indicators are drawn to show a line has wrapped."""
-
         None_                     = 0x0
         End                       = 0x1
         r"""Draws a visual flag at the end of each wrapped subline."""
@@ -2861,14 +2787,12 @@ class Scintilla(Shiboken.Object):
 
     class WrapVisualLocation(enum.IntEnum):
         r"""Set with `SCI_SETWRAPVISUALFLAGSLOCATION`, controls where wrap visual flags are drawn relative to the text versus the window border."""
-
         Default                   = 0x0
         r"""Visual flags are drawn near the border."""
         EndByText                 = 0x1
         r"""The end-of-subline visual flag is drawn near the text instead of the border."""
         StartByText               = 0x2
         r"""The start-of-subline visual flag is drawn near the text instead of the border."""
-
 
     @staticmethod
     def LevelIsHeader(level: Scintilla.FoldLevel, /) -> bool: ...
@@ -2886,7 +2810,6 @@ class ScintillaDocument(PySide6.QtCore.QObject):
     r"""Wraps a Scintilla document buffer independently of any `ScintillaEdit` view.
 
     Obtain one from an existing editor via `ScintillaEdit.get_doc()` (and share it with another editor via `set_doc()`), or construct one standalone to hold text off-screen. Exposes a subset of `ScintillaEdit`'s editing/undo API directly on the buffer, plus `modified`/`save_point`/etc. signals."""
-
     error_occurred           : typing.ClassVar[Signal] = ... # error_occurred(int)
     r"""An internal error occurred while editing the document. `status` is one of Scintilla's internal `Scintilla.Status` codes (e.g. out-of-memory or a malformed regular expression)."""
     modified                 : typing.ClassVar[Signal] = ... # modified(int,int,QByteArray,int,int,int,int,int)
@@ -2986,7 +2909,6 @@ class ScintillaDocument(PySide6.QtCore.QObject):
 
 
 class ScintillaDocumentFixed(ScintillaDocument):
-
     modified                 : typing.ClassVar[Signal] = ... # modified(int,int,QString,int,int,int,int,int)
     r"""The document's text or styling changed, or is about to (SCN_MODIFIED). `modification_type` is a `Scintilla.ModificationFlags` bitmask describing what; `text` holds the inserted/deleted text (decoded per the document's code page) for `Scintilla.ModificationFlags.InsertText`/`DeleteText`."""
 
@@ -3013,7 +2935,6 @@ class ScintillaEditBase(PySide6.QtWidgets.QAbstractScrollArea):
     r"""Qt widget exposing Scintilla's editor core via the raw `Scintilla.Message` API.
 
     `send`/`sends` send any message; `notify` and the typed signals below (`modified`, `charAdded`, `updateUi`, ...) deliver Scintilla's notifications. For a typed method per message, use the `ScintillaEdit` subclass instead."""
-
     aboutToCopy              : typing.ClassVar[Signal] = ... # aboutToCopy(QMimeData*)
     r"""Emitted just before selected text is copied to the clipboard, with the `QMimeData` about to be placed there.
 
@@ -3146,7 +3067,6 @@ class ScintillaEditBase(PySide6.QtWidgets.QAbstractScrollArea):
 
 
 class ScintillaEditBaseFixed(ScintillaEditBase):
-
     autoCompleteSelection    : typing.ClassVar[Signal] = ... # autoCompleteSelection(int,QString)
     r"""The user selected `text` from an autocompletion list, before it's inserted (SCN_AUTOCSELECTION). `position` is the start of the word being completed.
 
@@ -3193,7 +3113,6 @@ class ScintillaEditBaseFixed(ScintillaEditBase):
 
 
 class ScintillaEditFixed(ScintillaEditBaseFixed):
-
     def __init__(self, /, parent: PySide6.QtWidgets.QWidget | None = ...) -> None: ...
 
     def accessibility(self, /) -> int:

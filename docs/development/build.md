@@ -44,33 +44,30 @@ so the prerequisites below are pyside6-scintilla's. lexilla-specific notes:
 ## Local development build
 
 From the repo root, `uv sync` builds both packages (editable) plus the dev
-tools into `.venv`. pyside6-scintilla's CMake needs `CMAKE_PREFIX_PATH`
-pointing at your Qt 6 installation:
-
-```powershell
-# Windows (PowerShell)
-$env:CMAKE_PREFIX_PATH = "C:\Qt\6.12.0\msvc2022_64"
-uv sync
-```
+tools into `.venv`:
 
 ```bash
-# Linux / macOS
-export CMAKE_PREFIX_PATH=/path/to/Qt/6.12.0/gcc_64   # or macos/clang_64, etc.
 uv sync
 ```
 
-> [!TIP]
-> **Windows**: to avoid setting `CMAKE_PREFIX_PATH` every session, persist it
-> to the user environment instead:
->
-> ```powershell
-> $existing = [System.Environment]::GetEnvironmentVariable("CMAKE_PREFIX_PATH", "User")
-> $new = if ($existing) { "$existing;C:\Qt\6.12.0\msvc2022_64" } else { "C:\Qt\6.12.0\msvc2022_64" }
-> [System.Environment]::SetEnvironmentVariable("CMAKE_PREFIX_PATH", $new, "User")
-> ```
->
-> Restart your terminal (or VS Code) afterward -- the new value only applies
-> to terminals opened after it's set.
+pyside6-scintilla's CMake finds the Qt SDK matching the installed PySide6
+by itself (`packages/pyside6-scintilla/cmake/MatchingQt.cmake`, issue #25):
+it reads PySide6's version and looks for that Qt release where the Qt
+Maintenance Tool installs it -- `C:/Qt/<version>/msvc2022_64` on Windows,
+`~/Qt/<version>/macos` on macOS, `~/Qt/<version>/gcc_64` (or `gcc_arm64`) on
+Linux, also `/opt/Qt` -- preferring PySide6's exact version, then the newest
+patch release of the same minor. So after bumping the PySide6 minor, install
+the matching Qt and rebuild; nothing to reconfigure.
+
+For an SDK elsewhere, set `CMAKE_PREFIX_PATH`; a matching Qt there is used
+as is (CI sets it explicitly). One that doesn't match -- say, still the
+previous minor's -- is skipped in favour of a matching standard install, and
+without one the build stops with a message naming the Qt version it needs:
+
+```bash
+export CMAKE_PREFIX_PATH=/path/to/Qt/6.12.0/gcc_64   # PowerShell: $env:CMAKE_PREFIX_PATH = "..."
+uv sync
+```
 
 The packages depend on each other only for development -- lexilla's glue
 module and tests use pyside6-scintilla, pyside6-scintilla's lexilla example

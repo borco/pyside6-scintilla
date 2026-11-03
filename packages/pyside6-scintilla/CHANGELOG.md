@@ -6,6 +6,16 @@ Changelog](https://keepachangelog.com/en/1.0.0/); entries are kept high-level
 (what shipped, breaking changes) rather than a full commit-by-commit log —
 see git history for that.
 
+## [Unreleased]
+
+### Changed
+
+- Building from source finds the Qt SDK matching the installed PySide6 by
+  itself (#25): it looks for that Qt release in the standard install
+  locations (`C:/Qt`, `~/Qt`, `/opt/Qt`) unless `CMAKE_PREFIX_PATH` already
+  provides a matching one, and stops with a clear message naming the
+  needed Qt version instead of failing inside PySide6's headers.
+
 ## [5.6.3.11] - 2026-11-03
 
 ### Changed (breaking)

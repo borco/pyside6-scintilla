@@ -164,8 +164,8 @@ Repo-wide:
 ## Roadmap
 
 The [project board](https://github.com/users/borco/projects/3) is the
-roadmap for this repo (both packages). Issues/PRs are auto-added by
-`.github/workflows/add-to-project.yml`.
+roadmap for this repo (both packages). Issues/PRs are auto-added by the
+board's built-in "Auto-add to project" workflow.
 
 When asked what to work on next, check the project board's "In progress"
 lane for an item belonging to this repo (`borco/scintilla-py`). If one

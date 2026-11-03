@@ -13,8 +13,9 @@ see git history for that.
 - Built for PySide6 6.12 (#15): requires `PySide6-Essentials>=6.12,<6.13`
   and `shiboken6>=6.12,<6.13`. Keep using 5.6.3.10 with PySide6 6.11 -- pip
   picks the release matching the installed PySide6 minor.
-- macOS wheels need macOS 14.0 (`macosx_14_0`), up from 13.0, the same floor
-  as PySide6 6.12's own wheels.
+- macOS wheels need macOS 14.4 (tagged `macosx_14_0`, like PySide6 6.12's
+  own wheels), up from 13.0: Qt 6.12's `QtCore5Compat.framework`, bundled in
+  the wheel, requires it.
 
 ### Added
 

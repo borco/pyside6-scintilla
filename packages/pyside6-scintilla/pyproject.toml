@@ -211,11 +211,12 @@ archs = ["arm64", "x86_64"]
 # under Rosetta 2 on Apple Silicon runners/hosts. Skip if /tmp/qt already
 # has it (local iteration on the M1 Mac Mini pre-populates this path).
 before-all = "[ -d /tmp/qt/6.12.0/macos ] || (python3 -m pip install --break-system-packages 'aqtinstall @ git+https://github.com/miurahr/aqtinstall.git@8c3695d4a4e1ceabf6a74dc6c79681656dc6b74b' && python3 -m aqt install-qt mac desktop 6.12.0 clang_64 -m qt5compat -O /tmp/qt)"
-# PySide6 6.12's wheels (and the Qt 6.12 frameworks, QtCore5Compat included)
-# need macOS 14.0 - bump MACOSX_DEPLOYMENT_TARGET to match (cibuildwheel's
-# arm64 default is 11.0), so delocate doesn't reject the wheel and the
-# resulting wheel tag (macosx_14_0_arm64) accurately reflects what it needs.
-environment = { CMAKE_PREFIX_PATH = "/tmp/qt/6.12.0/macos", MACOSX_DEPLOYMENT_TARGET = "14.0" }
+# Qt 6.12's QtCore5Compat.framework (bundled in the wheel) has a minimum
+# target of macOS 14.4 - match it (cibuildwheel's arm64 default is 11.0) so
+# delocate doesn't reject the wheel. From macOS 11 on, wheel tags carry only
+# the major version, so the wheel is still tagged macosx_14_0, the same as
+# PySide6 6.12's own wheels.
+environment = { CMAKE_PREFIX_PATH = "/tmp/qt/6.12.0/macos", MACOSX_DEPLOYMENT_TARGET = "14.4" }
 test-environment = { QT_QPA_PLATFORM = "offscreen" }
 # QtWidgets.framework, QtGui.framework, QtCore.framework, libpyside6 and
 # libshiboken6 aren't bundled in the wheel - they're provided at runtime by

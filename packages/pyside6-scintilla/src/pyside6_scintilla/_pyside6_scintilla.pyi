@@ -2322,6 +2322,10 @@ class Scintilla(Shiboken.Object):
         r"""Get whether drag-and-drop is enabled or disabled"""
         SetDragDropEnabled        = 0xb03
         r"""Enable or disable drag-and-drop"""
+        SetScaleTechnique         = 0xb04
+        r"""Set the scale technique"""
+        GetScaleTechnique         = 0xb05
+        r"""Get the scale technique"""
         StartRecord               = 0xbb9
         r"""Start notifying the container of all key presses and commands."""
         StopRecord                = 0xbba
@@ -2603,6 +2607,13 @@ class Scintilla(Shiboken.Object):
         Colour                    = 0x10
         r"""If set, the representation is drawn in the colour set for it; if a colour is set but this flag is not, the representation shows in the colour of the underlying text instead."""
 
+    class ScaleTechnique(enum.IntEnum):
+        r"""How display scaling is implemented, set with `SCI_SETSCALETECHNIQUE`/`SCI_GETSCALETECHNIQUE` (provisional; added in Scintilla 5.6.4). Only Qt implements a non-default technique."""
+        Default                   = 0x0
+        r"""The platform's default behaviour."""
+        PixelAligned              = 0x1
+        r"""Align the top and bottom of lines to physical pixels, avoiding 'seams' between background rectangles under fractional scaling (e.g. 125%/150% display scale). May be slower than the default. In this mode the engine works in device pixels: raw `send()` pixel values are device pixels, while `ScintillaEdit`'s typed pixel methods convert to/from logical pixels."""
+
     class SelectionMode(enum.IntEnum):
         r"""The selection mode used by `SCI_SETSELECTIONMODE`/`SCI_CHANGESELECTIONMODE`/`SCI_GETSELECTIONMODE`, controlling how caret moves extend the selection."""
         Stream                    = 0x0
@@ -2724,6 +2735,10 @@ class Scintilla(Shiboken.Object):
         r"""May have scrolled vertically."""
         HScroll                   = 0x8
         r"""May have scrolled horizontally."""
+        Text                      = 0x10
+        r"""Contents may have changed (text inserted or deleted, not just styling or markers); the notification's `position` (`NotificationData.position`, via the `notify` signal) holds the start position of the changes. Added in Scintilla 5.6.5."""
+        LineCount                 = 0x20
+        r"""Number of lines may have changed. Added in Scintilla 5.6.5."""
 
     class VirtualSpace(enum.IntEnum):
         None_                     = 0x0
@@ -2850,7 +2865,7 @@ class ScintillaDocument(PySide6.QtCore.QObject):
         r"""End a sequence of actions started by `begin_undo_action`."""
     def ensure_styled_to(self, position: int, /) -> None:
         r"""Ensure the document is styled up to at least `position`, emitting `style_needed` as needed."""
-    def get_char_range(self, position: int, length: int, /) -> PySide6.QtCore.QByteArray:
+    def get_char_range(self, position: int, lengthGet: int, /) -> PySide6.QtCore.QByteArray:
         r"""Return the document's text in the `length` bytes starting at byte `position`, decoded per the document's code page (see `insert_string`)."""
     def get_character(self, pos: int, /) -> int:
         r"""Return the character at `pos`."""
@@ -3004,7 +3019,7 @@ class ScintillaEditBase(PySide6.QtWidgets.QAbstractScrollArea):
     textAreaClicked          : typing.ClassVar[Signal] = ... # textAreaClicked(Scintilla::Position,int)
     r"""The text area was clicked on `line`, with `modifiers` held down."""
     updateUi                 : typing.ClassVar[Signal] = ... # updateUi(Scintilla::Update)
-    r"""The text, styling, selection, or scroll position may have changed (SCN_UPDATEUI). `updated` is a `Scintilla.Update` bitmask of what changed since the previous notification."""
+    r"""The text, styling, selection, or scroll position may have changed (SCN_UPDATEUI). `updated` is a `Scintilla.Update` bitmask of what changed since the previous notification. For `Update.Text`, the notification's `position` (the start of the changes; not carried by this signal) is available from the `notify` signal's `NotificationData`."""
     uriDropped               : typing.ClassVar[Signal] = ... # uriDropped(QString)
     r"""The user dragged a URI such as a file path onto the editor (SCN_URIDROPPED, GTK only)."""
     userListSelection        : typing.ClassVar[Signal] = ... # userListSelection()
@@ -3094,7 +3109,7 @@ class ScintillaEditBaseFixed(ScintillaEditBase):
     textAreaClicked          : typing.ClassVar[Signal] = ... # textAreaClicked(int,int)
     r"""The text area was clicked on `line`, with `modifiers` held down."""
     updateUi                 : typing.ClassVar[Signal] = ... # updateUi(int)
-    r"""The text, styling, selection, or scroll position may have changed (SCN_UPDATEUI). `updated` is a `Scintilla.Update` bitmask of what changed since the previous notification."""
+    r"""The text, styling, selection, or scroll position may have changed (SCN_UPDATEUI). `updated` is a `Scintilla.Update` bitmask of what changed since the previous notification. For `Update.Text`, the notification's `position` (the start of the changes; not carried by this signal) is available from the `notify` signal's `NotificationData`."""
 
     def __init__(self, /, parent: PySide6.QtWidgets.QWidget | None = ...) -> None: ...
 
@@ -3498,7 +3513,11 @@ class ScintillaEditFixed(ScintillaEditBaseFixed):
     def callTipUseStyle(self, tabSize: int, /) -> None:
         r"""Enable use of STYLE_CALLTIP and set call tip tab size in pixels.
 
-        Sends `SCI_CALLTIPUSESTYLE`."""
+        Sends `SCI_CALLTIPUSESTYLE`. Pixels are logical pixels: under `ScaleTechnique.PixelAligned` they're converted (rounded) to/from the device pixels the message uses, so `send()` differs from this method there. `callTipUseStyleF()` is the unrounded `float` form."""
+    def callTipUseStyleF(self, tabSize: float, /) -> None:
+        r"""Enable use of STYLE_CALLTIP and set call tip tab size in pixels.
+
+        Sends `SCI_CALLTIPUSESTYLE`. Like `callTipUseStyle()`, but with pixels as unrounded `float` logical pixels."""
     def canPaste(self, /) -> bool:
         r"""Will a paste succeed?
 
@@ -3530,7 +3549,11 @@ class ScintillaEditFixed(ScintillaEditBaseFixed):
     def caretLineFrame(self, /) -> int:
         r"""Retrieve the caret line frame width. Width = 0 means this option is disabled.
 
-        Sends `SCI_GETCARETLINEFRAME`."""
+        Sends `SCI_GETCARETLINEFRAME`. Pixels are logical pixels: under `ScaleTechnique.PixelAligned` they're converted (rounded) to/from the device pixels the message uses, so `send()` differs from this method there. `caretLineFrameF()` is the unrounded `float` form."""
+    def caretLineFrameF(self, /) -> float:
+        r"""Retrieve the caret line frame width. Width = 0 means this option is disabled.
+
+        Sends `SCI_GETCARETLINEFRAME`. Like `caretLineFrame()`, but with pixels as unrounded `float` logical pixels."""
     def caretLineHighlightSubLine(self, /) -> bool:
         r"""Get only highlighting subline instead of whole line.
 
@@ -3562,7 +3585,11 @@ class ScintillaEditFixed(ScintillaEditBaseFixed):
     def caretWidth(self, /) -> int:
         r"""Returns the width of the insert mode caret.
 
-        Sends `SCI_GETCARETWIDTH`."""
+        Sends `SCI_GETCARETWIDTH`. Pixels are logical pixels: under `ScaleTechnique.PixelAligned` they're converted (rounded) to/from the device pixels the message uses, so `send()` differs from this method there. `caretWidthF()` is the unrounded `float` form."""
+    def caretWidthF(self, /) -> float:
+        r"""Returns the width of the insert mode caret.
+
+        Sends `SCI_GETCARETWIDTH`. Like `caretWidth()`, but with pixels as unrounded `float` logical pixels."""
     def changeHistory(self, /) -> int:
         r"""Report change history status.
 
@@ -3602,11 +3629,19 @@ class ScintillaEditFixed(ScintillaEditBaseFixed):
     def charPositionFromPoint(self, x: int, y: int, /) -> int:
         r"""Find the position of a character from a point within the window.
 
-        Sends `SCI_CHARPOSITIONFROMPOINT`."""
+        Sends `SCI_CHARPOSITIONFROMPOINT`. Pixels are logical pixels: under `ScaleTechnique.PixelAligned` they're converted (rounded) to/from the device pixels the message uses, so `send()` differs from this method there. `charPositionFromPointF()` is the unrounded `float` form."""
     def charPositionFromPointClose(self, x: int, y: int, /) -> int:
         r"""Find the position of a character from a point within the window. Return INVALID_POSITION if not close to text.
 
-        Sends `SCI_CHARPOSITIONFROMPOINTCLOSE`."""
+        Sends `SCI_CHARPOSITIONFROMPOINTCLOSE`. Pixels are logical pixels: under `ScaleTechnique.PixelAligned` they're converted (rounded) to/from the device pixels the message uses, so `send()` differs from this method there. `charPositionFromPointCloseF()` is the unrounded `float` form."""
+    def charPositionFromPointCloseF(self, x: float, y: float, /) -> int:
+        r"""Find the position of a character from a point within the window. Return INVALID_POSITION if not close to text.
+
+        Sends `SCI_CHARPOSITIONFROMPOINTCLOSE`. Like `charPositionFromPointClose()`, but with pixels as unrounded `float` logical pixels."""
+    def charPositionFromPointF(self, x: float, y: float, /) -> int:
+        r"""Find the position of a character from a point within the window.
+
+        Sends `SCI_CHARPOSITIONFROMPOINT`. Like `charPositionFromPoint()`, but with pixels as unrounded `float` logical pixels."""
     def charRight(self, /) -> None:
         r"""Move caret right one character.
 
@@ -3950,11 +3985,19 @@ class ScintillaEditFixed(ScintillaEditBaseFixed):
     def extraAscent(self, /) -> int:
         r"""Get extra ascent for each line
 
-        Sends `SCI_GETEXTRAASCENT`."""
+        Sends `SCI_GETEXTRAASCENT`. Pixels are logical pixels: under `ScaleTechnique.PixelAligned` they're converted (rounded) to/from the device pixels the message uses, so `send()` differs from this method there. `extraAscentF()` is the unrounded `float` form."""
+    def extraAscentF(self, /) -> float:
+        r"""Get extra ascent for each line
+
+        Sends `SCI_GETEXTRAASCENT`. Like `extraAscent()`, but with pixels as unrounded `float` logical pixels."""
     def extraDescent(self, /) -> int:
         r"""Get extra descent for each line
 
-        Sends `SCI_GETEXTRADESCENT`."""
+        Sends `SCI_GETEXTRADESCENT`. Pixels are logical pixels: under `ScaleTechnique.PixelAligned` they're converted (rounded) to/from the device pixels the message uses, so `send()` differs from this method there. `extraDescentF()` is the unrounded `float` form."""
+    def extraDescentF(self, /) -> float:
+        r"""Get extra descent for each line
+
+        Sends `SCI_GETEXTRADESCENT`. Like `extraDescent()`, but with pixels as unrounded `float` logical pixels."""
     def findColumn(self, line: int, column: int, /) -> int:
         r"""Find the position of a column on a line taking into account tabs and multi-byte characters. If beyond end of line, return line end position.
 
@@ -4234,7 +4277,11 @@ class ScintillaEditFixed(ScintillaEditBaseFixed):
     def indicSetStrokeWidth(self, indicator: int, hundredths: int, /) -> None:
         r"""Set the stroke width of an indicator in hundredths of a pixel.
 
-        Sends `SCI_INDICSETSTROKEWIDTH`."""
+        Sends `SCI_INDICSETSTROKEWIDTH`. Pixels are logical pixels: under `ScaleTechnique.PixelAligned` they're converted (rounded) to/from the device pixels the message uses, so `send()` differs from this method there. `indicSetStrokeWidthF()` is the unrounded `float` form."""
+    def indicSetStrokeWidthF(self, indicator: int, hundredths: float, /) -> None:
+        r"""Set the stroke width of an indicator in hundredths of a pixel.
+
+        Sends `SCI_INDICSETSTROKEWIDTH`. Like `indicSetStrokeWidth()`, but with pixels as unrounded `float` logical pixels."""
     def indicSetStyle(self, indicator: int, indicatorStyle: int, /) -> None:
         r"""Set an indicator to plain, squiggle or TT.
 
@@ -4246,7 +4293,11 @@ class ScintillaEditFixed(ScintillaEditBaseFixed):
     def indicStrokeWidth(self, indicator: int, /) -> int:
         r"""Retrieve the stroke width of an indicator.
 
-        Sends `SCI_INDICGETSTROKEWIDTH`."""
+        Sends `SCI_INDICGETSTROKEWIDTH`. Pixels are logical pixels: under `ScaleTechnique.PixelAligned` they're converted (rounded) to/from the device pixels the message uses, so `send()` differs from this method there. `indicStrokeWidthF()` is the unrounded `float` form."""
+    def indicStrokeWidthF(self, indicator: int, /) -> float:
+        r"""Retrieve the stroke width of an indicator.
+
+        Sends `SCI_INDICGETSTROKEWIDTH`. Like `indicStrokeWidth()`, but with pixels as unrounded `float` logical pixels."""
     def indicStyle(self, indicator: int, /) -> int:
         r"""Retrieve the style of an indicator.
 
@@ -4478,7 +4529,11 @@ class ScintillaEditFixed(ScintillaEditBaseFixed):
     def linesSplit(self, pixelWidth: int, /) -> None:
         r"""Split the lines in the target into lines that are less wide than pixelWidth where possible.
 
-        Sends `SCI_LINESSPLIT`."""
+        Sends `SCI_LINESSPLIT`. Pixels are logical pixels: under `ScaleTechnique.PixelAligned` they're converted (rounded) to/from the device pixels the message uses, so `send()` differs from this method there. `linesSplitF()` is the unrounded `float` form."""
+    def linesSplitF(self, pixelWidth: float, /) -> None:
+        r"""Split the lines in the target into lines that are less wide than pixelWidth where possible.
+
+        Sends `SCI_LINESSPLIT`. Like `linesSplit()`, but with pixels as unrounded `float` logical pixels."""
     def lowerCase(self, /) -> None:
         r"""Transform the selection to lower case.
 
@@ -4498,7 +4553,11 @@ class ScintillaEditFixed(ScintillaEditBaseFixed):
     def marginLeft(self, /) -> int:
         r"""Returns the size in pixels of the left margin.
 
-        Sends `SCI_GETMARGINLEFT`."""
+        Sends `SCI_GETMARGINLEFT`. Pixels are logical pixels: under `ScaleTechnique.PixelAligned` they're converted (rounded) to/from the device pixels the message uses, so `send()` differs from this method there. `marginLeftF()` is the unrounded `float` form."""
+    def marginLeftF(self, /) -> float:
+        r"""Returns the size in pixels of the left margin.
+
+        Sends `SCI_GETMARGINLEFT`. Like `marginLeft()`, but with pixels as unrounded `float` logical pixels."""
     def marginMaskN(self, margin: int, /) -> int:
         r"""Retrieve the marker mask of a margin.
 
@@ -4510,7 +4569,11 @@ class ScintillaEditFixed(ScintillaEditBaseFixed):
     def marginRight(self, /) -> int:
         r"""Returns the size in pixels of the right margin.
 
-        Sends `SCI_GETMARGINRIGHT`."""
+        Sends `SCI_GETMARGINRIGHT`. Pixels are logical pixels: under `ScaleTechnique.PixelAligned` they're converted (rounded) to/from the device pixels the message uses, so `send()` differs from this method there. `marginRightF()` is the unrounded `float` form."""
+    def marginRightF(self, /) -> float:
+        r"""Returns the size in pixels of the right margin.
+
+        Sends `SCI_GETMARGINRIGHT`. Like `marginRight()`, but with pixels as unrounded `float` logical pixels."""
     def marginSensitiveN(self, margin: int, /) -> bool:
         r"""Retrieve the mouse click sensitivity of a margin.
 
@@ -4558,7 +4621,11 @@ class ScintillaEditFixed(ScintillaEditBaseFixed):
     def marginWidthN(self, margin: int, /) -> int:
         r"""Retrieve the width of a margin in pixels.
 
-        Sends `SCI_GETMARGINWIDTHN`."""
+        Sends `SCI_GETMARGINWIDTHN`. Pixels are logical pixels: under `ScaleTechnique.PixelAligned` they're converted (rounded) to/from the device pixels the message uses, so `send()` differs from this method there. `marginWidthNF()` is the unrounded `float` form."""
+    def marginWidthNF(self, margin: int, /) -> float:
+        r"""Retrieve the width of a margin in pixels.
+
+        Sends `SCI_GETMARGINWIDTHN`. Like `marginWidthN()`, but with pixels as unrounded `float` logical pixels."""
     def margins(self, /) -> int:
         r"""How many margins are there?.
 
@@ -4662,7 +4729,11 @@ class ScintillaEditFixed(ScintillaEditBaseFixed):
     def markerSetStrokeWidth(self, markerNumber: int, hundredths: int, /) -> None:
         r"""Set the width of strokes used in .01 pixels so 50  = 1/2 pixel width.
 
-        Sends `SCI_MARKERSETSTROKEWIDTH`."""
+        Sends `SCI_MARKERSETSTROKEWIDTH`. Pixels are logical pixels: under `ScaleTechnique.PixelAligned` they're converted (rounded) to/from the device pixels the message uses, so `send()` differs from this method there. `markerSetStrokeWidthF()` is the unrounded `float` form."""
+    def markerSetStrokeWidthF(self, markerNumber: int, hundredths: float, /) -> None:
+        r"""Set the width of strokes used in .01 pixels so 50  = 1/2 pixel width.
+
+        Sends `SCI_MARKERSETSTROKEWIDTH`. Like `markerSetStrokeWidth()`, but with pixels as unrounded `float` logical pixels."""
     def markerSymbolDefined(self, markerNumber: int, /) -> int:
         r"""Which symbol was defined for markerNumber with MarkerDefine
 
@@ -4814,11 +4885,19 @@ class ScintillaEditFixed(ScintillaEditBaseFixed):
     def pointXFromPosition(self, pos: int, /) -> int:
         r"""Retrieve the x value of the point in the window where a position is displayed.
 
-        Sends `SCI_POINTXFROMPOSITION`."""
+        Sends `SCI_POINTXFROMPOSITION`. Pixels are logical pixels: under `ScaleTechnique.PixelAligned` they're converted (rounded) to/from the device pixels the message uses, so `send()` differs from this method there. `pointXFromPositionF()` is the unrounded `float` form."""
+    def pointXFromPositionF(self, pos: int, /) -> float:
+        r"""Retrieve the x value of the point in the window where a position is displayed.
+
+        Sends `SCI_POINTXFROMPOSITION`. Like `pointXFromPosition()`, but with pixels as unrounded `float` logical pixels."""
     def pointYFromPosition(self, pos: int, /) -> int:
         r"""Retrieve the y value of the point in the window where a position is displayed.
 
-        Sends `SCI_POINTYFROMPOSITION`."""
+        Sends `SCI_POINTYFROMPOSITION`. Pixels are logical pixels: under `ScaleTechnique.PixelAligned` they're converted (rounded) to/from the device pixels the message uses, so `send()` differs from this method there. `pointYFromPositionF()` is the unrounded `float` form."""
+    def pointYFromPositionF(self, pos: int, /) -> float:
+        r"""Retrieve the y value of the point in the window where a position is displayed.
+
+        Sends `SCI_POINTYFROMPOSITION`. Like `pointYFromPosition()`, but with pixels as unrounded `float` logical pixels."""
     def positionAfter(self, pos: int, /) -> int:
         r"""Given a valid document position, return the next position taking code page into account. Maximum value returned is the last position in the document.
 
@@ -4838,11 +4917,19 @@ class ScintillaEditFixed(ScintillaEditBaseFixed):
     def positionFromPoint(self, x: int, y: int, /) -> int:
         r"""Find the position from a point within the window.
 
-        Sends `SCI_POSITIONFROMPOINT`."""
+        Sends `SCI_POSITIONFROMPOINT`. Pixels are logical pixels: under `ScaleTechnique.PixelAligned` they're converted (rounded) to/from the device pixels the message uses, so `send()` differs from this method there. `positionFromPointF()` is the unrounded `float` form."""
     def positionFromPointClose(self, x: int, y: int, /) -> int:
         r"""Find the position from a point within the window but return INVALID_POSITION if not close to text.
 
-        Sends `SCI_POSITIONFROMPOINTCLOSE`."""
+        Sends `SCI_POSITIONFROMPOINTCLOSE`. Pixels are logical pixels: under `ScaleTechnique.PixelAligned` they're converted (rounded) to/from the device pixels the message uses, so `send()` differs from this method there. `positionFromPointCloseF()` is the unrounded `float` form."""
+    def positionFromPointCloseF(self, x: float, y: float, /) -> int:
+        r"""Find the position from a point within the window but return INVALID_POSITION if not close to text.
+
+        Sends `SCI_POSITIONFROMPOINTCLOSE`. Like `positionFromPointClose()`, but with pixels as unrounded `float` logical pixels."""
+    def positionFromPointF(self, x: float, y: float, /) -> int:
+        r"""Find the position from a point within the window.
+
+        Sends `SCI_POSITIONFROMPOINT`. Like `positionFromPoint()`, but with pixels as unrounded `float` logical pixels."""
     def positionRelative(self, pos: int, relative: int, /) -> int:
         r"""Given a valid document position, return a position that differs in a number of characters. Returned value is always between 0 and last position in document.
 
@@ -5003,6 +5090,10 @@ class ScintillaEditFixed(ScintillaEditBaseFixed):
         r"""Set the main selection to the next selection.
 
         Sends `SCI_ROTATESELECTION`."""
+    def scaleTechnique(self, /) -> int:
+        r"""Get the scale technique
+
+        Sends `SCI_GETSCALETECHNIQUE`."""
     def scrollCaret(self, /) -> None:
         r"""Ensure the caret is visible.
 
@@ -5026,7 +5117,11 @@ class ScintillaEditFixed(ScintillaEditBaseFixed):
     def scrollWidth(self, /) -> int:
         r"""Retrieve the document width assumed for scrolling.
 
-        Sends `SCI_GETSCROLLWIDTH`."""
+        Sends `SCI_GETSCROLLWIDTH`. Pixels are logical pixels: under `ScaleTechnique.PixelAligned` they're converted (rounded) to/from the device pixels the message uses, so `send()` differs from this method there. `scrollWidthF()` is the unrounded `float` form."""
+    def scrollWidthF(self, /) -> float:
+        r"""Retrieve the document width assumed for scrolling.
+
+        Sends `SCI_GETSCROLLWIDTH`. Like `scrollWidth()`, but with pixels as unrounded `float` logical pixels."""
     def scrollWidthTracking(self, /) -> bool:
         r"""Retrieve whether the scroll width tracks wide lines.
 
@@ -5078,7 +5173,11 @@ class ScintillaEditFixed(ScintillaEditBaseFixed):
     def selectionFromPoint(self, x: int, y: int, /) -> int:
         r"""Find the selection index for a point. -1 when not at a selection.
 
-        Sends `SCI_SELECTIONFROMPOINT`."""
+        Sends `SCI_SELECTIONFROMPOINT`. Pixels are logical pixels: under `ScaleTechnique.PixelAligned` they're converted (rounded) to/from the device pixels the message uses, so `send()` differs from this method there. `selectionFromPointF()` is the unrounded `float` form."""
+    def selectionFromPointF(self, x: float, y: float, /) -> int:
+        r"""Find the selection index for a point. -1 when not at a selection.
+
+        Sends `SCI_SELECTIONFROMPOINT`. Like `selectionFromPoint()`, but with pixels as unrounded `float` logical pixels."""
     def selectionHidden(self, /) -> bool:
         r"""Sends `SCI_GETSELECTIONHIDDEN`."""
     def selectionIsRectangle(self, /) -> bool:
@@ -5204,7 +5303,11 @@ class ScintillaEditFixed(ScintillaEditBaseFixed):
     def setCaretLineFrame(self, width: int, /) -> None:
         r"""Display the caret line framed. Set width != 0 to enable this option and width = 0 to disable it.
 
-        Sends `SCI_SETCARETLINEFRAME`."""
+        Sends `SCI_SETCARETLINEFRAME`. Pixels are logical pixels: under `ScaleTechnique.PixelAligned` they're converted (rounded) to/from the device pixels the message uses, so `send()` differs from this method there. `setCaretLineFrameF()` is the unrounded `float` form."""
+    def setCaretLineFrameF(self, width: float, /) -> None:
+        r"""Display the caret line framed. Set width != 0 to enable this option and width = 0 to disable it.
+
+        Sends `SCI_SETCARETLINEFRAME`. Like `setCaretLineFrame()`, but with pixels as unrounded `float` logical pixels."""
     def setCaretLineHighlightSubLine(self, subLine: bool, /) -> None:
         r"""Set only highlighting subline instead of whole line.
 
@@ -5236,7 +5339,11 @@ class ScintillaEditFixed(ScintillaEditBaseFixed):
     def setCaretWidth(self, pixelWidth: int, /) -> None:
         r"""Set the width of the insert mode caret.
 
-        Sends `SCI_SETCARETWIDTH`."""
+        Sends `SCI_SETCARETWIDTH`. Pixels are logical pixels: under `ScaleTechnique.PixelAligned` they're converted (rounded) to/from the device pixels the message uses, so `send()` differs from this method there. `setCaretWidthF()` is the unrounded `float` form."""
+    def setCaretWidthF(self, pixelWidth: float, /) -> None:
+        r"""Set the width of the insert mode caret.
+
+        Sends `SCI_SETCARETWIDTH`. Like `setCaretWidth()`, but with pixels as unrounded `float` logical pixels."""
     def setChangeHistory(self, changeHistory: int, /) -> None:
         r"""Enable or disable change history.
 
@@ -5316,11 +5423,19 @@ class ScintillaEditFixed(ScintillaEditBaseFixed):
     def setExtraAscent(self, extraAscent: int, /) -> None:
         r"""Set extra ascent for each line
 
-        Sends `SCI_SETEXTRAASCENT`."""
+        Sends `SCI_SETEXTRAASCENT`. Pixels are logical pixels: under `ScaleTechnique.PixelAligned` they're converted (rounded) to/from the device pixels the message uses, so `send()` differs from this method there. `setExtraAscentF()` is the unrounded `float` form."""
+    def setExtraAscentF(self, extraAscent: float, /) -> None:
+        r"""Set extra ascent for each line
+
+        Sends `SCI_SETEXTRAASCENT`. Like `setExtraAscent()`, but with pixels as unrounded `float` logical pixels."""
     def setExtraDescent(self, extraDescent: int, /) -> None:
         r"""Set extra descent for each line
 
-        Sends `SCI_SETEXTRADESCENT`."""
+        Sends `SCI_SETEXTRADESCENT`. Pixels are logical pixels: under `ScaleTechnique.PixelAligned` they're converted (rounded) to/from the device pixels the message uses, so `send()` differs from this method there. `setExtraDescentF()` is the unrounded `float` form."""
+    def setExtraDescentF(self, extraDescent: float, /) -> None:
+        r"""Set extra descent for each line
+
+        Sends `SCI_SETEXTRADESCENT`. Like `setExtraDescent()`, but with pixels as unrounded `float` logical pixels."""
     def setFirstVisibleLine(self, displayLine: int, /) -> None:
         r"""Scroll so that a display line is at the top of the display.
 
@@ -5460,7 +5575,11 @@ class ScintillaEditFixed(ScintillaEditBaseFixed):
     def setMarginLeft(self, pixelWidth: int, /) -> None:
         r"""Sets the size in pixels of the left margin.
 
-        Sends `SCI_SETMARGINLEFT`."""
+        Sends `SCI_SETMARGINLEFT`. Pixels are logical pixels: under `ScaleTechnique.PixelAligned` they're converted (rounded) to/from the device pixels the message uses, so `send()` differs from this method there. `setMarginLeftF()` is the unrounded `float` form."""
+    def setMarginLeftF(self, pixelWidth: float, /) -> None:
+        r"""Sets the size in pixels of the left margin.
+
+        Sends `SCI_SETMARGINLEFT`. Like `setMarginLeft()`, but with pixels as unrounded `float` logical pixels."""
     def setMarginMaskN(self, margin: int, mask: int, /) -> None:
         r"""Set a mask that determines which markers are displayed in a margin.
 
@@ -5472,7 +5591,11 @@ class ScintillaEditFixed(ScintillaEditBaseFixed):
     def setMarginRight(self, pixelWidth: int, /) -> None:
         r"""Sets the size in pixels of the right margin.
 
-        Sends `SCI_SETMARGINRIGHT`."""
+        Sends `SCI_SETMARGINRIGHT`. Pixels are logical pixels: under `ScaleTechnique.PixelAligned` they're converted (rounded) to/from the device pixels the message uses, so `send()` differs from this method there. `setMarginRightF()` is the unrounded `float` form."""
+    def setMarginRightF(self, pixelWidth: float, /) -> None:
+        r"""Sets the size in pixels of the right margin.
+
+        Sends `SCI_SETMARGINRIGHT`. Like `setMarginRight()`, but with pixels as unrounded `float` logical pixels."""
     def setMarginSensitiveN(self, margin: int, sensitive: bool, /) -> None:
         r"""Make a margin sensitive or insensitive to mouse clicks.
 
@@ -5484,7 +5607,11 @@ class ScintillaEditFixed(ScintillaEditBaseFixed):
     def setMarginWidthN(self, margin: int, pixelWidth: int, /) -> None:
         r"""Set the width of a margin to a width expressed in pixels.
 
-        Sends `SCI_SETMARGINWIDTHN`."""
+        Sends `SCI_SETMARGINWIDTHN`. Pixels are logical pixels: under `ScaleTechnique.PixelAligned` they're converted (rounded) to/from the device pixels the message uses, so `send()` differs from this method there. `setMarginWidthNF()` is the unrounded `float` form."""
+    def setMarginWidthNF(self, margin: int, pixelWidth: float, /) -> None:
+        r"""Set the width of a margin to a width expressed in pixels.
+
+        Sends `SCI_SETMARGINWIDTHN`. Like `setMarginWidthN()`, but with pixels as unrounded `float` logical pixels."""
     def setMargins(self, margins: int, /) -> None:
         r"""Allocate a non-standard number of margins.
 
@@ -5595,10 +5722,18 @@ class ScintillaEditFixed(ScintillaEditBaseFixed):
         r"""Remember the current position in the undo history as the position at which the document was saved.
 
         Sends `SCI_SETSAVEPOINT`."""
+    def setScaleTechnique(self, technique: int, /) -> None:
+        r"""Set the scale technique
+
+        Sends `SCI_SETSCALETECHNIQUE`."""
     def setScrollWidth(self, pixelWidth: int, /) -> None:
         r"""Sets the document width assumed for scrolling.
 
-        Sends `SCI_SETSCROLLWIDTH`."""
+        Sends `SCI_SETSCROLLWIDTH`. Pixels are logical pixels: under `ScaleTechnique.PixelAligned` they're converted (rounded) to/from the device pixels the message uses, so `send()` differs from this method there. `setScrollWidthF()` is the unrounded `float` form."""
+    def setScrollWidthF(self, pixelWidth: float, /) -> None:
+        r"""Sets the document width assumed for scrolling.
+
+        Sends `SCI_SETSCROLLWIDTH`. Like `setScrollWidth()`, but with pixels as unrounded `float` logical pixels."""
     def setScrollWidthTracking(self, tracking: bool, /) -> None:
         r"""Sets whether the maximum width line displayed is used to set scroll width.
 
@@ -5698,7 +5833,11 @@ class ScintillaEditFixed(ScintillaEditBaseFixed):
     def setTabMinimumWidth(self, pixels: int, /) -> None:
         r"""Set the minimum visual width of a tab.
 
-        Sends `SCI_SETTABMINIMUMWIDTH`."""
+        Sends `SCI_SETTABMINIMUMWIDTH`. Pixels are logical pixels: under `ScaleTechnique.PixelAligned` they're converted (rounded) to/from the device pixels the message uses, so `send()` differs from this method there. `setTabMinimumWidthF()` is the unrounded `float` form."""
+    def setTabMinimumWidthF(self, pixels: float, /) -> None:
+        r"""Set the minimum visual width of a tab.
+
+        Sends `SCI_SETTABMINIMUMWIDTH`. Like `setTabMinimumWidth()`, but with pixels as unrounded `float` logical pixels."""
     def setTabWidth(self, tabWidth: int, /) -> None:
         r"""Change the visible size of a tab to be a multiple of the width of a space character.
 
@@ -5794,7 +5933,11 @@ class ScintillaEditFixed(ScintillaEditBaseFixed):
     def setWhitespaceSize(self, size: int, /) -> None:
         r"""Set the size of the dots used to mark space characters.
 
-        Sends `SCI_SETWHITESPACESIZE`."""
+        Sends `SCI_SETWHITESPACESIZE`. Pixels are logical pixels: under `ScaleTechnique.PixelAligned` they're converted (rounded) to/from the device pixels the message uses, so `send()` differs from this method there. `setWhitespaceSizeF()` is the unrounded `float` form."""
+    def setWhitespaceSizeF(self, size: float, /) -> None:
+        r"""Set the size of the dots used to mark space characters.
+
+        Sends `SCI_SETWHITESPACESIZE`. Like `setWhitespaceSize()`, but with pixels as unrounded `float` logical pixels."""
     def setWordChars(self, characters: str, /) -> None:
         r"""Set the set of characters making up words for when moving or selecting by word. First sets defaults like SetCharsDefault.
 
@@ -5810,7 +5953,11 @@ class ScintillaEditFixed(ScintillaEditBaseFixed):
     def setWrapStartIndent(self, indent: int, /) -> None:
         r"""Set the start indent for wrapped lines.
 
-        Sends `SCI_SETWRAPSTARTINDENT`."""
+        Sends `SCI_SETWRAPSTARTINDENT`. Pixels are logical pixels: under `ScaleTechnique.PixelAligned` they're converted (rounded) to/from the device pixels the message uses, so `send()` differs from this method there. `setWrapStartIndentF()` is the unrounded `float` form."""
+    def setWrapStartIndentF(self, indent: float, /) -> None:
+        r"""Set the start indent for wrapped lines.
+
+        Sends `SCI_SETWRAPSTARTINDENT`. Like `setWrapStartIndent()`, but with pixels as unrounded `float` logical pixels."""
     def setWrapVisualFlags(self, wrapVisualFlags: int, /) -> None:
         r"""Set the display mode of visual flags for wrapped lines.
 
@@ -5822,11 +5969,19 @@ class ScintillaEditFixed(ScintillaEditBaseFixed):
     def setXCaretPolicy(self, caretPolicy: int, caretSlop: int, /) -> None:
         r"""Set the way the caret is kept visible when going sideways. The exclusion zone is given in pixels.
 
-        Sends `SCI_SETXCARETPOLICY`."""
+        Sends `SCI_SETXCARETPOLICY`. Pixels are logical pixels: under `ScaleTechnique.PixelAligned` they're converted (rounded) to/from the device pixels the message uses, so `send()` differs from this method there. `setXCaretPolicyF()` is the unrounded `float` form."""
+    def setXCaretPolicyF(self, caretPolicy: int, caretSlop: float, /) -> None:
+        r"""Set the way the caret is kept visible when going sideways. The exclusion zone is given in pixels.
+
+        Sends `SCI_SETXCARETPOLICY`. Like `setXCaretPolicy()`, but with pixels as unrounded `float` logical pixels."""
     def setXOffset(self, xOffset: int, /) -> None:
         r"""Set the xOffset (ie, horizontal scroll position).
 
-        Sends `SCI_SETXOFFSET`."""
+        Sends `SCI_SETXOFFSET`. Pixels are logical pixels: under `ScaleTechnique.PixelAligned` they're converted (rounded) to/from the device pixels the message uses, so `send()` differs from this method there. `setXOffsetF()` is the unrounded `float` form."""
+    def setXOffsetF(self, xOffset: float, /) -> None:
+        r"""Set the xOffset (ie, horizontal scroll position).
+
+        Sends `SCI_SETXOFFSET`. Like `setXOffset()`, but with pixels as unrounded `float` logical pixels."""
     def setYCaretPolicy(self, caretPolicy: int, caretSlop: int, /) -> None:
         r"""Set the way the line the caret is on is kept visible. The exclusion zone is given in lines.
 
@@ -6074,7 +6229,11 @@ class ScintillaEditFixed(ScintillaEditBaseFixed):
     def tabMinimumWidth(self, /) -> int:
         r"""Get the minimum visual width of a tab.
 
-        Sends `SCI_GETTABMINIMUMWIDTH`."""
+        Sends `SCI_GETTABMINIMUMWIDTH`. Pixels are logical pixels: under `ScaleTechnique.PixelAligned` they're converted (rounded) to/from the device pixels the message uses, so `send()` differs from this method there. `tabMinimumWidthF()` is the unrounded `float` form."""
+    def tabMinimumWidthF(self, /) -> float:
+        r"""Get the minimum visual width of a tab.
+
+        Sends `SCI_GETTABMINIMUMWIDTH`. Like `tabMinimumWidth()`, but with pixels as unrounded `float` logical pixels."""
     def tabWidth(self, /) -> int:
         r"""Retrieve the visible size of a tab.
 
@@ -6122,7 +6281,11 @@ class ScintillaEditFixed(ScintillaEditBaseFixed):
     def textHeight(self, line: int, /) -> int:
         r"""Retrieve the height of a particular line of text in pixels.
 
-        Sends `SCI_TEXTHEIGHT`."""
+        Sends `SCI_TEXTHEIGHT`. Pixels are logical pixels: under `ScaleTechnique.PixelAligned` they're converted (rounded) to/from the device pixels the message uses, so `send()` differs from this method there. `textHeightF()` is the unrounded `float` form."""
+    def textHeightF(self, line: int, /) -> float:
+        r"""Retrieve the height of a particular line of text in pixels.
+
+        Sends `SCI_TEXTHEIGHT`. Like `textHeight()`, but with pixels as unrounded `float` logical pixels."""
     def textLength(self, /) -> int:
         r"""Retrieve the number of characters in the document.
 
@@ -6132,7 +6295,11 @@ class ScintillaEditFixed(ScintillaEditBaseFixed):
     def textWidth(self, style: int, text: str, /) -> int:
         r"""Measure the pixel width of some text in a particular style. NUL terminated text argument. Does not handle tab or control characters.
 
-        Sends `SCI_TEXTWIDTH`."""
+        Sends `SCI_TEXTWIDTH`. Pixels are logical pixels: under `ScaleTechnique.PixelAligned` they're converted (rounded) to/from the device pixels the message uses, so `send()` differs from this method there. `textWidthF()` is the unrounded `float` form."""
+    def textWidthF(self, style: int, text: str, /) -> float:
+        r"""Measure the pixel width of some text in a particular style. NUL terminated text argument. Does not handle tab or control characters.
+
+        Sends `SCI_TEXTWIDTH`. Like `textWidth()`, but with pixels as unrounded `float` logical pixels."""
     def toggleCaretSticky(self, /) -> None:
         r"""Switch between sticky and non-sticky: meant to be bound to a key.
 
@@ -6268,7 +6435,11 @@ class ScintillaEditFixed(ScintillaEditBaseFixed):
     def whitespaceSize(self, /) -> int:
         r"""Get the size of the dots used to mark space characters.
 
-        Sends `SCI_GETWHITESPACESIZE`."""
+        Sends `SCI_GETWHITESPACESIZE`. Pixels are logical pixels: under `ScaleTechnique.PixelAligned` they're converted (rounded) to/from the device pixels the message uses, so `send()` differs from this method there. `whitespaceSizeF()` is the unrounded `float` form."""
+    def whitespaceSizeF(self, /) -> float:
+        r"""Get the size of the dots used to mark space characters.
+
+        Sends `SCI_GETWHITESPACESIZE`. Like `whitespaceSize()`, but with pixels as unrounded `float` logical pixels."""
     def wordChars(self, /) -> str:
         r"""Get the set of characters making up words for when moving or selecting by word. Returns the number of characters
 
@@ -6344,7 +6515,11 @@ class ScintillaEditFixed(ScintillaEditBaseFixed):
     def wrapStartIndent(self, /) -> int:
         r"""Retrive the start indent for wrapped lines.
 
-        Sends `SCI_GETWRAPSTARTINDENT`."""
+        Sends `SCI_GETWRAPSTARTINDENT`. Pixels are logical pixels: under `ScaleTechnique.PixelAligned` they're converted (rounded) to/from the device pixels the message uses, so `send()` differs from this method there. `wrapStartIndentF()` is the unrounded `float` form."""
+    def wrapStartIndentF(self, /) -> float:
+        r"""Retrive the start indent for wrapped lines.
+
+        Sends `SCI_GETWRAPSTARTINDENT`. Like `wrapStartIndent()`, but with pixels as unrounded `float` logical pixels."""
     def wrapVisualFlags(self, /) -> int:
         r"""Retrive the display mode of visual flags for wrapped lines.
 
@@ -6356,7 +6531,11 @@ class ScintillaEditFixed(ScintillaEditBaseFixed):
     def xOffset(self, /) -> int:
         r"""Get the xOffset (ie, horizontal scroll position).
 
-        Sends `SCI_GETXOFFSET`."""
+        Sends `SCI_GETXOFFSET`. Pixels are logical pixels: under `ScaleTechnique.PixelAligned` they're converted (rounded) to/from the device pixels the message uses, so `send()` differs from this method there. `xOffsetF()` is the unrounded `float` form."""
+    def xOffsetF(self, /) -> float:
+        r"""Get the xOffset (ie, horizontal scroll position).
+
+        Sends `SCI_GETXOFFSET`. Like `xOffset()`, but with pixels as unrounded `float` logical pixels."""
     def zoom(self, /) -> int:
         r"""Retrieve the zoom level.
 

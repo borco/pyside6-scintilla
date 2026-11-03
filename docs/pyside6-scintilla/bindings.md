@@ -308,6 +308,17 @@ in by `tools/generate_pyi.py`), e.g. `addText`: *"Sends `SCI_ADDTEXT`. No
   `send()` keeps Scintilla's packed ints; `colour_to_scintilla()`/
   `colour_from_scintilla()` (in `__init__.py`) convert for it, and reject an
   `int` since its byte order would be ambiguous.
+- **Pixels are logical pixels**, as in upstream's `WidgetGen.py` since
+  Scintilla 5.6.4, which types pixel values as `pixels` in `Scintilla.iface`
+  (`setMarginWidthN`, `textWidth`, `pointXFromPosition`, `setCaretWidth`,
+  ...). Under `Scintilla.ScaleTechnique.PixelAligned` (`setScaleTechnique`,
+  Qt only) the engine works in device pixels; the generated methods then
+  scale by the viewport's `ScintillaScale` property, which `ScintillaQt` sets
+  to the device-pixel ratio in that mode and to 0 (no scaling) otherwise.
+  So they're unchanged with the default technique, and `send()` always sees
+  what the engine uses. The integer methods round; each has a `...F` twin
+  (`textWidthF`, `setMarginWidthNF`, ...) with unrounded `float` pixels. See
+  `tests/test_scale_technique.py`.
 - `targetAsUTF8`/`encodedFromUTF8` aren't generated: `ScintillaQt` doesn't
   handle those messages (only the Win32/GTK/Cocoa platform layers do).
 

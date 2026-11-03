@@ -97,6 +97,7 @@
         <enum-type name="PopUp"/>
         <enum-type name="PrintOption"/>
         <enum-type name="RepresentationAppearance"/>
+        <enum-type name="ScaleTechnique"/>
         <enum-type name="SelectionMode"/>
         <enum-type name="Status"/>
         <enum-type name="StylesCommon"/>

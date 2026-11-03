@@ -38,7 +38,7 @@ the popup.
 
 ## Source
 
-[`examples/autocomplete/`](https://github.com/borco/pyside6-scintilla/tree/master/examples/autocomplete)
+[`examples/autocomplete/`](https://github.com/borco/scintilla-py/tree/master/examples/autocomplete)
 
 ## Screenshots
 

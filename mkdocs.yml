@@ -1,8 +1,8 @@
-site_name: pyside6-scintilla
-site_description: Permissively-licensed PySide6 bindings for the Scintilla code editor component
-site_url: https://borco.github.io/pyside6-scintilla/
-repo_url: https://github.com/borco/pyside6-scintilla
-repo_name: borco/pyside6-scintilla
+site_name: scintilla-py
+site_description: Permissively-licensed Python bindings for Scintilla (pyside6-scintilla) and Lexilla (lexilla)
+site_url: https://borco.github.io/scintilla-py/
+repo_url: https://github.com/borco/scintilla-py
+repo_name: borco/scintilla-py
 edit_uri: edit/master/docs/
 
 extra:
@@ -22,10 +22,10 @@ plugins:
   - mkdocstrings:
       handlers:
         python:
-          paths: [src]
+          paths: [packages/pyside6-scintilla/src, packages/lexilla/src]
           options:
             # The .pyi stub has no docstrings on individual members (see
-            # tools/generate_pyi.py) - show them anyway, since the signature
+            # packages/pyside6-scintilla/tools/generate_pyi.py) - show them anyway, since the signature
             # itself is the documentation for most of this binding's API.
             show_if_no_docstring: true
             # Source shown would be the generated .pyi stub (`def foo(...) -> T: ...`),
@@ -83,17 +83,33 @@ markdown_extensions:
   - pymdownx.emoji:
       emoji_index: !!python/name:material.extensions.emoji.twemoji
       emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  # docs/changelog/*.md include each package's CHANGELOG.md (paths relative
+  # to the repo root); check_paths makes a moved changelog a build error.
+  - pymdownx.snippets:
+      base_path: [.]
+      check_paths: true
 
 nav:
   - Home: index.md
+  - Scintilla:
+      - pyside6-scintilla/index.md
+      - Design decisions: pyside6-scintilla/design-decisions.md
+      - Bindings architecture: pyside6-scintilla/bindings.md
+      - Build notes: pyside6-scintilla/build.md
+      - Verifying vendored Scintilla: pyside6-scintilla/auditing.md
+      - Alternatives & landscape: pyside6-scintilla/alternatives.md
+  - Lexilla:
+      - lexilla/index.md
+      - Design decisions: lexilla/design-decisions.md
+      - Bindings architecture: lexilla/bindings.md
+      - Build notes: lexilla/build.md
+      - Verifying vendored Lexilla: lexilla/auditing.md
   - Development:
-      - Project mission: specs/mission.md
-      - Alternatives & landscape: alternatives.md
-      - Bindings architecture: bindings.md
-      - Build instructions: build.md
-      - Verifying vendored Scintilla: auditing.md
-      - Documenting: documenting.md
-      - TestPyPI: testpypi.md
+      - Mission: development/mission.md
+      - How the packages are built: development/architecture.md
+      - Building and publishing: development/build.md
+      - Documenting: development/documenting.md
+      - TestPyPI: development/testpypi.md
   - Examples:
       - examples/index.md
       - examples/simple_scintilla_base_edit.md
@@ -105,76 +121,86 @@ nav:
           - highlighting/lexilla_highlighting.md
           - highlighting/pygments_highlighting.md
           - highlighting/tree_sitter_highlighting.md
-  - Scintilla API:
-      - Editing:
-          - scintilla/editing/text-retrieval-and-modification.md
-          - scintilla/editing/information.md
-          - scintilla/editing/overtype.md
-          - scintilla/editing/cut-copy-and-paste.md
-          - scintilla/editing/undo-and-redo.md
-          - scintilla/editing/undo-save-and-restore.md
-          - scintilla/editing/change-history.md
-      - Selection & Search:
-          - scintilla/selection-search/selection.md
-          - scintilla/selection-search/multiple-selection-and-virtual-space.md
-          - scintilla/selection-search/searching.md
-      - Display:
-          - scintilla/display/scrolling-and-automatic-scrolling.md
-          - scintilla/display/white-space.md
-          - scintilla/display/cursor.md
-          - scintilla/display/mouse-capture.md
-          - scintilla/display/line-endings.md
-          - scintilla/display/margins.md
-          - scintilla/display/annotations.md
-          - scintilla/display/end-of-line-annotations.md
-          - scintilla/display/other-settings.md
-          - scintilla/display/brace-highlighting.md
-          - scintilla/display/tabs-and-indentation-guides.md
-          - scintilla/display/markers.md
-          - scintilla/display/indicators.md
-          - scintilla/display/folding.md
-          - scintilla/display/line-wrapping.md
-          - scintilla/display/zooming.md
-          - scintilla/display/long-lines.md
-          - scintilla/display/accessibility.md
-      - Styling & Lexing:
-          - scintilla/styling-lexing/words.md
-          - scintilla/styling-lexing/styling.md
-          - scintilla/styling-lexing/style-definition.md
-          - scintilla/styling-lexing/element-colours.md
-          - scintilla/styling-lexing/selection-caret-and-hotspot-styles.md
-          - scintilla/styling-lexing/character-representations.md
-          - scintilla/styling-lexing/lexer.md
-          - scintilla/styling-lexing/lexer-objects.md
-      - Interaction & Commands:
-          - scintilla/interaction-commands/autocompletion.md
-          - scintilla/interaction-commands/user-lists.md
-          - scintilla/interaction-commands/call-tips.md
-          - scintilla/interaction-commands/keyboard-commands.md
-          - scintilla/interaction-commands/key-bindings.md
-          - scintilla/interaction-commands/popup-edit-menu.md
-          - scintilla/interaction-commands/macro-recording.md
-      - Documents:
-          - scintilla/documents/printing.md
-          - scintilla/documents/direct-access.md
-          - scintilla/documents/multiple-views.md
-          - scintilla/documents/background-loading-and-saving.md
-          - scintilla/documents/document-interface.md
-      - Notifications:
-          - scintilla/notifications/notifications.md
-      - Appendix / Reference:
-          - scintilla/appendix-reference/images.md
-          - scintilla/appendix-reference/gtk.md
-          - scintilla/appendix-reference/provisional-messages.md
-          - scintilla/appendix-reference/deprecated-and-discouraged-messages-and-notifications.md
-          - scintilla/appendix-reference/edit-messages-never-supported-by-scintilla.md
-          - scintilla/appendix-reference/removed-features.md
-          - scintilla/appendix-reference/building-scintilla.md
+  - API:
+      - Scintilla:
+          - api/scintilla/index.md
+          - Editing:
+              - api/scintilla/editing/text-retrieval-and-modification.md
+              - api/scintilla/editing/information.md
+              - api/scintilla/editing/overtype.md
+              - api/scintilla/editing/cut-copy-and-paste.md
+              - api/scintilla/editing/undo-and-redo.md
+              - api/scintilla/editing/undo-save-and-restore.md
+              - api/scintilla/editing/change-history.md
+          - Selection & Search:
+              - api/scintilla/selection-search/selection.md
+              - api/scintilla/selection-search/multiple-selection-and-virtual-space.md
+              - api/scintilla/selection-search/searching.md
+          - Display:
+              - api/scintilla/display/scrolling-and-automatic-scrolling.md
+              - api/scintilla/display/white-space.md
+              - api/scintilla/display/cursor.md
+              - api/scintilla/display/mouse-capture.md
+              - api/scintilla/display/line-endings.md
+              - api/scintilla/display/margins.md
+              - api/scintilla/display/annotations.md
+              - api/scintilla/display/end-of-line-annotations.md
+              - api/scintilla/display/other-settings.md
+              - api/scintilla/display/brace-highlighting.md
+              - api/scintilla/display/tabs-and-indentation-guides.md
+              - api/scintilla/display/markers.md
+              - api/scintilla/display/indicators.md
+              - api/scintilla/display/folding.md
+              - api/scintilla/display/line-wrapping.md
+              - api/scintilla/display/zooming.md
+              - api/scintilla/display/long-lines.md
+              - api/scintilla/display/accessibility.md
+          - Styling & Lexing:
+              - api/scintilla/styling-lexing/words.md
+              - api/scintilla/styling-lexing/styling.md
+              - api/scintilla/styling-lexing/style-definition.md
+              - api/scintilla/styling-lexing/element-colours.md
+              - api/scintilla/styling-lexing/selection-caret-and-hotspot-styles.md
+              - api/scintilla/styling-lexing/character-representations.md
+              - api/scintilla/styling-lexing/lexer.md
+              - api/scintilla/styling-lexing/lexer-objects.md
+          - Interaction & Commands:
+              - api/scintilla/interaction-commands/autocompletion.md
+              - api/scintilla/interaction-commands/user-lists.md
+              - api/scintilla/interaction-commands/call-tips.md
+              - api/scintilla/interaction-commands/keyboard-commands.md
+              - api/scintilla/interaction-commands/key-bindings.md
+              - api/scintilla/interaction-commands/popup-edit-menu.md
+              - api/scintilla/interaction-commands/macro-recording.md
+          - Documents:
+              - api/scintilla/documents/printing.md
+              - api/scintilla/documents/direct-access.md
+              - api/scintilla/documents/multiple-views.md
+              - api/scintilla/documents/background-loading-and-saving.md
+              - api/scintilla/documents/document-interface.md
+          - Notifications:
+              - api/scintilla/notifications/notifications.md
+          - Appendix / Reference:
+              - api/scintilla/appendix-reference/images.md
+              - api/scintilla/appendix-reference/gtk.md
+              - api/scintilla/appendix-reference/provisional-messages.md
+              - api/scintilla/appendix-reference/deprecated-and-discouraged-messages-and-notifications.md
+              - api/scintilla/appendix-reference/edit-messages-never-supported-by-scintilla.md
+              - api/scintilla/appendix-reference/removed-features.md
+              - api/scintilla/appendix-reference/building-scintilla.md
+      - Lexilla: api/lexilla/index.md
   - Reference:
       - reference/index.md
-      - ScintillaEditBase: reference/scintilla-edit-base.md
-      - ScintillaEdit: reference/scintilla-edit.md
-      - ScintillaDocument: reference/scintilla-document.md
-      - Scintilla.Message: reference/message.md
-      - Colours: reference/colours.md
-  - PyPI: https://pypi.org/project/pyside6-scintilla/
+      - Scintilla:
+          - reference/scintilla/index.md
+          - ScintillaEditBase: reference/scintilla/scintilla-edit-base.md
+          - ScintillaEdit: reference/scintilla/scintilla-edit.md
+          - ScintillaDocument: reference/scintilla/scintilla-document.md
+          - Scintilla.Message: reference/scintilla/message.md
+          - Colours: reference/scintilla/colours.md
+      - Lexilla: reference/lexilla.md
+  - Changelog:
+      - changelog/index.md
+      - pyside6-scintilla: changelog/pyside6-scintilla.md
+      - lexilla: changelog/lexilla.md
+  - PyPI: pypi.md

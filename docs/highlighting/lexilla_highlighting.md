@@ -2,9 +2,9 @@
 
 A minimal `QMainWindow` with a `ScintillaEdit` central widget, showing real
 C++ syntax highlighting driven by a
-[lexilla](https://github.com/borco/lexilla-py)-created `"cpp"` lexer — the
-cross-binding pointer path described in lexilla-py's
-[docs/specs/mission.md](https://github.com/borco/lexilla-py/blob/master/docs/specs/mission.md#cross-binding-integration-raw-pointer-with-an-optional-convenience-extra)
+[lexilla](https://github.com/borco/scintilla-py/tree/master/packages/lexilla)-created `"cpp"` lexer — the
+cross-binding pointer path described in lexilla's
+[docs/specs/mission.md](https://github.com/borco/scintilla-py/blob/master/docs/specs/lexilla-mission.md#cross-binding-integration-raw-pointer-with-an-optional-convenience-extra)
 "Cross-binding integration" decision:
 
 ```python
@@ -32,8 +32,8 @@ Scintilla-based editor.
 ## Resolving style numbers by name, not hardcoding them
 
 `SCE_C_*` numbers are baked into the compiled `cpp` lexer itself
-(`LexCPP.cxx`'s own style table), not chosen by lexilla-py — and with 125
-vendored lexers, each with its own style set, lexilla-py doesn't generate a
+(`LexCPP.cxx`'s own style table), not chosen by lexilla — and with 125
+vendored lexers, each with its own style set, lexilla doesn't generate a
 static enum per lexer for them (same staleness risk as any generated enum,
 multiplied by 125). Instead it binds `ILexer4`'s real runtime introspection
 ([borco/lexilla-py#8](https://github.com/borco/lexilla-py/issues/8)), so
@@ -116,7 +116,7 @@ installed from its [PyPI release](https://pypi.org/project/lexilla/).
 
 ## Source
 
-[`examples/highlighting/lexilla_highlighting/`](https://github.com/borco/pyside6-scintilla/tree/master/examples/highlighting/lexilla_highlighting)
+[`examples/highlighting/lexilla_highlighting/`](https://github.com/borco/scintilla-py/tree/master/examples/highlighting/lexilla_highlighting)
 
 ## Screenshots
 

@@ -1,85 +1,185 @@
 name: Publish
 
+# One tag, one package (rehuco's scheme): pushing `<package>-<version>`, e.g.
+# `pyside6-scintilla-5.6.3.10` or `lexilla-5.5.0.2`, publishes that package at
+# that version -- the tag is the instruction, so a run can never upload
+# something nobody meant to release. The version is read from the package's
+# __init__.py and must match the tag.
+#
+# workflow_dispatch is the dry run: it stops at TestPyPI (real PyPI is gated
+# on the ref being a tag), exercising build, OIDC and upload without touching
+# pypi.org. Both publish jobs use PyPI trusted publishing, configured per
+# package on test.pypi.org/pypi.org for this repo, this workflow file and the
+# `testpypi`/`pypi` environments (see docs/development/build.md).
 on:
-  release:
-    types: [published]
+  push:
+    tags:
+      - "pyside6-scintilla-[0-9]*"
+      - "lexilla-[0-9]*"
   workflow_dispatch:
+    inputs:
+      package:
+        description: Package to publish to TestPyPI (dry run -- real PyPI is never touched)
+        required: true
+        type: choice
+        options: [pyside6-scintilla, lexilla]
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
 
 jobs:
-  build-sdist:
+  package:
+    name: Resolve package and version
+    runs-on: ubuntu-latest
+    outputs:
+      name: ${{ steps.package.outputs.name }}
+      version: ${{ steps.package.outputs.version }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Resolve the package from the tag, and its version from the package
+        id: package
+        env:
+          # Empty on a tag push, so it doubles as the "which trigger" test.
+          DISPATCH_PACKAGE: ${{ inputs.package }}
+        run: |
+          if [ -n "$DISPATCH_PACKAGE" ]; then
+            name="$DISPATCH_PACKAGE"
+          else
+            name="${GITHUB_REF_NAME%-*}"
+          fi
+          init="packages/$name/src/${name//-/_}/__init__.py"
+          if [ ! -f "$init" ]; then
+            echo "no workspace package named '$name' -- expected $init" >&2
+            exit 1
+          fi
+          version=$(sed -n 's/^__version__ = "\(.*\)"$/\1/p' "$init")
+          if [ -z "$version" ]; then
+            echo "could not read __version__ from $init" >&2
+            exit 1
+          fi
+          echo "package: $name, version: $version"
+          if [ -z "$DISPATCH_PACKAGE" ] && [ "${GITHUB_REF_NAME##*-}" != "$version" ]; then
+            echo "tag $GITHUB_REF_NAME does not match version $version in $init" >&2
+            exit 1
+          fi
+          {
+            echo "name=$name"
+            echo "version=$version"
+          } >> "$GITHUB_OUTPUT"
+
+  sdist:
     name: Build sdist
+    needs: package
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
 
       - uses: astral-sh/setup-uv@v7
 
-      # `[tool.uv] no-build-isolation-package` (pyproject.toml) makes `uv
-      # build` use the project's own environment instead of an isolated build
-      # env for this package, expecting [build-system].requires to already be
-      # installed there. `--no-install-project` populates .venv with those
-      # deps (and PySide6/shiboken6, pure-Python wheels - no Qt SDK needed)
-      # without building/installing pyside6-scintilla itself.
+      # pyside6-scintilla builds without isolation ([tool.uv] in the root
+      # pyproject.toml), expecting its build requirements in .venv;
+      # --no-install-workspace installs those (and PySide6/shiboken6, plain
+      # wheels -- no Qt SDK needed for an sdist) without building the
+      # packages themselves.
       - name: Install build dependencies
-        run: uv sync --no-install-project
+        run: uv sync --no-install-workspace
 
       - name: Build sdist
-        run: uv build --sdist
+        run: uv build --sdist --package "${{ needs.package.outputs.name }}" --out-dir dist
 
       - uses: actions/upload-artifact@v7
         with:
-          name: sdist
+          name: dist-sdist
           path: dist/*.tar.gz
 
-  build-wheels:
+  wheels:
     name: Build wheels
+    needs: package
     uses: ./.github/workflows/wheels.yml
+    with:
+      package: ${{ needs.package.outputs.name }}
 
-  # TestPyPI tracer: publish every run here first to verify the trusted
-  # publishing (OIDC) wiring before anything reaches real PyPI. Requires a
-  # pending trusted publisher configured on test.pypi.org for this repo +
-  # workflow + the "testpypi" environment.
+  # Every run publishes here first, including a real tag: TestPyPI is where
+  # the trusted-publishing wiring gets exercised before anything reaches
+  # pypi.org, where an upload cannot be taken back.
   publish-testpypi:
     name: Publish to TestPyPI
-    needs: [build-sdist, build-wheels]
+    needs: [package, sdist, wheels]
     runs-on: ubuntu-latest
     environment:
       name: testpypi
-      url: https://test.pypi.org/p/pyside6-scintilla
+      url: https://test.pypi.org/p/${{ needs.package.outputs.name }}
     permissions:
       id-token: write
     steps:
+      # Only this package's files: a lexilla run also built
+      # pyside6-scintilla's wheels, for lexilla's tests.
       - uses: actions/download-artifact@v8
         with:
+          pattern: dist-sdist
+          path: dist
+          merge-multiple: true
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: wheels-${{ needs.package.outputs.name }}-*
           path: dist
           merge-multiple: true
 
       - uses: pypa/gh-action-pypi-publish@release/v1
         with:
           repository-url: https://test.pypi.org/legacy/
-          # A real-PyPI release re-publishes the same version to TestPyPI
-          # too (the tracer already uploaded it earlier) - don't fail on
-          # TestPyPI's "file already exists" for identical files.
+          # A tag re-run uploads a version the dry run already put here.
           skip-existing: true
 
-  # Real PyPI publish only happens for an actual GitHub Release - the
-  # workflow_dispatch tracer trigger stops at TestPyPI above. Requires a
-  # trusted publisher configured on pypi.org for this repo + workflow + the
-  # "pypi" environment.
   publish-pypi:
     name: Publish to PyPI
-    needs: publish-testpypi
-    if: github.event_name == 'release'
+    needs: [package, publish-testpypi]
+    if: startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
     environment:
       name: pypi
-      url: https://pypi.org/p/pyside6-scintilla
+      url: https://pypi.org/p/${{ needs.package.outputs.name }}
     permissions:
       id-token: write
     steps:
       - uses: actions/download-artifact@v8
         with:
+          pattern: dist-sdist
+          path: dist
+          merge-multiple: true
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: wheels-${{ needs.package.outputs.name }}-*
           path: dist
           merge-multiple: true
 
+      # No skip-existing: PyPI refusing a version it already holds is what
+      # catches a tag cut against a spent version number.
       - uses: pypa/gh-action-pypi-publish@release/v1
+
+  # The GitHub Release for the tag, its notes taken from the package's
+  # CHANGELOG.md section for this version.
+  github-release:
+    name: GitHub Release
+    needs: [package, publish-pypi]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Create the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NAME: ${{ needs.package.outputs.name }}
+          VERSION: ${{ needs.package.outputs.version }}
+        run: |
+          python3 tools/changelog_section.py "packages/$NAME/CHANGELOG.md" "$VERSION" > notes.md
+          echo "" >> notes.md
+          echo "See [CHANGELOG.md](https://github.com/$GITHUB_REPOSITORY/blob/$GITHUB_REF_NAME/packages/$NAME/CHANGELOG.md) for full history." >> notes.md
+          gh release create "$GITHUB_REF_NAME" --title "$NAME $VERSION" --notes-file notes.md

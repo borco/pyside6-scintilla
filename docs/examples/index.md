@@ -1,7 +1,7 @@
 # Examples
 
 Standalone example apps demonstrating `pyside6_scintilla`. Each one lives
-under [`examples/`](https://github.com/borco/pyside6-scintilla/tree/master/examples)
+under [`examples/`](https://github.com/borco/scintilla-py/tree/master/examples)
 in the repository and can be run directly after `uv sync`:
 
 ```bash
@@ -70,7 +70,7 @@ uv run python examples/<example>/main.py
     ---
 
     Real C++ syntax highlighting *and* folding in a `ScintillaEdit`, driven
-    by a [lexilla](https://github.com/borco/lexilla-py)-created `"cpp"`
+    by a [lexilla](https://github.com/borco/scintilla-py/tree/master/packages/lexilla)-created `"cpp"`
     lexer wired in via `SCI_SETILEXER` — no per-edit re-tokenizing glue
     needed, since Scintilla calls the lexer's `Lex()`/`Fold()` itself.
 

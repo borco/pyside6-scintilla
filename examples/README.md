@@ -1,8 +1,9 @@
 # Examples
 
-Standalone example apps for `pyside6-scintilla`. These are development aids,
-not part of the published package (see `[tool.scikit-build]` in
-`pyproject.toml`).
+Standalone example apps for both packages of this repo -- `pyside6-scintilla`,
+and `lexilla` in use with it (`highlighting/lexilla_highlighting/`). These are
+development aids, not part of either published package (they live outside
+`packages/`).
 
 Run from the repo root after `uv sync`:
 
@@ -48,7 +49,7 @@ Scintilla's `autoCShow()` from the `charAdded` signal and reacting to
 
 `QMainWindow` with a `ScintillaEdit` central widget showing real C++ syntax
 highlighting and folding driven by a
-[lexilla](https://github.com/borco/lexilla-py)-created `"cpp"` lexer, wired
+[lexilla](https://github.com/borco/scintilla-py/tree/master/packages/lexilla)-created `"cpp"` lexer, wired
 in via lexilla's `set_lexer()` glue (itself `setILexer()`/`SCI_SETILEXER`) —
 unlike the `pygments_highlighting`/`tree_sitter_highlighting` examples
 below, no per-edit re-tokenizing glue code is needed once the lexer is

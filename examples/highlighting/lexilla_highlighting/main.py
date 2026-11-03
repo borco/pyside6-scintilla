@@ -2,7 +2,7 @@
 
 Wires a lexilla-created "cpp" lexer into a ScintillaEdit via lexilla's
 set_lexer() glue (which itself calls SCI_SETILEXER/setILexer()) -- the
-cross-binding pointer path described in lexilla-py's docs/specs/mission.md
+cross-binding pointer path described in lexilla-py's docs/development/mission.md
 "Cross-binding integration" decision. Unlike this repo's own
 pygments_highlighting/tree_sitter_highlighting examples, no re-tokenizing
 glue code is needed here: once the lexer is wired up, Scintilla calls its
@@ -76,7 +76,7 @@ class StyleSpec:
 # "SCE_C_DEFAULT"). Neither the SCE_C_* numbers nor their names are bound as
 # constants by lexilla-py -- each lexer defines its own style set, and
 # binding all of them is out of lexilla-py's scope (see its
-# docs/specs/mission.md) -- so a plain string is the only handle available;
+# docs/development/mission.md) -- so a plain string is the only handle available;
 # there is no enum member to import instead. Resolved to the cpp lexer's
 # actual style numbers at runtime in __setup_editor() via
 # Lexer.named_styles()/name_of_style(), and checked there against typos

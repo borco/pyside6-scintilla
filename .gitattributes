@@ -1,7 +1,13 @@
 # Keep vendored Scintilla source byte-identical to the upstream release
 # tarball so future version bumps diff cleanly.
-src/scintilla/** -text
+packages/pyside6-scintilla/src/scintilla/** -text
 
 # Local copy of the upstream docs hosted on the docs site -- copied
-# byte-for-byte from src/scintilla/doc/, same reasoning as above.
-docs/scintilla-original/** -text
+# byte-for-byte from packages/pyside6-scintilla/src/scintilla/doc/, same reasoning as above.
+docs/api/scintilla-original/** -text
+
+# Vendored Lexilla source, byte-identical to its release tarball, and
+# lexilla's copy of the Scintilla interface headers, kept byte-identical to
+# the vendored Scintilla by tools/sync_scintilla_headers.py.
+packages/lexilla/src/lexilla_vendor/** -text
+packages/lexilla/src/scintilla_interface/** -text

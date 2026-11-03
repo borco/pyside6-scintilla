@@ -7,12 +7,24 @@ on:
       - 'docs/**'
       - 'mkdocs.yml'
       - '.github/workflows/docs.yml'
+      # API reference (mkdocstrings) and the changelog/README pages pulled in
+      # from the packages.
+      - 'packages/*/src/**/*.py'
+      - 'packages/*/src/**/*.pyi'
+      - 'packages/*/CHANGELOG.md'
+      - 'packages/*/README.md'
   pull_request:
     branches: [master]
     paths:
       - 'docs/**'
       - 'mkdocs.yml'
       - '.github/workflows/docs.yml'
+      # API reference (mkdocstrings) and the changelog/README pages pulled in
+      # from the packages.
+      - 'packages/*/src/**/*.py'
+      - 'packages/*/src/**/*.pyi'
+      - 'packages/*/CHANGELOG.md'
+      - 'packages/*/README.md'
   workflow_dispatch:
 
 permissions:
@@ -35,12 +47,12 @@ jobs:
         with:
           enable-cache: true
 
-      # --no-install-project: the docs build doesn't need the compiled
-      # _pyside6_scintilla extension (no Qt/CMake toolchain in this job).
-      - run: uv sync --group docs --no-install-project
+      # --only-group docs: the docs build reads the packages' sources, but
+      # doesn't need them built (no Qt/CMake toolchain in this job).
+      - run: uv sync --only-group docs
 
-      # --no-sync: `uv run` would otherwise re-sync without
-      # --no-install-project and try to build the CMake extension.
+      # --no-sync: `uv run` would otherwise re-sync the default groups and try
+      # to build both packages' extensions.
       - run: uv run --no-sync mkdocs build --strict
 
       - uses: actions/upload-pages-artifact@v5

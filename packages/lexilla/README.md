@@ -28,7 +28,7 @@ below) rather than raw `SCI_SETILEXER` pointer plumbing; it's kept as a
 separate package so this binding's release cadence and vendored Lexilla
 version can track upstream Lexilla releases independently of
 pyside6-scintilla's own release cycle — see
-[docs/lexilla/design-decisions.md](docs/lexilla/design-decisions.md) for the full background.
+[design decisions](https://borco.github.io/scintilla-py/lexilla/design-decisions/) for the full background.
 
 ## Goals
 

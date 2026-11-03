@@ -167,6 +167,10 @@ The [project board](https://github.com/users/borco/projects/3) is the
 roadmap for this repo (both packages). Issues/PRs are auto-added by the
 board's built-in "Auto-add to project" workflow.
 
+Every issue gets a package label: `scintilla` (pyside6-scintilla),
+`lexilla`, or both when it touches both packages (shared CI, docs site,
+examples using both). Add it when creating an issue.
+
 When asked what to work on next, check the project board's "In progress"
 lane for an item belonging to this repo (`borco/scintilla-py`). If one
 exists, work on it. If there is no item for this repo in "In progress", say

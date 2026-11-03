@@ -6,7 +6,7 @@ Changelog](https://keepachangelog.com/en/1.0.0/); entries are kept high-level
 (what shipped, breaking changes) rather than a full commit-by-commit log —
 see git history for that.
 
-## [Unreleased]
+## [5.6.3.10] - 2026-11-03
 
 ### Changed
 
@@ -14,6 +14,9 @@ see git history for that.
   monorepo (as `packages/pyside6-scintilla/`), next to lexilla. Docs:
   <https://borco.github.io/scintilla-py/>. Releases are now tagged
   `pyside6-scintilla-<version>`.
+- The PyPI project links (homepage, repository, issues) and the README's
+  links point to the new locations; 5.6.3.9's docs link 404s since the move.
+  No code changes: still built for PySide6 6.11.
 
 ## [5.6.3.9] - 2026-11-02
 

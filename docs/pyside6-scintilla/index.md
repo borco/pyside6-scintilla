@@ -30,7 +30,7 @@ Install from [PyPI](https://pypi.org/project/pyside6-scintilla/):
 pip install pyside6-scintilla
 ```
 
-`PySide6-Essentials` 6.11.x is installed automatically as a dependency; the
+`PySide6-Essentials` 6.12.x is installed automatically as a dependency; the
 wheels bundle everything else `ScintillaEditBase` needs at runtime. Each
 release is built for, and pinned to, one PySide6 minor (its binding libraries
 aren't ABI-compatible across minors), so on another PySide6 minor pip picks

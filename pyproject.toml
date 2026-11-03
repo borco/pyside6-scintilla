@@ -31,7 +31,7 @@ dev = [
     "nanobind>=2.4",
     "ninja",
     "scikit-build-core>=0.10",
-    "shiboken6-generator>=6.11,<6.12",
+    "shiboken6-generator>=6.12,<6.13",
     # Tests, lint, type checking.
     "pyright>=1.1.410",
     "pytest>=8.0",

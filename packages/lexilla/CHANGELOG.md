@@ -6,7 +6,7 @@ Changelog](https://keepachangelog.com/en/1.0.0/); entries are kept
 high-level (what shipped, breaking changes) rather than a full
 commit-by-commit log — see git history for that.
 
-## [Unreleased]
+## [5.5.0.2] - 2026-11-03
 
 ### Changed (breaking)
 

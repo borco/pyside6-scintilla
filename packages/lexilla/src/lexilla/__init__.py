@@ -18,7 +18,7 @@ from ._lexilla import (
     get_lexer_name,
 )
 
-__version__ = "5.5.0.1"
+__version__ = "5.5.0.2"
 
 __all__ = [
     "Language",

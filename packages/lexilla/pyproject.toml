@@ -41,7 +41,7 @@ dependencies = []
 [project.urls]
 Homepage = "https://borco.github.io/scintilla-py/lexilla/"
 Repository = "https://github.com/borco/scintilla-py/tree/master/packages/lexilla"
-Issues = "https://github.com/borco/lexilla-py/issues"
+Issues = "https://github.com/borco/scintilla-py/issues"
 
 
 [tool.scikit-build]

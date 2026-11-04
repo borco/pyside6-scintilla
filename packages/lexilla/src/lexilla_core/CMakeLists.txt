@@ -30,4 +30,9 @@ target_include_directories(${LIB_NAME}
     ${LEXILLA_DIR}/lexlib
 )
 
+# Lexilla 5.5.2+: don't mark CreateLexer() & co. dllexport/visibility-default.
+# They're called directly by the binding linked into the same extension
+# module, which shouldn't re-export Lexilla's C API.
+target_compile_definitions(${LIB_NAME} PRIVATE LEXILLA_NO_EXPORT)
+
 set_target_properties(${LIB_NAME} PROPERTIES POSITION_INDEPENDENT_CODE ON)

@@ -401,7 +401,7 @@ int ClassifyWordRb(Sci_PositionU end, char ch, char chNext, const WordList &keyw
 
 //XXX Identical to Perl, put in common area
 bool isMatch(Accessor &styler, Sci_Position lengthDoc, Sci_Position pos, const char *val) {
-    if ((pos + static_cast<int>(strlen(val))) >= lengthDoc) {
+    if ((pos < 0) || ((pos + static_cast<int>(strlen(val))) >= lengthDoc)) {
         return false;
     }
     while (*val) {
@@ -1023,17 +1023,17 @@ void LexerRuby::Lex(Sci_PositionU startPos, Sci_Position length, int initStyle, 
         [[nodiscard]] bool canExit() const noexcept {
             return inner_string_count > 0;
         }
-        void enter(int &state, const QuoteCls &curr_quote) noexcept {
-            inner_string_types[inner_string_count] = state;
-            state = SCE_RB_DEFAULT;
+        void enter(int &stateToSet, const QuoteCls &curr_quote) noexcept {
+            inner_string_types[inner_string_count] = stateToSet;
+            stateToSet = SCE_RB_DEFAULT;
             inner_expn_brace_counts[inner_string_count] = brace_counts;
             brace_counts = 0;
             inner_quotes[inner_string_count] = curr_quote;
             ++inner_string_count;
         }
-        void exit(int &state, QuoteCls &curr_quote) noexcept {
+        void exit(int &stateToSet, QuoteCls &curr_quote) noexcept {
             --inner_string_count;
-            state = inner_string_types[inner_string_count];
+            stateToSet = inner_string_types[inner_string_count];
             brace_counts = inner_expn_brace_counts[inner_string_count];
             curr_quote = inner_quotes[inner_string_count];
         }
@@ -1784,6 +1784,7 @@ std::string getPrevWord(Sci_Position pos, Accessor &styler, int word_state) {
             break;
         }
     }
+    i = std::max<Sci_Position>(i, 0);
     std::string prevWord;
     for (; i <= pos; i++) {
         prevWord.push_back(styler[i]);

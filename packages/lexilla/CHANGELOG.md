@@ -6,10 +6,30 @@ Changelog](https://keepachangelog.com/en/1.0.0/); entries are kept
 high-level (what shipped, breaking changes) rather than a full
 commit-by-commit log — see git history for that.
 
-## [Unreleased]
+## [5.5.5.0] - 2026-11-04
 
 ### Changed
 
+- Vendors Lexilla 5.5.5, up from 5.5.0 (#24). See
+  [LexillaHistory](https://www.scintilla.org/LexillaHistory.html) for the
+  full list: mostly lexer fixes, many of them crashes, hangs and
+  out-of-bounds writes (Baan, C++, DMIS, Perl, Raku, TCMD, TeX, Visual
+  Prolog, X12), and Unicode 17 character categories. No lexers were added or
+  removed, and `ILexer5` is unchanged. Styling changes worth knowing about:
+  - XML/HTML: only CDATA's contents are `SCE_H_CDATA`; the `CDATA` keyword
+    is `SCE_H_SGML_COMMAND` and its punctuation `SCE_H_SGML_DEFAULT`.
+  - HTML: the extra `!`/`#`/`$`/`:` in JSP and ASP tags are `SCE_H_ASP`;
+    PHP `$$variable` is `SCE_HPHP_VARIABLE`.
+  - Markdown: front matter (YAML, TOML or JSON metadata at the file start)
+    gets three new styles, `SCE_MARKDOWN_FRONT_MARK`/`_FRONT`/`_FRONT_KEY`.
+  - Progress: typed annotations are `SCE_ABL_TYPEDANNOTATION`.
+  - JavaScript (cpp, XML and HTML lexers): a `/` only starts a regex literal
+    when another `/` follows on the same line; the new
+    `lexer.cpp.continuation.only.in.strings` property limits line
+    continuation to string literals.
+- The extension no longer exports Lexilla's C entry points (`CreateLexer`,
+  `GetLexerCount`, ...): Lexilla is built with `LEXILLA_NO_EXPORT` (new in
+  5.5.2), since only the binding linked beside it calls them.
 - Built against the Scintilla 5.6.9 interface headers (the Scintilla release
   pyside6-scintilla vendors), up from 5.6.3. Only `Scintilla.h` changed: it
   adds constants (`SC_UPDATE_TEXT`, `SC_UPDATE_LINE_COUNT`, the scale

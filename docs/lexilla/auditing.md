@@ -8,25 +8,25 @@
 > `src/lexilla_vendor/` is vendored unmodified from Lexilla's official
 > release. If you'd like to confirm that for yourself, here's one way --
 > use whatever approach you're comfortable with. Mirrors
-> [pyside6-scintilla's docs/auditing.md](https://github.com/borco/scintilla-py/blob/master/docs/auditing.md)
+> [Verifying vendored Scintilla](../pyside6-scintilla/auditing.md)
 > for its vendored `src/scintilla/`.
 
-Lexilla **5.5.0** is extracted as-is in `src/lexilla_vendor/`.
+Lexilla **5.5.5** is extracted as-is in `src/lexilla_vendor/`.
 
 | Field | Value |
 | --- | --- |
 | Upstream project | <https://www.scintilla.org/Lexilla.html> |
-| Upstream version | 5.5.0 |
-| Upstream tag | `rel-5-5-0` (per `version.txt`: `550`) |
-| Tarball/zip URL | <https://www.scintilla.org/lexilla550.tgz> |
-| Tarball/zip SHA-256 | `8532414359b851e0f100af802c64dfbb5be7fe35d60a8a467331c939d905f6e2` |
+| Upstream version | 5.5.5 |
+| Upstream tag | `rel-5-5-5`, commit `e67537693bfb` (per `version.txt`: `555`) |
+| Tarball/zip URL | <https://www.scintilla.org/lexilla555.tgz> |
+| Tarball/zip SHA-256 | `fa4093ad5c48acf49a6f3eca1b75143a5c824ef1a6f5b0ee59e8c3d6a970f229` |
 | Vendored path | `src/lexilla_vendor` |
 
 After verifying the checksum and extracting the tarball, a tree diff against
 `src/lexilla_vendor/` should come back empty:
 
 ```sh
-tar -xzf lexilla550.tgz --strip-components=1 -C <some-dir>
+tar -xzf lexilla555.tgz --strip-components=1 -C <some-dir>
 ```
 
 ```sh
